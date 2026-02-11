@@ -9,7 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit mother fucker</Text>
+      <Text>Edit mother fucker what elase you coud have done what the fuck you doing lol</Text>
     </View>
   );
 }

@@ -2,14 +2,8 @@ import { Text, View } from "react-native";
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit mother fucker what elase you coud have done what the fuck you doing lol</Text>
+    <View className="flex-1 justify-center items-center bg-red-500">
+      <Text className="text-lg font-bold">Hello, NativeWind!</Text>
     </View>
   );
 }

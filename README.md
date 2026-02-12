@@ -49,119 +49,233 @@ Join our community of developers creating universal apps.
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
-- [To start the project:] [npx expo start --clear]
+- To start the project:
 
+  ```bash
+  npx expo start --clear
+  ```
 
-https://www.youtube.com/watch?v=tacJUeBYPYc&t=5s
-eas credentials
-// to generate sha 1 key
+---
 
+## EAS Credentials & SHA-1 Key
 
-// it is hard to create build every time when you change you package so people use expo go and it's app
-// expo go help you to build you app fast
+> **Reference:** [EAS Credentials Tutorial](https://www.youtube.com/watch?v=tacJUeBYPYc&t=5s)
 
-// to craete development build
-// npx expo install expo-dev-client    
+To generate the SHA-1 key, use the `eas credentials` command.
 
-// eas build --profile development --plateform <android> for ios device you have to register first
+---
 
-native app bundle + js bundle that run  in case of expo go app it runs as native app bundle and js bundel runs inside it
+## Understanding Expo Go vs Development Builds
 
-in case of dev buid you create this native bundle your self(expo go version created by your self) with relaing one aloredy exist like expo app and dev build all you to run native libraries
+It is hard to create a build every time you change your package, so people use **Expo Go** — it helps you build and test your app fast.
 
-// there are two way to create dev builds
-// locally -> reqire x code and adroid studio and simulators
-// eas - expo applicatoin services - to build in cloud and install in device
-ask for package for dev build com.comapu,app also for ios
+### How It Works
 
-1) locally
-// npx expo prebuild - generate native code for android and ios using technic called continuse native gneration
+- **Expo Go:** The native app bundle + JS bundle run together. In the case of Expo Go, it runs as a pre-built native app bundle with your JS bundle running inside it.
+- **Development Build:** You create the native bundle yourself (essentially your own version of Expo Go). Unlike the existing Expo Go app, a dev build allows you to run **native libraries**.
 
-// it generates two folder andorid and ios - you are not allowed ot modify this folder's code because every time when you run eas expo prebuild then these folders are auto generated, so next time when you run the new chagnes are overriden
+---
 
-// npx expo run:ios - run the native code in ios simulator 
-// npx expo run:andoid 
+## Creating Development Builds
 
-2) eas cli - to check dev  build in real device
+First, install the dev client:
 
-// make sure you have eas cli install 
-// npm install -g eas-cli
-// eas -v
+```bash
+npx expo install expo-dev-client
+```
 
-// eas login
+Then trigger a build:
 
-//eas whoami - know acc info
+```bash
+eas build --profile development --platform <android|ios|all>
+```
 
-// eas init - initalize new eas porject in my project, also add project id  extra object in app.json
-// select your acc
+> **Note:** For iOS devices, you have to register your device first.
 
-// eas build:configure - create file and apply diff setting that i want to apply on each build hit all for both platform ios and android and you can see the eas.json file is created and here you file diff option for dev(  "developmentClient": true, this option show dev option on dev build), preview, and production , if you do not want to depend local server of your project then create preview and production build
+### Two Ways to Create Dev Builds
 
-// to create build
-// eas build --profile development --plateform <android, ios, all>   // when you run this command then make sure there does not ios and andoid folder exists in you project which might got created when you created local build with prebuild, or you can add those both folder into git ignore or .easignore
-// --profile development form above file dev option it selects
-// before this way if you have created build via above way and in your directory andorid and ios folder exists then
-expo think you have made some change in these folders and it is not going to reveal the ios or android porject if
-we container these two folder in our project so add those folder names in .giignore /ios /andorid
+1. **Locally** — Requires Xcode, Android Studio, and simulators.
+2. **EAS (Expo Application Services)** — Build in the cloud and install on a device.
 
-if you did not instealled expo-dev-client then inatall it because it allow us to install this on real device
+When it asks for a package name for the dev build, provide it (e.g., `com.company.app`) for both Android and iOS.
 
-it ask you for apple creads because we want to install it on real device and then we need to generate a certificate from
-apple so that they gave us permissions to install this in a real device and we also have to register our device if you
-do not have device you can add cli will ask you
+---
 
-so now it will push my code to eas cloud and start building my app and you check it by going to dashboard
+### Option 1: Local Development Build
 
-once build is completed share this like to your actual device and install the build and 
+1. **Generate native code** using Continuous Native Generation:
 
-<!-- to GET the ssh key to add for google login -->
+   ```bash
+   npx expo prebuild
+   ```
+
+   This generates two folders: `android` and `ios`. **Do not manually modify** the code in these folders — every time you run `npx expo prebuild`, these folders are auto-generated and any manual changes will be overridden.
+
+2. **Run the native code** in simulators:
+
+   ```bash
+   # For iOS simulator
+   npx expo run:ios
+
+   # For Android emulator
+   npx expo run:android
+   ```
+
+---
+
+### Option 2: EAS CLI — Dev Build on a Real Device
+
+1. **Install EAS CLI:**
+
+   ```bash
+   npm install -g eas-cli
+   ```
+
+2. **Verify installation:**
+
+   ```bash
+   eas -v
+   ```
+
+3. **Login to your Expo account:**
+
+   ```bash
+   eas login
+   ```
+
+4. **Check account info:**
+
+   ```bash
+   eas whoami
+   ```
+
+5. **Initialize a new EAS project** (also adds `projectId` to the `extra` object in `app.json`):
+
+   ```bash
+   eas init
+   ```
+
+   Select your account when prompted.
+
+6. **Configure EAS build profiles:**
+
+   ```bash
+   eas build:configure
+   ```
+
+   This creates the `eas.json` file with different build profiles:
+   - **development** — Has `"developmentClient": true` (this option shows dev options on the dev build).
+   - **preview** — For internal testing.
+   - **production** — For release builds.
+
+   > If you do not want to depend on the local server of your project, create **preview** or **production** builds instead.
+
+7. **Create the build:**
+
+   ```bash
+   eas build --profile development --platform <android|ios|all>
+   ```
+
+   - The `--profile development` flag selects the development configuration from `eas.json`.
+   - **Important:** Make sure the `ios` and `android` folders do **not** exist in your project when running this command (they may have been created by a local `prebuild`). Either delete them or add them to `.gitignore` / `.easignore`:
+
+     ```
+     /ios
+     /android
+     ```
+
+   - If those folders exist, Expo will think you've made manual changes to them and will not regenerate the native project.
+
+8. **Install `expo-dev-client`** (if not already installed) — it allows installing the build on a real device:
+
+   ```bash
+   npx expo install expo-dev-client
+   ```
+
+9. **Apple Credentials (iOS only):**
+   - EAS will ask for your Apple credentials because installing on a real device requires generating a certificate from Apple.
+   - You also need to **register your device**. If you don't have a device registered, the CLI will guide you through adding one.
+
+10. **Build & Install:**
+    - EAS will push your code to the cloud and start building. You can monitor progress on the [EAS Dashboard](https://expo.dev).
+    - Once the build is completed, share the link to your actual device and install the build.
+
+---
+
+## Google Login Setup
+
+### Get the SHA Key for Google Login
+
+```bash
 keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+```
 
+### Reference Links
 
-https://www.youtube.com/watch?v=FdjczjkwQKE
-https://www.youtube.com/watch?v=uQCE9zl3dXU
-https://reactnative.directory/?search=%40react-native-google-signin%2Fgoogle- // this thired party libry doe not work with expo go
+- [Google Sign-In Tutorial 1](https://www.youtube.com/watch?v=FdjczjkwQKE)
+- [Google Sign-In Tutorial 2](https://www.youtube.com/watch?v=uQCE9zl3dXU)
+- [React Native Google Sign-In Library](https://reactnative.directory/?search=%40react-native-google-signin%2Fgoogle-)
+  > **Note:** This third-party library does **not** work with Expo Go.
 
+---
 
+## Build Version Management
 
+- [Build Version Management Tutorial](https://www.youtube.com/watch?v=C8x4N9UmzS8)
+- [Multiple Variants Tutorial](https://www.youtube.com/watch?v=UtJJCAfrjIg) _(review again)_
 
-<!-- build verion manange -->
-https://www.youtube.com/watch?v=C8x4N9UmzS8
-<!-- multiple varients see this again-->
-https://www.youtube.com/watch?v=UtJJCAfrjIg
+---
 
-<!-- production build for android -->
-https://www.youtube.com/watch?v=nxlt8uwqhpE
-<!-- production build for ios -->
-https://www.youtube.com/watch?v=VZL_e0cEwo8
+## Production Builds
 
-<!-- How to use over the air updates to share previews with your team | EAS Tutorial -->
-https://www.youtube.com/watch?v=vPKh-tNm-yI
+- [Production Build for Android](https://www.youtube.com/watch?v=nxlt8uwqhpE)
+- [Production Build for iOS](https://www.youtube.com/watch?v=VZL_e0cEwo8)
 
-<!-- How to create and share internal distribution builds | EAS Tutorial -->
-https://www.youtube.com/watch?v=1fQuGLHxWks
+---
 
-<!-- How to manage Multiple App Environments with Expo -->
-https://www.youtube.com/watch?v=uKGx3gRrhx0
+## EAS Tutorials
 
-<!-- entire playlist -->
-https://www.youtube.com/watch?v=uQCE9zl3dXU&list=PLsXDmrmFV_AS14tZCBin6m9NIS_VCUKe2
+- [Over-the-Air Updates — Share Previews with Your Team](https://www.youtube.com/watch?v=vPKh-tNm-yI)
+- [Create and Share Internal Distribution Builds](https://www.youtube.com/watch?v=1fQuGLHxWks)
+- [Manage Multiple App Environments with Expo](https://www.youtube.com/watch?v=uKGx3gRrhx0)
+- [Entire EAS Playlist](https://www.youtube.com/watch?v=uQCE9zl3dXU&list=PLsXDmrmFV_AS14tZCBin6m9NIS_VCUKe2)
 
+---
 
-"tu":"expo start --tunnel"
-"pb": "npx expo rebuild --plateform android && npx expo run:android"
+## Useful Scripts
 
-https://www.youtube.com/watch?v=O2kxRkiWv0M
+Add these to your `package.json` scripts:
 
+```json
+"tu": "expo start --tunnel",
+"pb": "npx expo rebuild --platform android && npx expo run:android"
+```
 
+> **Reference:** [Expo Tunnel Tutorial](https://www.youtube.com/watch?v=O2kxRkiWv0M)
 
-// can add this in eas.json file for custom env if you want to create, it do not ask you for creds or certificate and you can run in simulator https://www.youtube.com/watch?v=uKGx3gRrhx0
- "ios-simulator": {
-      "extends": "development",
-      "ios": {
-        "simulator": true
-      }
-    },
+---
 
-// if you have created env var in dashboard
+## iOS Simulator Build Profile (EAS)
+
+You can add this profile in your `eas.json` file to create a custom environment for the iOS simulator. It does **not** ask for credentials or certificates, and you can run it directly in the simulator.
+
+> **Reference:** [Multiple App Environments Tutorial](https://www.youtube.com/watch?v=uKGx3gRrhx0)
+
+```json
+"ios-simulator": {
+  "extends": "development",
+  "ios": {
+    "simulator": true
+  }
+}
+```
+
+---
+
+## Pull Environment Variables from EAS Dashboard
+
+If you have created environment variables in the EAS Dashboard, pull them locally with:
+
+```bash
 eas env:pull
+```

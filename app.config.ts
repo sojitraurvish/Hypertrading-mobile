@@ -72,6 +72,7 @@ export default ({config}:ConfigContext):ExpoConfig =>{
       "predictiveBackGestureEnabled": false
     },
     "web": {
+      "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },

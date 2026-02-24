@@ -4,6 +4,7 @@ module.exports = {
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}",
+    "./containers/**/*.{js,jsx,ts,tsx}",
     "./assets/**/*.{js,jsx,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
@@ -24,13 +25,13 @@ module.exports = {
         // TEXT COLORS — Dark Mode
         // ==========================================
         "text-primary-dark": "#FFFFFF",
-        "text-secondary-dark": "#005FF9",
-        "text-tertiary-dark": "#7C3AED",
-        "text-quaternary-dark": "",
+        "text-secondary-dark": "#50fa7b",
+        "text-tertiary-dark": "#9ca3af",
+        "text-quaternary-dark": "#50fa7b",
         "text-quinary-dark": "#d1d5db",
-        "text-senary-dark": "#818cf8",
+        "text-senary-dark": "#ef4444",
         "text-septenary-dark": "#B0B0B0",
-        "text-octonary-dark": "#ef4444",
+        "text-octonary-dark": "#6b7280",
 
         // ==========================================
         // BACKGROUND COLORS — Light Mode
@@ -40,15 +41,15 @@ module.exports = {
         // ==========================================
         // BACKGROUND COLORS — Dark Mode
         // ==========================================
-        "bg-primary-dark": "#005FF9",
-        "bg-secondary-dark": "#00000080",
-        "bg-tertiary-dark": "#1f2937",
-        "bg-quaternary-dark": "#374151",
+        "bg-primary-dark": "#000000",
+        "bg-secondary-dark": "#0a0a0a",
+        "bg-tertiary-dark": "#141414",
+        "bg-quaternary-dark": "#1a1a1a",
         "bg-quinary-dark": "#FFFFFF",
-        "bg-senary-dark": "#818cf8",
-        "bg-septenary-dark": "#111827",
-        "bg-octonary-dark": "#393e46",
-        "bg-nonary-dark": "#373c47",
+        "bg-senary-dark": "#50fa7b",
+        "bg-septenary-dark": "#111111",
+        "bg-octonary-dark": "#1f1f1f",
+        "bg-nonary-dark": "#2a2a2a",
         "bg-denary-dark": "#b91c1c",
 
         // ==========================================
@@ -59,9 +60,9 @@ module.exports = {
         // ==========================================
         // BORDER COLORS — Dark Mode
         // ==========================================
-        "border-primary-dark": "#818cf8",
-        "border-secondary-dark": "#6b7280",
-        "border-tertiary-dark": "#636363",
+        "border-primary-dark": "#1f1f1f",
+        "border-secondary-dark": "#2a2a2a",
+        "border-tertiary-dark": "#333333",
       },
     },
   },

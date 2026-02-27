@@ -50,7 +50,7 @@ type Props = {
   items?: MarketItem[];
   expandAll?: boolean;
   onItemPress?: (item: MarketItem) => void;
-  onFavoriteToggle?: (item: MarketItem) => void;
+  onFavoriteToggle?: (pair: string, nextIsFavorite: boolean) => void;
   className?: string;
   isRefreshing?: boolean;
   onRefresh?: () => void;
@@ -129,10 +129,18 @@ const MarketCard: React.FC<{
   item: MarketItem;
   expandAll?: boolean;
   onItemPress?: (item: MarketItem) => void;
-  onFavoriteToggle?: (item: MarketItem) => void;
+  onFavoriteToggle?: (pair: string, nextIsFavorite: boolean) => void;
 }> = memo(({ item, expandAll = false, onItemPress, onFavoriteToggle }) => {
   const [localExpanded, setLocalExpanded] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const [optimisticFavorite, setOptimisticFavorite] = useState(
+    item.isFavorite ?? false,
+  );
   const expanded = expandAll || localExpanded;
+
+  useEffect(() => {
+    setOptimisticFavorite(item.isFavorite ?? false);
+  }, [item.isFavorite]);
 
   const toggleExpanded = () => {
     if (Platform.OS === "ios") {
@@ -164,11 +172,21 @@ const MarketCard: React.FC<{
   return (
     <AppButton
       variant={VARIANT_TYPES.NOT_SELECTED}
-      onPress={() => onItemPress?.(item)}
+      onPress={() => {
+        setIsPressed(false);
+        onItemPress?.(item);
+      }}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
     >
       <AppCard
         variant={VARIANT_TYPES.SECONDARY}
-        className="py-3.5 px-4 rounded-2xl border border-border-primary-dark/80"
+        className={cn(
+          "py-3.5 px-4 rounded-2xl border",
+          isPressed
+            ? "bg-bg-tertiary-dark border-border-secondary-dark"
+            : "border-border-primary-dark/80",
+        )}
       >
         {/* Top Row */}
         <View className="flex-row items-center">
@@ -177,7 +195,11 @@ const MarketCard: React.FC<{
             variant={VARIANT_TYPES.NOT_SELECTED}
             onPress={(e) => {
               e.stopPropagation();
-              onFavoriteToggle?.(item);
+              const nextIsFavorite = !optimisticFavorite;
+              setOptimisticFavorite(nextIsFavorite);
+              requestAnimationFrame(() => {
+                onFavoriteToggle?.(item.pair, nextIsFavorite);
+              });
             }}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             className="mr-3"
@@ -186,13 +208,13 @@ const MarketCard: React.FC<{
             <View
               className={cn(
                 "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full items-center justify-center border-2 border-bg-quaternary-dark",
-                item.isFavorite ? "bg-bg-senary-dark" : "bg-bg-tertiary-dark",
+                optimisticFavorite ? "bg-bg-senary-dark" : "bg-bg-tertiary-dark",
               )}
             >
               <Ionicons
-                name={item.isFavorite ? "star" : "star-outline"}
+                name={optimisticFavorite ? "star" : "star-outline"}
                 size={10}
-                color={item.isFavorite ? "#000000" : "#6b7280"}
+                color={optimisticFavorite ? "#000000" : "#6b7280"}
               />
             </View>
           </AppButton>

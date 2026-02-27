@@ -1,14 +1,17 @@
+import { HomeHeader } from "@/components/sections/home/header";
+import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { HomeHeader } from "@/components/sections/home/header";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-bg-primary-dark" style={{ paddingTop: insets.top }}>
+    <View
+      className="flex-1 bg-bg-primary-dark"
+      style={{ paddingTop: insets.top }}
+    >
       {/* Sticky Header */}
       <HomeHeader />
 
@@ -57,7 +60,11 @@ export default function TabLayout() {
           options={{
             title: "Vault",
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="shield-outline" size={22} color={color} />
+              <MaterialCommunityIcons
+                name="shield-outline"
+                size={22}
+                color={color}
+              />
             ),
           }}
         />

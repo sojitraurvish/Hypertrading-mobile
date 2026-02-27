@@ -1,6 +1,9 @@
 import { ENVIRONMENT, ENVIRONMENT_TYPES } from "../constants";
 
+export const DEFAULT_LANGUAGE = "en";
+
 export const API_BASE_URL = `http://localhost:9000`
+
 
 export const jwtToken = "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OGI1YmNiODE4ZDA5YTBjMWIwY2Y0ZSIsImlhdCI6MTc1NDA1MTIxOCwiZXhwIjoxNzU2NjQzMjE4fQ.GF3h2xAwvr-PegUXXbX7rLFrA4BTkbC4NKatt3vbScg";
 

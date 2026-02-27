@@ -2,15 +2,18 @@ import { MarketFilters } from "@/components/sections/markets/market-filters";
 import { MarketHeader } from "@/components/sections/markets/market-header";
 import { Feather } from "@expo/vector-icons";
 import type { ISubscription } from "@nktkas/hyperliquid";
+import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Keyboard, View } from "react-native";
+import { ActivityIndicator, BackHandler, Keyboard, View } from "react-native";
 
 import type { MarketItem } from "@/components/sections/markets/market-list";
 import { MarketList } from "@/components/sections/markets/market-list";
 import { AppButton } from "@/components/ui/app-button";
 import { AppText } from "@/components/ui/app-text";
 import { VARIANT_TYPES } from "@/lib/constants";
+import { errorHandler } from "@/lib/utils/error-handler";
 import { useMarketStore } from "@/store/markets";
+import { MarketDetailContainer } from "./market-detail";
 
 // ============================================================
 // All API calls and data fetching should happen in this container.
@@ -27,6 +30,8 @@ export const MarketsContainer: React.FC = () => {
   const markets = useMarketStore((state) => state.markets);
   const favoriteSymbols = useMarketStore((state) => state.favoriteSymbols);
   const isLoading = useMarketStore((state) => state.isLoading);
+  const selectedMarket = useMarketStore((state) => state.selectedMarket);
+  const setSelectedMarket = useMarketStore((state) => state.setSelectedMarket);
   const fetchMarkets = useMarketStore((state) => state.fetchMarkets);
   const setMarkets = useMarketStore((state) => state.setMarkets);
   const getLiveMarketUpdates = useMarketStore(
@@ -62,17 +67,20 @@ export const MarketsContainer: React.FC = () => {
     setActiveFilter(value);
   }, []);
 
-  const handleItemPress = useCallback((item: MarketItem) => {
-    // TODO: Navigate to trading pair detail
-  }, []);
+  const handleItemPress = useCallback(
+    (item: MarketItem) => {
+      setSelectedMarket(item.symbol);
+    },
+    [setSelectedMarket],
+  );
 
   const handleFavoriteToggle = useCallback(
-    (item: MarketItem) => {
-      if (item.isFavorite) {
-        removeFromFavorite(item.pair);
+    (pair: string, nextIsFavorite: boolean) => {
+      if (nextIsFavorite) {
+        addToFavorite(pair);
         return;
       }
-      addToFavorite(item.pair);
+      removeFromFavorite(pair);
     },
     [addToFavorite, removeFromFavorite],
   );
@@ -87,7 +95,7 @@ export const MarketsContainer: React.FC = () => {
         const fetchedMarkets = await fetchMarkets();
         setMarkets(fetchedMarkets);
       } catch (error) {
-        console.error("Failed to fetch markets", error);
+        errorHandler(error, "Markets Load Error");
       } finally {
         setHasLoadedOnce(true);
         if (showRefreshLoader) {
@@ -101,7 +109,8 @@ export const MarketsContainer: React.FC = () => {
   const handleRefresh = useCallback(() => {
     loadMarkets(true);
   }, [loadMarkets]);
-  const isInitialLoading = isLoading && !hasLoadedOnce;
+  const hasMarkets = markets.size > 0;
+  const isInitialLoading = isLoading && !hasLoadedOnce && !hasMarkets;
 
   const filteredMarkets = useMemo(() => {
     let items = Array.from(markets.values());
@@ -172,6 +181,13 @@ export const MarketsContainer: React.FC = () => {
     loadMarkets();
   }, [loadMarkets]);
 
+
+  useEffect(() => {
+    if (hasMarkets && !hasLoadedOnce) {
+      setHasLoadedOnce(true);
+    }
+  }, [hasMarkets, hasLoadedOnce]);
+
   useEffect(() => {
     let subscription: ISubscription | null = null;
 
@@ -185,14 +201,48 @@ export const MarketsContainer: React.FC = () => {
       try {
         subscription?.unsubscribe();
       } catch (error) {
-        // ignore unsubscribe errors from stale/closed sockets
+        errorHandler(error, "Subscription Cleanup Error");
       }
     };
   }, [getLiveMarketUpdates, setMarkets]);
 
+  useEffect(() => {
+    if (!selectedMarket) return;
+
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        setSelectedMarket(null);
+        return true;
+      },
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [selectedMarket, setSelectedMarket]);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setSelectedMarket(null);
+      };
+    }, [setSelectedMarket]),
+  );
+
   // ----------------------------------------------------------
   // Render
   // ----------------------------------------------------------
+  if (selectedMarket) {
+    return (
+      <MarketDetailContainer
+        coin={selectedMarket}
+        pair={`${selectedMarket}-USDC`}
+        onBack={() => setSelectedMarket(null)}
+      />
+    );
+  }
+
   return (
     <View className="flex-1 bg-bg-primary-dark">
       <MarketHeader

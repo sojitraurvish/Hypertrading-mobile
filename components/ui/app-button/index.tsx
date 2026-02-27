@@ -2,9 +2,9 @@ import { VARIANT_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils/tailwind-configs";
 import React, { ReactNode } from "react";
 import {
-  TouchableOpacity,
-  ActivityIndicator,
-  TouchableOpacityProps,
+    ActivityIndicator,
+    TouchableOpacity,
+    TouchableOpacityProps,
 } from "react-native";
 
 const VARIANTS = {
@@ -23,8 +23,7 @@ const VARIANTS = {
     "px-3 py-1.5 flex-row items-center justify-center rounded-md",
   [VARIANT_TYPES.OCTONARY]:
     "w-12 h-12 items-center justify-center bg-bg-quaternary-dark rounded-2xl",
-  [VARIANT_TYPES.NONARY]:
-    "flex-row items-center gap-2",
+  [VARIANT_TYPES.NONARY]: "flex-row items-center gap-2",
   [VARIANT_TYPES.DENARY]:
     "px-5 py-3 flex-row items-center justify-center bg-bg-quinary-dark rounded-xl",
 } as const;

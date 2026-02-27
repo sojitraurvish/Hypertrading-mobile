@@ -1,7 +1,8 @@
 import { infoClient, subscriptionClient } from "@/lib/clients/hyperliquid";
+import { errorHandler } from "@/lib/utils/error-handler";
 import type { PerpetualMarket } from "@/types/markets";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { ISubscription } from "@nktkas/hyperliquid";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 
@@ -10,10 +11,12 @@ const FAVORITES_STORAGE_KEY = "market-favorites";
 type MarketStore = {
   markets: Map<string, PerpetualMarket>;
   favoriteSymbols: string[];
+  selectedMarket: string | null;
   isLoading: boolean;
 
   fetchMarkets: () => Promise<Map<string, PerpetualMarket>>;
   setMarkets: (markets: Map<string, PerpetualMarket>) => void;
+  setSelectedMarket: (coin: string | null) => void;
   addToFavorite: (symbol: string) => void;
   removeFromFavorite: (symbol: string) => void;
   getLiveMarketUpdates: (
@@ -27,6 +30,7 @@ export const useMarketStore = create<MarketStore>()(
       (set, get) => ({
         markets: new Map(),
         favoriteSymbols: [],
+        selectedMarket: null,
         isLoading: false,
 
         fetchMarkets: async () => {
@@ -170,12 +174,17 @@ export const useMarketStore = create<MarketStore>()(
             return marketsMap;
           } catch (error) {
             set({ isLoading: false });
+            errorHandler(error, "Markets Fetch Error");
             throw error;
           }
         },
 
         setMarkets: (markets: Map<string, PerpetualMarket>) => {
           set({ markets });
+        },
+
+        setSelectedMarket: (coin) => {
+          set({ selectedMarket: coin });
         },
 
         addToFavorite: (symbol) => {
@@ -197,7 +206,9 @@ export const useMarketStore = create<MarketStore>()(
 
         getLiveMarketUpdates: async (setState) => {
           const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-          type WebData2Callback = Parameters<typeof subscriptionClient.webData2>[1];
+          type WebData2Callback = Parameters<
+            typeof subscriptionClient.webData2
+          >[1];
           type WebData2Response = Parameters<WebData2Callback>[0];
 
           const formatPct = (n: number | null, digits = 4): string => {
@@ -225,7 +236,8 @@ export const useMarketStore = create<MarketStore>()(
                 const assetCtxs = resp.assetCtxs || [];
 
                 const now =
-                  "time" in resp && typeof (resp as { time?: number }).time === "number"
+                  "time" in resp &&
+                  typeof (resp as { time?: number }).time === "number"
                     ? (resp as { time: number }).time
                     : Date.now();
                 const msUntilNextHour = 3_600_000 - (now % 3_600_000);
@@ -233,102 +245,108 @@ export const useMarketStore = create<MarketStore>()(
 
                 const state = get();
                 const savedFavorites = new Set(state.favoriteSymbols);
-                  const updated = new Map<string, PerpetualMarket>();
+                const updated = new Map<string, PerpetualMarket>();
 
-                  for (let i = 0; i < universe.length; i++) {
-                    const u = universe[i];
-                    const ctx = assetCtxs[i];
-                    const coin = u?.name ?? "UNKNOWN";
-                    const symbol = `${coin}-USDC`;
-                    const existingMarket = state.markets.get(symbol);
-                    const isFavorite =
-                      existingMarket?.isFavorite ?? savedFavorites.has(symbol);
+                for (let i = 0; i < universe.length; i++) {
+                  const u = universe[i];
+                  const ctx = assetCtxs[i];
+                  const coin = u?.name ?? "UNKNOWN";
+                  const symbol = `${coin}-USDC`;
+                  const existingMarket = state.markets.get(symbol);
+                  const isFavorite =
+                    existingMarket?.isFavorite ?? savedFavorites.has(symbol);
 
-                    let marketData: PerpetualMarket;
+                  let marketData: PerpetualMarket;
 
-                    if (!ctx) {
-                      marketData = {
-                        coin,
-                        symbol,
-                        leverage: u?.maxLeverage ? `${u.maxLeverage}x` : null,
-                        lastPrice: null,
-                        change24h: null,
-                        change24hPer: null,
-                        fundingPer: null,
-                        funding8hour: null,
-                        volume: null,
-                        openInterest: null,
-                        mark: null,
-                        oracle: null,
-                        volume24h: null,
-                        fundingDisplay: null,
-                        countdown,
-                        isFavorite,
-                      };
-                    } else {
-                      const last = ctx.markPx ?? ctx.midPx ?? null;
-                      const prevDay = ctx.prevDayPx ?? null;
-                      const lastPrice = last != null ? Number(last) : null;
-                      const prevPrice = prevDay != null ? Number(prevDay) : null;
+                  if (!ctx) {
+                    marketData = {
+                      coin,
+                      symbol,
+                      leverage: u?.maxLeverage ? `${u.maxLeverage}x` : null,
+                      lastPrice: null,
+                      change24h: null,
+                      change24hPer: null,
+                      fundingPer: null,
+                      funding8hour: null,
+                      volume: null,
+                      openInterest: null,
+                      mark: null,
+                      oracle: null,
+                      volume24h: null,
+                      fundingDisplay: null,
+                      countdown,
+                      isFavorite,
+                    };
+                  } else {
+                    const last = ctx.markPx ?? ctx.midPx ?? null;
+                    const prevDay = ctx.prevDayPx ?? null;
+                    const lastPrice = last != null ? Number(last) : null;
+                    const prevPrice = prevDay != null ? Number(prevDay) : null;
 
-                      const change24h =
-                        lastPrice != null && prevPrice != null
-                          ? lastPrice - prevPrice
+                    const change24h =
+                      lastPrice != null && prevPrice != null
+                        ? lastPrice - prevPrice
+                        : null;
+                    const change24hPer =
+                      change24h != null && prevPrice != null && prevPrice !== 0
+                        ? (change24h / prevPrice) * 100
+                        : null;
+
+                    const fundingRaw =
+                      ctx.funding != null ? Number(ctx.funding) : null;
+                    const fundingHourlyPct =
+                      fundingRaw != null ? fundingRaw * 100 : null;
+                    const funding8hPct =
+                      fundingRaw != null ? fundingRaw * 8 * 100 : null;
+                    const funding8hour =
+                      fundingHourlyPct != null ? fundingHourlyPct * 8 : null;
+
+                    const volume =
+                      ctx.dayNtlVlm != null ? Number(ctx.dayNtlVlm) : null;
+
+                    const openInterestSize =
+                      ctx.openInterest != null
+                        ? Number(ctx.openInterest)
+                        : null;
+                    const openInterest =
+                      openInterestSize != null && lastPrice != null
+                        ? openInterestSize * lastPrice
+                        : null;
+
+                    const mark =
+                      ctx.markPx != null
+                        ? Number(ctx.markPx)
+                        : ctx.midPx != null
+                          ? Number(ctx.midPx)
                           : null;
-                      const change24hPer =
-                        change24h != null && prevPrice != null && prevPrice !== 0
-                          ? (change24h / prevPrice) * 100
-                          : null;
+                    const oracle =
+                      ctx.oraclePx != null ? Number(ctx.oraclePx) : null;
 
-                      const fundingRaw = ctx.funding != null ? Number(ctx.funding) : null;
-                      const fundingHourlyPct =
-                        fundingRaw != null ? fundingRaw * 100 : null;
-                      const funding8hPct =
-                        fundingRaw != null ? fundingRaw * 8 * 100 : null;
-                      const funding8hour =
-                        fundingHourlyPct != null ? fundingHourlyPct * 8 : null;
-
-                      const volume =
-                        ctx.dayNtlVlm != null ? Number(ctx.dayNtlVlm) : null;
-
-                      const openInterestSize =
-                        ctx.openInterest != null ? Number(ctx.openInterest) : null;
-                      const openInterest =
-                        openInterestSize != null && lastPrice != null
-                          ? openInterestSize * lastPrice
-                          : null;
-
-                      const mark =
-                        ctx.markPx != null
-                          ? Number(ctx.markPx)
-                          : ctx.midPx != null
-                            ? Number(ctx.midPx)
-                            : null;
-                      const oracle =
-                        ctx.oraclePx != null ? Number(ctx.oraclePx) : null;
-
-                      marketData = {
-                        coin,
-                        symbol,
-                        leverage: u?.maxLeverage ? `${u.maxLeverage}x` : null,
-                        lastPrice,
-                        change24h,
-                        change24hPer,
-                        fundingPer: fundingHourlyPct,
-                        funding8hour,
-                        volume,
-                        openInterest,
-                        mark,
-                        oracle,
-                        volume24h: volume,
-                        fundingDisplay: formatPct(fundingHourlyPct ?? funding8hPct, 4),
-                        countdown,
-                        isFavorite,
-                      };
-                    }
-
-                    updated.set(symbol, marketData);
+                    marketData = {
+                      coin,
+                      symbol,
+                      leverage: u?.maxLeverage ? `${u.maxLeverage}x` : null,
+                      lastPrice,
+                      change24h,
+                      change24hPer,
+                      fundingPer: fundingHourlyPct,
+                      funding8hour,
+                      volume,
+                      openInterest,
+                      mark,
+                      oracle,
+                      volume24h: volume,
+                      fundingDisplay: formatPct(
+                        fundingHourlyPct ?? funding8hPct,
+                        4,
+                      ),
+                      countdown,
+                      isFavorite,
+                    };
                   }
+
+                  updated.set(symbol, marketData);
+                }
 
                 setState(updated);
               },
@@ -336,7 +354,7 @@ export const useMarketStore = create<MarketStore>()(
 
             return subscription;
           } catch (err) {
-            console.error("webData2 subscription error:", err);
+            errorHandler(err, "Market Updates Error");
             return null;
           }
         },
@@ -346,7 +364,23 @@ export const useMarketStore = create<MarketStore>()(
         storage: createJSONStorage(() => AsyncStorage),
         partialize: (state) => ({
           favoriteSymbols: state.favoriteSymbols,
+          markets: Array.from(state.markets.entries()),
         }),
+        merge: (persistedState, currentState) => {
+          type PersistedState = {
+            favoriteSymbols?: string[];
+            markets?: [string, PerpetualMarket][];
+          };
+
+          const persisted = persistedState as PersistedState;
+
+          return {
+            ...currentState,
+            favoriteSymbols:
+              persisted.favoriteSymbols ?? currentState.favoriteSymbols,
+            markets: new Map(persisted.markets ?? []),
+          };
+        },
       },
     ),
   ),

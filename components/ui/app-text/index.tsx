@@ -42,7 +42,7 @@ export const AppText: React.FC<Props> = ({
   const baseClassName = VARIANTS[variant] || "";
 
   return (
-    <Text className={cn(baseClassName, className)} {...props}>
+    <Text className={cn("font-medium", baseClassName, className)} {...props}>
       {children}
     </Text>
   );

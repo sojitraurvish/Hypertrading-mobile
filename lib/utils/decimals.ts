@@ -16,7 +16,7 @@ export const removeDecimal = (price: number): number => {
  * Formats a number to a specified number of decimal places.
  * Used for calculations and display purposes.
  */
-export const addDecimal = (
+export const addDecimals= (
   value: number,
   decimals: number = PRICE_DECIMAL_PLACES,
 ): number => {

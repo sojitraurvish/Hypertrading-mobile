@@ -117,7 +117,7 @@ const DEFAULT_INTERVAL_SECTIONS: IntervalSection[] = [
   },
 ];
 
-const CHART_HEIGHT = 340;
+const CHART_HEIGHT = 320;
 const INTERVAL_FAVORITES_STORAGE_KEY = "vault-chart-interval-favorites-v1";
 const EMPTY_PAYLOAD_JSON = JSON.stringify({
   candles: [],
@@ -860,11 +860,11 @@ export const VaultChart: React.FC<Props> = ({
   };
 
   const renderIntervalFavorites = () => (
-    <View className="w-[190px]">
+    <View className="flex-1 min-w-0 max-w-[210px]">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 6, paddingRight: 6 }}
+        contentContainerStyle={{ gap: 8, paddingRight: 4 }}
       >
         {favoriteIntervals.map((item) => {
           const isActive = selectedInterval === item.value;
@@ -873,7 +873,7 @@ export const VaultChart: React.FC<Props> = ({
               key={`favorite-${item.value}`}
               variant={VARIANT_TYPES.NOT_SELECTED}
               className={cn(
-                "w-[36px] py-1 rounded-md items-center justify-center",
+                "px-2.5 py-1 rounded-md items-center justify-center",
                 isActive ? "bg-bg-senary-dark" : "bg-transparent",
               )}
               onPress={() => selectInterval(item.value)}
@@ -881,8 +881,8 @@ export const VaultChart: React.FC<Props> = ({
               <AppText
                 variant={VARIANT_TYPES.NOT_SELECTED}
                 className={cn(
-                  "text-[10px] font-semibold",
-                  isActive ? "text-black" : "text-text-tertiary-dark",
+                  "text-[11px] font-semibold",
+                  isActive ? "text-black" : "text-[#7c8596]",
                 )}
               >
                 {item.value}
@@ -973,27 +973,29 @@ export const VaultChart: React.FC<Props> = ({
 
   return (
     <View className="mx-2 mt-4 rounded-2xl border border-border-primary-dark bg-bg-secondary-dark overflow-hidden">
-      <View className="px-3 py-2 border-b border-border-primary-dark flex-row items-center justify-between gap-2">
-        <View className="flex-row items-center gap-2">
+      <View className="px-3 py-2.5 border-b border-border-primary-dark flex-row items-center justify-between gap-2">
+        <View className="flex-1 min-w-0 flex-row items-center gap-2">
           {renderIntervalFavorites()}
+        </View>
+        <View className="ml-2 shrink-0 flex-row items-center gap-2">
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="px-2 py-1 rounded-md bg-bg-tertiary-dark border border-border-primary-dark"
+            className="px-0 py-0 rounded-none bg-transparent border-0 flex-row items-center gap-1"
             onPress={() => {}}
           >
+            <Feather name="bar-chart-2" size={12} color="#7c8596" />
             <AppText
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="text-[10px] text-text-tertiary-dark"
+              className="text-[11px] text-[#7c8596] font-medium"
             >
               Indicators
             </AppText>
           </AppButton>
-        </View>
-        <View className="flex-row items-center gap-2">
+          <View className="w-px h-4 bg-border-primary-dark/80" />
           <View ref={inlineIntervalTriggerRef} collapsable={false}>
             <AppButton
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="px-2 py-1 rounded-md bg-bg-tertiary-dark border border-border-primary-dark flex-row items-center gap-1"
+              className="h-8 px-3 rounded-lg bg-[#131722] border border-border-primary-dark/80 flex-row items-center gap-1"
               onPress={() =>
                 isIntervalMenuOpen
                   ? setIsIntervalMenuOpen(false)
@@ -1002,7 +1004,7 @@ export const VaultChart: React.FC<Props> = ({
             >
               <AppText
                 variant={VARIANT_TYPES.NOT_SELECTED}
-                className="text-[10px] text-text-tertiary-dark"
+                className="text-[11px] text-text-primary-dark"
               >
                 {selectedIntervalTitle}
               </AppText>
@@ -1015,7 +1017,7 @@ export const VaultChart: React.FC<Props> = ({
           </View>
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="px-2 py-1 rounded-md bg-bg-tertiary-dark border border-border-primary-dark"
+            className="h-8 w-8 rounded-lg bg-[#131722] border border-border-primary-dark/80 items-center justify-center"
             onPress={() => setIsFullscreen(true)}
           >
             <Feather name="maximize-2" size={12} color="#e2e8f0" />
@@ -1086,7 +1088,7 @@ export const VaultChart: React.FC<Props> = ({
       </View>
 
       {error && !payload.candles.length ? (
-        <View className="h-[340px] items-center justify-center px-4">
+        <View className="h-[320px] items-center justify-center px-4">
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-text-senary-dark text-center text-[12px]"
@@ -1107,7 +1109,7 @@ export const VaultChart: React.FC<Props> = ({
           </AppButton>
         </View>
       ) : !isLoading && !payload.candles.length ? (
-        <View className="h-[340px] items-center justify-center px-4">
+        <View className="h-[320px] items-center justify-center px-4">
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-text-tertiary-dark text-[12px]"
@@ -1162,27 +1164,29 @@ export const VaultChart: React.FC<Props> = ({
         onRequestClose={() => setIsFullscreen(false)}
       >
         <View className="flex-1 bg-bg-primary-dark pt-12">
-          <View className="px-3 py-2 border-b border-border-primary-dark flex-row items-center justify-between gap-2">
-            <View className="flex-row items-center gap-2">
+          <View className="px-3 py-2.5 border-b border-border-primary-dark flex-row items-center justify-between gap-2">
+            <View className="flex-1 min-w-0 flex-row items-center gap-2">
               {renderIntervalFavorites()}
+            </View>
+            <View className="ml-2 shrink-0 flex-row items-center gap-2">
               <AppButton
                 variant={VARIANT_TYPES.NOT_SELECTED}
-                className="px-2 py-1 rounded-md bg-bg-tertiary-dark border border-border-primary-dark"
+                className="px-0 py-0 rounded-none bg-transparent border-0 flex-row items-center gap-1"
                 onPress={() => {}}
               >
+                <Feather name="bar-chart-2" size={12} color="#7c8596" />
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="text-[10px] text-text-tertiary-dark"
+                  className="text-[11px] text-[#7c8596] font-medium"
                 >
                   Indicators
                 </AppText>
               </AppButton>
-            </View>
-            <View className="flex-row items-center gap-2">
+              <View className="w-px h-4 bg-border-primary-dark/80" />
               <View ref={fullscreenIntervalTriggerRef} collapsable={false}>
                 <AppButton
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="px-2 py-1 rounded-md bg-bg-tertiary-dark border border-border-primary-dark flex-row items-center gap-1"
+                  className="h-8 px-3 rounded-lg bg-[#131722] border border-border-primary-dark/80 flex-row items-center gap-1"
                   onPress={() =>
                     isIntervalMenuOpen
                       ? setIsIntervalMenuOpen(false)
@@ -1191,7 +1195,7 @@ export const VaultChart: React.FC<Props> = ({
                 >
                   <AppText
                     variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[10px] text-text-tertiary-dark"
+                    className="text-[11px] text-text-primary-dark"
                   >
                     {selectedIntervalTitle}
                   </AppText>
@@ -1204,7 +1208,7 @@ export const VaultChart: React.FC<Props> = ({
               </View>
               <AppButton
                 variant={VARIANT_TYPES.NOT_SELECTED}
-                className="px-2 py-1 rounded-md bg-bg-tertiary-dark border border-border-primary-dark"
+                className="h-8 w-8 rounded-lg bg-[#131722] border border-border-primary-dark/80 items-center justify-center"
                 onPress={() => setIsFullscreen(false)}
               >
                 <Feather name="minimize-2" size={12} color="#e2e8f0" />

@@ -19,7 +19,9 @@ export const activeChain =
 
 export const walletKit = createAppKit({
   projectId,
-  networks: [arbitrum, arbitrumSepolia],
+  // Request only the active chain to avoid invalid-chain rejections
+  // from wallets that don't support every configured testnet/mainnet.
+  networks: [activeChain],
   defaultNetwork: activeChain,
   adapters: [ethersAdapter],
   storage: walletStorage,

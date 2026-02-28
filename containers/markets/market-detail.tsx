@@ -1,4 +1,8 @@
 import { MarketChart } from "@/components/sections/markets/market-chart";
+import {
+  MarketAccountOverview,
+  type TabKey,
+} from "@/components/sections/markets/account-overview";
 import { OrderBook } from "@/components/sections/markets/order-book";
 import { AppButton } from "@/components/ui/app-button";
 import { AppText } from "@/components/ui/app-text";
@@ -17,6 +21,26 @@ type Props = {
   onBack?: () => void;
 };
 
+const MemoizedMarketChart = React.memo(function MemoizedMarketChart({
+  coin,
+}: {
+  coin: string;
+}) {
+  return (
+    <View className="mt-2">
+      <MarketChart currency={coin} />
+    </View>
+  );
+});
+
+const MemoizedOrderBook = React.memo(function MemoizedOrderBook({
+  coin,
+}: {
+  coin: string;
+}) {
+  return <OrderBook currency={coin} />;
+});
+
 export const MarketDetailContainer: React.FC<Props> = ({
   coin,
   pair,
@@ -32,6 +56,10 @@ export const MarketDetailContainer: React.FC<Props> = ({
   const [symbolIconIndex, setSymbolIconIndex] = useState(0);
   const [showSymbolFallback, setShowSymbolFallback] = useState(false);
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+  const [activeAccountTab, setActiveAccountTab] = useState<TabKey>("balances");
+  const [expandedAccountCards, setExpandedAccountCards] = useState<
+    Record<string, boolean>
+  >({});
   const favoriteSymbol = pair;
   const isFavoriteInStore = favoriteSymbols.includes(favoriteSymbol);
   const [optimisticFavorite, setOptimisticFavorite] =
@@ -99,249 +127,275 @@ export const MarketDetailContainer: React.FC<Props> = ({
     });
   }, [addToFavorite, favoriteSymbol, optimisticFavorite, removeFromFavorite]);
 
+  const handleToggleAccountCard = useCallback((cardId: string) => {
+    setExpandedAccountCards((prev) => ({
+      ...prev,
+      [cardId]: !prev[cardId],
+    }));
+  }, []);
+
   return (
     <View className="flex-1 bg-bg-primary-dark">
+      <View className="mx-2 rounded-xl border border-border-primary-dark/70 bg-bg-secondary-dark overflow-hidden z-20">
+        <View
+          className={cn(
+            "px-3 py-2 flex-row items-center justify-between",
+            isStatsExpanded ? "border-b border-border-primary-dark/60" : "",
+          )}
+        >
+          <View className="flex-1 min-w-0 flex-row items-center">
+            <AppButton
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="w-7 h-7 items-center justify-center mr-1"
+              onPress={onBack}
+            >
+              <Feather name="arrow-left" size={14} color="#9ca3af" />
+            </AppButton>
+            <View className="w-5 h-5 rounded-full bg-[#f7931a] overflow-hidden items-center justify-center mr-1.5">
+              {!showSymbolFallback && symbolIconUri ? (
+                <Image
+                  source={{ uri: symbolIconUri }}
+                  style={{ width: 18, height: 18 }}
+                  onError={handleSymbolIconError}
+                  contentFit="cover"
+                  cachePolicy="memory-disk"
+                />
+              ) : (
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[8px] text-black font-bold"
+                >
+                  {(coin[0] ?? "C").toUpperCase()}
+                </AppText>
+              )}
+            </View>
+            <AppText
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="text-[16px] text-text-primary-dark font-bold uppercase"
+              numberOfLines={1}
+            >
+              {pair}
+            </AppText>
+            <AppText
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="text-[10px] text-[#52f2a8] font-semibold ml-1.5 px-1.5 py-[2px] rounded bg-[#063b2e] uppercase"
+            >
+              {leverageText}
+            </AppText>
+            <AppButton
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="w-7 h-7 items-center justify-center ml-1"
+              onPress={handleFavoriteToggle}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons
+                name={optimisticFavorite ? "star" : "star-outline"}
+                size={14}
+                color={optimisticFavorite ? "#a3e635" : "#9ca3af"}
+              />
+            </AppButton>
+          </View>
+
+          <View className="flex-row items-center ml-2">
+            <View className="items-end mr-2">
+              <AppText
+                variant={VARIANT_TYPES.NOT_SELECTED}
+                className="text-[18px] leading-[20px] font-extrabold text-text-primary-dark"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.85}
+              >
+                {headerPrice}
+              </AppText>
+              <View
+                className={cn(
+                  "mt-1 px-1.5 py-[1px] rounded",
+                  (market?.change24hPer ?? 0) >= 0
+                    ? "bg-[#073b2a]"
+                    : "bg-[#3a1318]",
+                )}
+              >
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className={cn(
+                    "text-[10px] font-semibold",
+                    (market?.change24hPer ?? 0) >= 0
+                      ? "text-[#52f2a8]"
+                      : "text-[#fb7185]",
+                  )}
+                >
+                  {signedChangeText}
+                </AppText>
+              </View>
+            </View>
+            <AppButton
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="w-6 h-6 items-center justify-center"
+              onPress={() => setIsStatsExpanded((prev) => !prev)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Feather
+                name={isStatsExpanded ? "chevron-up" : "chevron-down"}
+                size={14}
+                color="#94a3b8"
+              />
+            </AppButton>
+          </View>
+        </View>
+
+        {isStatsExpanded ? (
+          <View className="px-3 py-2">
+            <View className="flex-row border-b border-border-primary-dark/60 pb-2">
+              <View className="flex-1 pr-2">
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[9px] text-text-octonary-dark uppercase"
+                >
+                  Mark
+                </AppText>
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[15px] text-text-primary-dark font-bold mt-1"
+                >
+                  {formatCompactUsd(market?.mark)}
+                </AppText>
+              </View>
+              <View className="flex-1 px-2 border-l border-border-primary-dark/45">
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[9px] text-text-octonary-dark uppercase"
+                >
+                  Oracle
+                </AppText>
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[15px] text-text-primary-dark font-bold mt-1"
+                >
+                  {formatCompactUsd(market?.oracle)}
+                </AppText>
+              </View>
+              <View className="flex-1 pl-2 border-l border-border-primary-dark/45 items-end">
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[9px] text-text-octonary-dark uppercase"
+                >
+                  24h Volume
+                </AppText>
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[15px] text-text-primary-dark font-bold mt-1 text-right"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.75}
+                >
+                  {formatCompactValue(market?.volume24h, true)}
+                </AppText>
+              </View>
+            </View>
+
+            <View className="flex-row pt-2">
+              <View className="flex-1 pr-2">
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[9px] text-text-octonary-dark uppercase"
+                >
+                  Open Interest
+                </AppText>
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[15px] text-text-primary-dark font-bold mt-1"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.75}
+                >
+                  {formatCompactValue(market?.openInterest, true)}
+                </AppText>
+              </View>
+              <View className="flex-1 pl-2 border-l border-border-primary-dark/45 items-end">
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[9px] text-text-octonary-dark uppercase"
+                >
+                  Funding / Countdown
+                </AppText>
+                <View className="flex-row items-center mt-1">
+                  <AppText
+                    variant={VARIANT_TYPES.NOT_SELECTED}
+                    className={cn(
+                      "text-[14px] font-bold",
+                      (market?.fundingPer ?? 0) >= 0
+                        ? "text-text-quaternary-dark"
+                        : "text-text-senary-dark",
+                    )}
+                  >
+                    {fundingText}
+                  </AppText>
+                  <AppText
+                    variant={VARIANT_TYPES.NOT_SELECTED}
+                    className="text-[14px] text-text-primary-dark font-bold ml-2"
+                  >
+                    {market?.countdown ?? "--:--:--"}
+                  </AppText>
+                </View>
+              </View>
+            </View>
+          </View>
+        ) : null}
+      </View>
+
       <ScrollView
         className="flex-1"
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[2]}
         contentContainerClassName="pb-8"
       >
-        <View className="mx-2 mt-2 rounded-xl border border-border-primary-dark/70 bg-bg-secondary-dark overflow-hidden">
-          <View
-            className={cn(
-              "px-3 py-2 flex-row items-center justify-between",
-              isStatsExpanded ? "border-b border-border-primary-dark/60" : "",
-            )}
-          >
-            <View className="flex-1 min-w-0 flex-row items-center">
-              <AppButton
-                variant={VARIANT_TYPES.NOT_SELECTED}
-                className="w-7 h-7 items-center justify-center mr-1"
-                onPress={onBack}
-              >
-                <Feather name="arrow-left" size={14} color="#9ca3af" />
-              </AppButton>
-              <View className="w-5 h-5 rounded-full bg-[#f7931a] overflow-hidden items-center justify-center mr-1.5">
-                {!showSymbolFallback && symbolIconUri ? (
-                  <Image
-                    source={{ uri: symbolIconUri }}
-                    style={{ width: 18, height: 18 }}
-                    onError={handleSymbolIconError}
-                    contentFit="cover"
-                    cachePolicy="memory-disk"
-                  />
-                ) : (
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[8px] text-black font-bold"
-                  >
-                    {(coin[0] ?? "C").toUpperCase()}
-                  </AppText>
-                )}
-              </View>
-              <AppText
-                variant={VARIANT_TYPES.NOT_SELECTED}
-                className="text-[16px] text-text-primary-dark font-bold uppercase"
-                numberOfLines={1}
-              >
-                {pair}
-              </AppText>
-              <AppText
-                variant={VARIANT_TYPES.NOT_SELECTED}
-                className="text-[10px] text-[#52f2a8] font-semibold ml-1.5 px-1.5 py-[2px] rounded bg-[#063b2e] uppercase"
-              >
-                {leverageText}
-              </AppText>
-              <AppButton
-                variant={VARIANT_TYPES.NOT_SELECTED}
-                className="w-7 h-7 items-center justify-center ml-1"
-                onPress={handleFavoriteToggle}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Ionicons
-                  name={optimisticFavorite ? "star" : "star-outline"}
-                  size={14}
-                  color={optimisticFavorite ? "#a3e635" : "#9ca3af"}
-                />
-              </AppButton>
-            </View>
-
-            <View className="flex-row items-center ml-2">
-              <View className="items-end mr-2">
-                <AppText
-                  variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="text-[18px] leading-[20px] font-extrabold text-text-primary-dark"
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.85}
-                >
-                  {headerPrice}
-                </AppText>
-                <View
-                  className={cn(
-                    "mt-1 px-1.5 py-[1px] rounded",
-                    (market?.change24hPer ?? 0) >= 0
-                      ? "bg-[#073b2a]"
-                      : "bg-[#3a1318]",
-                  )}
-                >
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className={cn(
-                      "text-[10px] font-semibold",
-                      (market?.change24hPer ?? 0) >= 0
-                        ? "text-[#52f2a8]"
-                        : "text-[#fb7185]",
-                    )}
-                  >
-                    {signedChangeText}
-                  </AppText>
-                </View>
-              </View>
-              <AppButton
-                variant={VARIANT_TYPES.NOT_SELECTED}
-                className="w-6 h-6 items-center justify-center"
-                onPress={() => setIsStatsExpanded((prev) => !prev)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Feather
-                  name={isStatsExpanded ? "chevron-up" : "chevron-down"}
-                  size={14}
-                  color="#94a3b8"
-                />
-              </AppButton>
-            </View>
-          </View>
-
-          {isStatsExpanded ? (
-            <View className="px-3 py-2">
-              <View className="flex-row border-b border-border-primary-dark/60 pb-2">
-                <View className="flex-1 pr-2">
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[9px] text-text-octonary-dark uppercase"
-                  >
-                    Mark
-                  </AppText>
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[15px] text-text-primary-dark font-bold mt-1"
-                  >
-                    {formatCompactUsd(market?.mark)}
-                  </AppText>
-                </View>
-                <View className="flex-1 px-2 border-l border-border-primary-dark/45">
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[9px] text-text-octonary-dark uppercase"
-                  >
-                    Oracle
-                  </AppText>
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[15px] text-text-primary-dark font-bold mt-1"
-                  >
-                    {formatCompactUsd(market?.oracle)}
-                  </AppText>
-                </View>
-                <View className="flex-1 pl-2 border-l border-border-primary-dark/45 items-end">
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[9px] text-text-octonary-dark uppercase"
-                  >
-                    24h Volume
-                  </AppText>
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[15px] text-text-primary-dark font-bold mt-1 text-right"
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    minimumFontScale={0.75}
-                  >
-                    {formatCompactValue(market?.volume24h, true)}
-                  </AppText>
-                </View>
-              </View>
-
-              <View className="flex-row pt-2">
-                <View className="flex-1 pr-2">
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[9px] text-text-octonary-dark uppercase"
-                  >
-                    Open Interest
-                  </AppText>
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[15px] text-text-primary-dark font-bold mt-1"
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    minimumFontScale={0.75}
-                  >
-                    {formatCompactValue(market?.openInterest, true)}
-                  </AppText>
-                </View>
-                <View className="flex-1 pl-2 border-l border-border-primary-dark/45 items-end">
-                  <AppText
-                    variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[9px] text-text-octonary-dark uppercase"
-                  >
-                    Funding / Countdown
-                  </AppText>
-                  <View className="flex-row items-center mt-1">
-                    <AppText
-                      variant={VARIANT_TYPES.NOT_SELECTED}
-                      className={cn(
-                        "text-[14px] font-bold",
-                        (market?.fundingPer ?? 0) >= 0
-                          ? "text-text-quaternary-dark"
-                          : "text-text-senary-dark",
-                      )}
-                    >
-                      {fundingText}
-                    </AppText>
-                    <AppText
-                      variant={VARIANT_TYPES.NOT_SELECTED}
-                      className="text-[14px] text-text-primary-dark font-bold ml-2"
-                    >
-                      {market?.countdown ?? "--:--:--"}
-                    </AppText>
-                  </View>
-                </View>
-              </View>
-            </View>
-          ) : null}
-        </View>
-
-        <MarketChart currency={coin} />
-
-        <OrderBook currency={coin} />
+        <MemoizedMarketChart coin={coin} />
+        <MemoizedOrderBook coin={coin} />
+        <MarketAccountOverview
+          mode="header"
+          activeTab={activeAccountTab}
+          expandedCards={expandedAccountCards}
+          onTabChange={setActiveAccountTab}
+          onToggleCard={handleToggleAccountCard}
+        />
+        <MarketAccountOverview
+          mode="content"
+          activeTab={activeAccountTab}
+          expandedCards={expandedAccountCards}
+          onTabChange={setActiveAccountTab}
+          onToggleCard={handleToggleAccountCard}
+        />
       </ScrollView>
 
-      <View className="px-3 py-3 border-t border-border-primary-dark/60 bg-bg-secondary-dark flex-row gap-3">
+      <View className="px-3 py-2 border-t border-border-primary-dark/60 bg-bg-secondary-dark">
+        <View className="rounded-2xl border border-border-primary-dark/35 bg-bg-primary-dark/80 p-1.5 flex-row items-center overflow-hidden">
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="flex-1 h-[54px] rounded-[18px] bg-bg-senary-dark items-center justify-center"
+          className="flex-1 h-[42px] rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 flex-row items-center justify-center gap-1"
         >
+          <Feather name="trending-up" size={13} color="#05290f" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-black text-[15px] font-extrabold tracking-[2px]"
+            className="text-black text-[12px] font-extrabold tracking-[1.2px]"
           >
             LONG
           </AppText>
         </AppButton>
+        <View className="w-px h-6 bg-border-primary-dark/50 mx-1.5" />
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="flex-1 h-[54px] rounded-[18px] bg-red-500 items-center justify-center"
+          className="flex-1 h-[42px] rounded-xl bg-red-500 border border-[#ff8a8a]/40 flex-row items-center justify-center gap-1"
         >
+          <Feather name="trending-down" size={13} color="#ffffff" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-white text-[15px] font-extrabold tracking-[2px]"
+            className="text-white text-[12px] font-extrabold tracking-[1.2px]"
           >
             SHORT
           </AppText>
         </AppButton>
+        </View>
       </View>
     </View>
   );

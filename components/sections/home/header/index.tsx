@@ -2,8 +2,8 @@ import { AppButton } from "@/components/ui/app-button";
 import { AppText } from "@/components/ui/app-text";
 import { VARIANT_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils/tailwind-configs";
-import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
-import { useAppKit, useAccount } from "@reown/appkit-react-native";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useAccount, useAppKit } from "@reown/appkit-react-native";
 import React from "react";
 import { Text, View } from "react-native";
 
@@ -59,7 +59,8 @@ export const HomeHeader: React.FC<Props> = ({
         >
           {portfolioValue}
           <Text className="text-text-tertiary-dark text-sm font-normal">
-            {"  "}{currency}
+            {"  "}
+            {currency}
           </Text>
         </AppText>
       </View>
@@ -103,9 +104,7 @@ export const HomeHeader: React.FC<Props> = ({
             variant={VARIANT_TYPES.QUATERNARY}
             className="ml-1.5 text-xs font-semibold text-black"
           >
-            {isConnected && address
-              ? truncateAddress(address)
-              : "CONNECT"}
+            {isConnected && address ? truncateAddress(address) : "CONNECT"}
           </AppText>
         </AppButton>
       </View>

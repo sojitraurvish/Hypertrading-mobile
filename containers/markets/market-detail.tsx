@@ -1,8 +1,5 @@
+import { BottomPannel } from "@/containers/markets/bottom-pannel";
 import { MarketChart } from "@/components/sections/markets/market-chart";
-import {
-  MarketAccountOverview,
-  type TabKey,
-} from "@/components/sections/markets/account-overview";
 import { OrderBook } from "@/components/sections/markets/order-book";
 import { AppButton } from "@/components/ui/app-button";
 import { AppText } from "@/components/ui/app-text";
@@ -56,10 +53,6 @@ export const MarketDetailContainer: React.FC<Props> = ({
   const [symbolIconIndex, setSymbolIconIndex] = useState(0);
   const [showSymbolFallback, setShowSymbolFallback] = useState(false);
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
-  const [activeAccountTab, setActiveAccountTab] = useState<TabKey>("balances");
-  const [expandedAccountCards, setExpandedAccountCards] = useState<
-    Record<string, boolean>
-  >({});
   const favoriteSymbol = pair;
   const isFavoriteInStore = favoriteSymbols.includes(favoriteSymbol);
   const [optimisticFavorite, setOptimisticFavorite] =
@@ -126,13 +119,6 @@ export const MarketDetailContainer: React.FC<Props> = ({
       }
     });
   }, [addToFavorite, favoriteSymbol, optimisticFavorite, removeFromFavorite]);
-
-  const handleToggleAccountCard = useCallback((cardId: string) => {
-    setExpandedAccountCards((prev) => ({
-      ...prev,
-      [cardId]: !prev[cardId],
-    }));
-  }, []);
 
   return (
     <View className="flex-1 bg-bg-primary-dark">
@@ -352,49 +338,36 @@ export const MarketDetailContainer: React.FC<Props> = ({
       >
         <MemoizedMarketChart coin={coin} />
         <MemoizedOrderBook coin={coin} />
-        <MarketAccountOverview
-          mode="header"
-          activeTab={activeAccountTab}
-          expandedCards={expandedAccountCards}
-          onTabChange={setActiveAccountTab}
-          onToggleCard={handleToggleAccountCard}
-        />
-        <MarketAccountOverview
-          mode="content"
-          activeTab={activeAccountTab}
-          expandedCards={expandedAccountCards}
-          onTabChange={setActiveAccountTab}
-          onToggleCard={handleToggleAccountCard}
-        />
+        <BottomPannel coin={coin} />
       </ScrollView>
 
       <View className="px-3 py-2 border-t border-border-primary-dark/60 bg-bg-secondary-dark">
         <View className="rounded-2xl border border-border-primary-dark/35 bg-bg-primary-dark/80 p-1.5 flex-row items-center overflow-hidden">
-        <AppButton
-          variant={VARIANT_TYPES.NOT_SELECTED}
-          className="flex-1 h-[42px] rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 flex-row items-center justify-center gap-1"
-        >
-          <Feather name="trending-up" size={13} color="#05290f" />
-          <AppText
+          <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-black text-[12px] font-extrabold tracking-[1.2px]"
+            className="flex-1 h-[42px] rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 flex-row items-center justify-center gap-1"
           >
-            LONG
-          </AppText>
-        </AppButton>
-        <View className="w-px h-6 bg-border-primary-dark/50 mx-1.5" />
-        <AppButton
-          variant={VARIANT_TYPES.NOT_SELECTED}
-          className="flex-1 h-[42px] rounded-xl bg-red-500 border border-[#ff8a8a]/40 flex-row items-center justify-center gap-1"
-        >
-          <Feather name="trending-down" size={13} color="#ffffff" />
-          <AppText
+            <Feather name="trending-up" size={13} color="#05290f" />
+            <AppText
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="text-black text-[12px] font-extrabold tracking-[1.2px]"
+            >
+              LONG
+            </AppText>
+          </AppButton>
+          <View className="w-px h-6 bg-border-primary-dark/50 mx-1.5" />
+          <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-white text-[12px] font-extrabold tracking-[1.2px]"
+            className="flex-1 h-[42px] rounded-xl bg-red-500 border border-[#ff8a8a]/40 flex-row items-center justify-center gap-1"
           >
-            SHORT
-          </AppText>
-        </AppButton>
+            <Feather name="trending-down" size={13} color="#ffffff" />
+            <AppText
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="text-white text-[12px] font-extrabold tracking-[1.2px]"
+            >
+              SHORT
+            </AppText>
+          </AppButton>
         </View>
       </View>
     </View>

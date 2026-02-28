@@ -1,7 +1,7 @@
-import { createAppKit } from "@reown/appkit-react-native";
 import { EthersAdapter } from "@reown/appkit-ethers-react-native";
-import { arbitrum, arbitrumSepolia } from "viem/chains";
+import { createAppKit } from "@reown/appkit-react-native";
 import Constants from "expo-constants";
+import { arbitrum, arbitrumSepolia } from "viem/chains";
 
 import { ENVIRONMENT, ENVIRONMENT_TYPES } from "@/lib/constants";
 import { walletStorage } from "./storage";
@@ -19,9 +19,9 @@ export const activeChain =
 
 export const walletKit = createAppKit({
   projectId,
-  // Request only the active chain to avoid invalid-chain rejections
-  // from wallets that don't support every configured testnet/mainnet.
-  networks: [activeChain],
+  // Register all supported chains so WalletConnect chain-change events
+  // can always resolve to a configured provider.
+  networks: [...allChains],
   defaultNetwork: activeChain,
   adapters: [ethersAdapter],
   storage: walletStorage,

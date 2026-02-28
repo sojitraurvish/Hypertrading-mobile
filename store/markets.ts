@@ -351,6 +351,7 @@ export const useMarketStore = create<MarketStore>()(
                 setState(updated);
               },
             );
+            console.log("subscription", subscription);
 
             return subscription;
           } catch (err) {

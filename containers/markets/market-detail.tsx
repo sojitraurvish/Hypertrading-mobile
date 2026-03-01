@@ -334,11 +334,13 @@ export const MarketDetailContainer: React.FC<Props> = ({
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
         stickyHeaderIndices={[2]}
-        contentContainerClassName="pb-8"
+        contentContainerClassName="pb-16"
+        keyboardShouldPersistTaps="handled"
       >
         <MemoizedMarketChart coin={coin} />
         <MemoizedOrderBook coin={coin} />
-        <BottomPannel coin={coin} />
+        <BottomPannel coin={coin} mode="header" enableDataSync={false} />
+        <BottomPannel coin={coin} mode="content" />
       </ScrollView>
 
       <View className="px-3 py-2 border-t border-border-primary-dark/60 bg-bg-secondary-dark">

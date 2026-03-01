@@ -1,8 +1,8 @@
-import { BottomPannel } from "@/containers/markets/bottom-pannel";
 import { MarketChart } from "@/components/sections/markets/market-chart";
 import { OrderBook } from "@/components/sections/markets/order-book";
 import { AppButton } from "@/components/ui/app-button";
 import { AppText } from "@/components/ui/app-text";
+import { BottomPannel } from "@/containers/markets/bottom-pannel";
 import { getCoinIconUrls } from "@/lib/config";
 import { VARIANT_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils/tailwind-configs";

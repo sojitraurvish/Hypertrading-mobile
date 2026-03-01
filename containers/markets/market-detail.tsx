@@ -1,8 +1,8 @@
-import { BottomPannel } from "@/containers/markets/bottom-pannel";
 import { MarketChart } from "@/components/sections/markets/market-chart";
 import { OrderBook } from "@/components/sections/markets/order-book";
 import { AppButton } from "@/components/ui/app-button";
 import { AppText } from "@/components/ui/app-text";
+import { BottomPannel } from "@/containers/markets/bottom-pannel";
 import { getCoinIconUrls } from "@/lib/config";
 import { VARIANT_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils/tailwind-configs";
@@ -334,11 +334,13 @@ export const MarketDetailContainer: React.FC<Props> = ({
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
         stickyHeaderIndices={[2]}
-        contentContainerClassName="pb-8"
+        contentContainerClassName="pb-16"
+        keyboardShouldPersistTaps="handled"
       >
         <MemoizedMarketChart coin={coin} />
         <MemoizedOrderBook coin={coin} />
-        <BottomPannel coin={coin} />
+        <BottomPannel coin={coin} mode="header" enableDataSync={false} />
+        <BottomPannel coin={coin} mode="content" />
       </ScrollView>
 
       <View className="px-3 py-2 border-t border-border-primary-dark/60 bg-bg-secondary-dark">

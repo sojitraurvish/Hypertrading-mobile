@@ -162,7 +162,7 @@ export const useOrderBookStore = create<OrderBookStore>()(
       try {
         const config: L2BookParameters = { coin: currency, ...precision };
         const subscription = await subscriptionClient.l2Book(config, (book) => {
-          // console.log("book", book);
+          
           const bestBid = book.levels[0];
           const bestAsk = book.levels[1];
           const spread =

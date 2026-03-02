@@ -193,6 +193,9 @@ export const BottomPannel: React.FC<Props> = ({
     userAddress,
   ]);
 
+  /*
+    Moved live balances subscription to HomeHeader.
+    Keeping this commented block for reference.
   useEffect(() => {
     if (!enableDataSync) return;
     if (!userAddress) return;
@@ -231,6 +234,7 @@ export const BottomPannel: React.FC<Props> = ({
     setBalances,
     userAddress,
   ]);
+  */
 
   useEffect(() => {
     if (!enableDataSync) return;

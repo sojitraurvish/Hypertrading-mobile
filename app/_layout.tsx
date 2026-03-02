@@ -2,8 +2,11 @@ import "@/lib/polyfills";
 import "@walletconnect/react-native-compat";
 import "react-native-get-random-values";
 
+import { TradeOrderDrawer } from "@/components/sections/markets/trade-order-drawer";
 import { AppToast } from "@/components/ui/app-toast";
 import { walletKit } from "@/lib/clients/wallet";
+import { useMarketStore } from "@/store/markets";
+import { useTradeOrderDrawerStore } from "@/store/trade-order-drawer";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import { Stack } from "expo-router";
 import { View } from "react-native";
@@ -11,11 +14,29 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../global.css";
 
 export default function RootLayout() {
+  const isTradeDrawerOpen = useTradeOrderDrawerStore((state) => state.isOpen);
+  const selectedMarket = useMarketStore((state) => state.selectedMarket);
+  const tradeDrawerSide = useTradeOrderDrawerStore(
+    (state) => state.sideOpenWith,
+  );
+  const closeTradeOrderDrawer = useTradeOrderDrawerStore(
+    (state) => state.closeTradeOrderDrawer,
+  );
+  const tradeDrawerCoin = selectedMarket?.split("-")[0] ?? null;
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppKitProvider instance={walletKit}>
         <Stack screenOptions={{ headerShown: false }} />
         <AppToast />
+        {tradeDrawerCoin ? (
+          <TradeOrderDrawer
+            isOpen={isTradeDrawerOpen}
+            onClose={closeTradeOrderDrawer}
+            coin={tradeDrawerCoin}
+            side={tradeDrawerSide}
+          />
+        ) : null}
         <View style={{ position: "absolute", height: "100%", width: "100%" }}>
           <AppKit />
         </View>

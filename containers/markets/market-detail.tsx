@@ -7,10 +7,22 @@ import { getCoinIconUrls } from "@/lib/config";
 import { VARIANT_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils/tailwind-configs";
 import { useMarketStore } from "@/store/markets";
+import { useTradeOrderDrawerStore } from "@/store/trade-order-drawer";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  View,
+} from "react-native";
 
 type Props = {
   coin: string;
@@ -53,6 +65,13 @@ export const MarketDetailContainer: React.FC<Props> = ({
   const [symbolIconIndex, setSymbolIconIndex] = useState(0);
   const [showSymbolFallback, setShowSymbolFallback] = useState(false);
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+  const isTradeDrawerOpen = useTradeOrderDrawerStore((state) => state.isOpen);
+  const openTradeOrderDrawer = useTradeOrderDrawerStore(
+    (state) => state.openTradeOrderDrawer,
+  );
+  const dragStartOffsetYRef = useRef(0);
+  const dragStartTimeRef = useRef(0);
+  const lastSwipeOpenTimeRef = useRef(0);
   const favoriteSymbol = pair;
   const isFavoriteInStore = favoriteSymbols.includes(favoriteSymbol);
   const [optimisticFavorite, setOptimisticFavorite] =
@@ -119,6 +138,37 @@ export const MarketDetailContainer: React.FC<Props> = ({
       }
     });
   }, [addToFavorite, favoriteSymbol, optimisticFavorite, removeFromFavorite]);
+
+  const openTradeDrawer = useCallback((side: "long" | "short") => {
+    openTradeOrderDrawer({ side });
+  }, [openTradeOrderDrawer]);
+  const handleScrollBeginDrag = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      dragStartOffsetYRef.current = event.nativeEvent.contentOffset.y;
+      dragStartTimeRef.current = Date.now();
+    },
+    [],
+  );
+  const handleScrollEndDrag = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (isTradeDrawerOpen) return;
+
+      const endOffsetY = event.nativeEvent.contentOffset.y;
+      const deltaY = endOffsetY - dragStartOffsetYRef.current;
+      const elapsedMs = Date.now() - dragStartTimeRef.current;
+      const velocityY = event.nativeEvent.velocity?.y ?? 0;
+
+      // Open only on an intentional quick, long upward swipe.
+      const isIntentionalOpenGesture =
+        deltaY > 120 && elapsedMs < 280 && velocityY > 1.15;
+      const isInCooldown = Date.now() - lastSwipeOpenTimeRef.current < 500;
+      if (isIntentionalOpenGesture && !isInCooldown) {
+        lastSwipeOpenTimeRef.current = Date.now();
+        openTradeDrawer("long");
+      }
+    },
+    [isTradeDrawerOpen, openTradeDrawer],
+  );
 
   return (
     <View className="flex-1 bg-bg-primary-dark">
@@ -336,6 +386,9 @@ export const MarketDetailContainer: React.FC<Props> = ({
         stickyHeaderIndices={[2]}
         contentContainerClassName="pb-16"
         keyboardShouldPersistTaps="handled"
+        scrollEventThrottle={16}
+        onScrollBeginDrag={handleScrollBeginDrag}
+        onScrollEndDrag={handleScrollEndDrag}
       >
         <MemoizedMarketChart coin={coin} />
         <MemoizedOrderBook coin={coin} />
@@ -348,6 +401,7 @@ export const MarketDetailContainer: React.FC<Props> = ({
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="flex-1 h-[42px] rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 flex-row items-center justify-center gap-1"
+            onPress={() => openTradeDrawer("long")}
           >
             <Feather name="trending-up" size={13} color="#05290f" />
             <AppText
@@ -361,6 +415,7 @@ export const MarketDetailContainer: React.FC<Props> = ({
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="flex-1 h-[42px] rounded-xl bg-red-500 border border-[#ff8a8a]/40 flex-row items-center justify-center gap-1"
+            onPress={() => openTradeDrawer("short")}
           >
             <Feather name="trending-down" size={13} color="#ffffff" />
             <AppText
@@ -372,6 +427,7 @@ export const MarketDetailContainer: React.FC<Props> = ({
           </AppButton>
         </View>
       </View>
+
     </View>
   );
 };

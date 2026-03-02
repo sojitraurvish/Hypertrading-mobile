@@ -20,7 +20,15 @@ import { MarketDetailContainer } from "./market-detail";
 // Section components receive data as props — they are pure UI.
 // ============================================================
 
-export const MarketsContainer: React.FC = () => {
+type MarketsContainerProps = {
+  openMarketDetailsOnSelect?: boolean;
+  onMarketSelect?: (symbol: string) => void;
+};
+
+export const MarketsContainer: React.FC<MarketsContainerProps> = ({
+  openMarketDetailsOnSelect = true,
+  onMarketSelect,
+}) => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [expandAll, setExpandAll] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -70,8 +78,9 @@ export const MarketsContainer: React.FC = () => {
   const handleItemPress = useCallback(
     (item: MarketItem) => {
       setSelectedMarket(item.symbol);
+      onMarketSelect?.(item.symbol);
     },
-    [setSelectedMarket],
+    [onMarketSelect, setSelectedMarket],
   );
 
   const handleFavoriteToggle = useCallback(
@@ -181,7 +190,6 @@ export const MarketsContainer: React.FC = () => {
     loadMarkets();
   }, [loadMarkets]);
 
-
   useEffect(() => {
     if (hasMarkets && !hasLoadedOnce) {
       setHasLoadedOnce(true);
@@ -207,6 +215,7 @@ export const MarketsContainer: React.FC = () => {
   }, [getLiveMarketUpdates, setMarkets]);
 
   useEffect(() => {
+    if (!openMarketDetailsOnSelect) return;
     if (!selectedMarket) return;
 
     const subscription = BackHandler.addEventListener(
@@ -220,20 +229,21 @@ export const MarketsContainer: React.FC = () => {
     return () => {
       subscription.remove();
     };
-  }, [selectedMarket, setSelectedMarket]);
+  }, [openMarketDetailsOnSelect, selectedMarket, setSelectedMarket]);
 
   useFocusEffect(
     useCallback(() => {
+      if (!openMarketDetailsOnSelect) return;
       return () => {
         setSelectedMarket(null);
       };
-    }, [setSelectedMarket]),
+    }, [openMarketDetailsOnSelect, setSelectedMarket]),
   );
 
   // ----------------------------------------------------------
   // Render
   // ----------------------------------------------------------
-  if (selectedMarket) {
+  if (openMarketDetailsOnSelect && selectedMarket) {
     return (
       <MarketDetailContainer
         coin={selectedMarket}

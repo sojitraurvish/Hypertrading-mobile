@@ -1,10 +1,13 @@
 import { AppButton } from "@/components/ui/app-button";
 import { AppText } from "@/components/ui/app-text";
 import { VARIANT_TYPES } from "@/lib/constants";
+import { addDecimals } from "@/lib/utils/decimals";
 import { cn } from "@/lib/utils/tailwind-configs";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useBottomPannelStore } from "@/store/bottom-pannel";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import type { ISubscription } from "@nktkas/hyperliquid";
 import { useAccount, useAppKit } from "@reown/appkit-react-native";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Text, View } from "react-native";
 
 function truncateAddress(address: string) {
@@ -30,7 +33,7 @@ type Props = {
 
 export const HomeHeader: React.FC<Props> = ({
   variant = VARIANT_TYPES.PRIMARY,
-  portfolioValue = "$12,450.80",
+  portfolioValue = "$0.00",
   currency = "USDC",
   onDeposit,
   onWithdraw,
@@ -39,6 +42,44 @@ export const HomeHeader: React.FC<Props> = ({
   const baseClassName = VARIANTS[variant] || "";
   const { open } = useAppKit();
   const { address, isConnected } = useAccount();
+  const balances = useBottomPannelStore((state) => state.balances);
+
+  const setBalances = useBottomPannelStore((state) => state.setBalances);
+  const getLiveBalances = useBottomPannelStore(
+    (state) => state.getLiveBalances,
+  );
+  const balancesSubscriptionRef = useRef<ISubscription | null>(null);
+
+  useEffect(() => {
+    if (!address) return;
+    if (!address.startsWith("0x")) return;
+
+    let isActive = true;
+    balancesSubscriptionRef.current?.unsubscribe();
+    balancesSubscriptionRef.current = null;
+
+    const subscribe = async () => {
+      const subscription = await getLiveBalances(
+        address as `0x${string}`,
+        setBalances,
+      );
+
+      if (!isActive) {
+        subscription?.unsubscribe();
+        return;
+      }
+
+      balancesSubscriptionRef.current = subscription;
+    };
+
+    void subscribe();
+
+    return () => {
+      isActive = false;
+      balancesSubscriptionRef.current?.unsubscribe();
+      balancesSubscriptionRef.current = null;
+    };
+  }, [address, getLiveBalances, setBalances]);
 
   return (
     <View className={cn(baseClassName, className)}>
@@ -57,7 +98,9 @@ export const HomeHeader: React.FC<Props> = ({
           adjustsFontSizeToFit
           minimumFontScale={0.5}
         >
-          {portfolioValue}
+          {addDecimals(
+            Number(balances[0]?.available_balance.replace(/\s+[A-Za-z]+$/, "")), 2,
+          ).toFixed(2)}
           <Text className="text-text-tertiary-dark text-sm font-normal">
             {"  "}
             {currency}
@@ -69,24 +112,22 @@ export const HomeHeader: React.FC<Props> = ({
       <View style={{ flexShrink: 0 }} className="flex-row items-center gap-2">
         {/* Deposit Button */}
         <AppButton
-          variant={VARIANT_TYPES.QUATERNARY}
-          className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-xl"
+          variant={VARIANT_TYPES.NOT_SELECTED}
+          className="w-9 h-9 items-center justify-center bg-bg-quaternary-dark rounded-xl border border-border-primary-dark/60"
           onPress={onDeposit}
+          accessibilityLabel="Open deposit modal"
         >
-          <MaterialCommunityIcons
-            name="call-received"
-            size={18}
-            color="#50fa7b"
-          />
+          <Feather name="arrow-down-left" size={15} color="#52f2a8" />
         </AppButton>
 
         {/* Withdraw Button */}
         <AppButton
-          variant={VARIANT_TYPES.QUATERNARY}
-          className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-xl"
+          variant={VARIANT_TYPES.NOT_SELECTED}
+          className="w-9 h-9 items-center justify-center bg-bg-quaternary-dark rounded-xl border border-border-primary-dark/60"
           onPress={onWithdraw}
+          accessibilityLabel="Open withdraw modal"
         >
-          <MaterialCommunityIcons name="call-made" size={18} color="red" />
+          <Feather name="arrow-up-right" size={15} color="#ef4444" />
         </AppButton>
 
         {/* Connect Wallet Button */}

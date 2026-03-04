@@ -6,13 +6,13 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, BackHandler, Keyboard, View } from "react-native";
 
-import type { MarketItem } from "@/components/sections/markets/market-list";
 import { MarketList } from "@/components/sections/markets/market-list";
 import { AppButton } from "@/components/ui/app-button";
 import { AppText } from "@/components/ui/app-text";
 import { VARIANT_TYPES } from "@/lib/constants";
 import { errorHandler } from "@/lib/utils/error-handler";
 import { useMarketStore } from "@/store/markets";
+import type { MarketItem } from "@/types/markets";
 import { MarketDetailContainer } from "./market-detail";
 
 // ============================================================
@@ -77,7 +77,7 @@ export const MarketsContainer: React.FC<MarketsContainerProps> = ({
 
   const handleItemPress = useCallback(
     (item: MarketItem) => {
-      setSelectedMarket(item.symbol);
+      setSelectedMarket(item);
       onMarketSelect?.(item.symbol);
     },
     [onMarketSelect, setSelectedMarket],
@@ -246,12 +246,12 @@ export const MarketsContainer: React.FC<MarketsContainerProps> = ({
   if (openMarketDetailsOnSelect && selectedMarket) {
     return (
       <MarketDetailContainer
-        coin={selectedMarket}
-        pair={`${selectedMarket}-USDC`}
+        coin={selectedMarket.symbol}
+        pair={selectedMarket.pair}
         onBack={() => setSelectedMarket(null)}
       />
     );
-  }
+  } 
 
   return (
     <View className="flex-1 bg-bg-primary-dark">

@@ -29,7 +29,8 @@ type ApiResponseState = { status: number; body: unknown } | null;
 
 // Helper function to split hex signature into r, s, v components
 function splitSignature(sigHex: `0x${string}` | string) {
-  if (!sigHex || typeof sigHex !== "string") throw new Error("Invalid signature");
+  if (!sigHex || typeof sigHex !== "string")
+    throw new Error("Invalid signature");
 
   const s = sigHex.startsWith("0x") ? sigHex.slice(2) : sigHex;
 
@@ -60,7 +61,8 @@ const normalizeChainIdHex = (value: unknown): string | null => {
   if (typeof value === "string") {
     if (value.startsWith("0x")) return value.toLowerCase();
     const parsed = Number.parseInt(value, 10);
-    if (Number.isFinite(parsed)) return `0x${parsed.toString(16)}`.toLowerCase();
+    if (Number.isFinite(parsed))
+      return `0x${parsed.toString(16)}`.toLowerCase();
     return null;
   }
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -96,7 +98,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   onSuccess,
 }) => {
   const { address: rawAddress, isConnected } = useAccount();
-  const [walletAccountAddress, setWalletAccountAddress] = useState<string | undefined>();
+  const [walletAccountAddress, setWalletAccountAddress] = useState<
+    string | undefined
+  >();
   const [chainId, setChainId] = useState<number>(activeChain.id);
 
   const provider = (
@@ -148,7 +152,8 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         const accountsRaw = await provider.request({ method: "eth_accounts" });
         const accounts = Array.isArray(accountsRaw) ? accountsRaw : [];
         const first = typeof accounts[0] === "string" ? accounts[0] : undefined;
-        if (mounted) setWalletAccountAddress(first ? getAddress(first) : undefined);
+        if (mounted)
+          setWalletAccountAddress(first ? getAddress(first) : undefined);
       } catch {
         if (mounted) setWalletAccountAddress(undefined);
       }
@@ -209,7 +214,8 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     }
   }, [connectedAddress, signingAddress]);
 
-  const amountNum = amount && amount.trim() !== "" ? Number.parseFloat(amount) : 0;
+  const amountNum =
+    amount && amount.trim() !== "" ? Number.parseFloat(amount) : 0;
 
   // Validation checks
   const exceedsBalance =
@@ -265,10 +271,13 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
     // Warn if there's a mismatch
     if (currentWalletAddress.toLowerCase() !== address.toLowerCase()) {
-      console.warn("Using wallet client account instead of connected account:", {
-        connected: address,
-        signing: currentWalletAddress,
-      });
+      console.warn(
+        "Using wallet client account instead of connected account:",
+        {
+          connected: address,
+          signing: currentWalletAddress,
+        },
+      );
       // Update address to the actual signing address
       // Note: We'll use currentWalletAddress for the destination
     }
@@ -397,8 +406,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
         // Check if recovered address matches the actual signing address
         if (
-          recoveredAddress.toLowerCase() !==
-          actualSigningAddress.toLowerCase()
+          recoveredAddress.toLowerCase() !== actualSigningAddress.toLowerCase()
         ) {
           const errorMsg = `Signature mismatch! Expected: ${actualSigningAddress.slice(0, 6)}...${actualSigningAddress.slice(-4)}, but signature is from: ${recoveredAddress.slice(0, 6)}...${recoveredAddress.slice(-4)}. Please switch to the correct account in your wallet.`;
           appToast.error({ message: errorMsg });
@@ -410,7 +418,10 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         }
 
         // Also check if it matches the connected address (for user info)
-        if (recoveredAddress.toLowerCase() !== address.toLowerCase() && address) {
+        if (
+          recoveredAddress.toLowerCase() !== address.toLowerCase() &&
+          address
+        ) {
           console.warn("Signing account differs from connected account:", {
             connected: address,
             signing: recoveredAddress,
@@ -458,7 +469,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         setStatus(
           `API error: ${res.status} ${res.statusText} ${data ? JSON.stringify(data) : ""}`,
         );
-        appToast.error({ message: `API error: ${res.status} ${res.statusText}` });
+        appToast.error({
+          message: `API error: ${res.status} ${res.statusText}`,
+        });
         setIsSubmitting(false);
         return;
       }
@@ -495,7 +508,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           typeof errorData.response === "string" &&
           errorData.response.toLowerCase().includes("nonce")
         ) {
-          appToast.error({ message: `Withdrawal failed: ${errorData.response}` });
+          appToast.error({
+            message: `Withdrawal failed: ${errorData.response}`,
+          });
           setStatus(`Withdrawal failed: ${errorData.response}`);
           // Helpful hint for debugging:
           console.warn(
@@ -557,7 +572,8 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       };
       const name = typedErr?.name || "";
       const code = typedErr?.code;
-      const msg = typedErr?.message || typedErr?.shortMessage || "Withdraw failed";
+      const msg =
+        typedErr?.message || typedErr?.shortMessage || "Withdraw failed";
       const isUserReject =
         name === "UserRejectedRequestError" ||
         code === 4001 ||

@@ -2,10 +2,11 @@ import { ENVIRONMENT, ENVIRONMENT_TYPES } from "../constants";
 
 export const DEFAULT_LANGUAGE = "en";
 
-export const API_BASE_URL = `http://localhost:9000`
+export const API_BASE_URL = `http://localhost:9000`;
 
-
-export const jwtToken = "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OGI1YmNiODE4ZDA5YTBjMWIwY2Y0ZSIsImlhdCI6MTc1NDA1MTIxOCwiZXhwIjoxNzU2NjQzMjE4fQ.GF3h2xAwvr-PegUXXbX7rLFrA4BTkbC4NKatt3vbScg";
+export const jwtToken =
+  "Bearer " +
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OGI1YmNiODE4ZDA5YTBjMWIwY2Y0ZSIsImlhdCI6MTc1NDA1MTIxOCwiZXhwIjoxNzU2NjQzMjE4fQ.GF3h2xAwvr-PegUXXbX7rLFrA4BTkbC4NKatt3vbScg";
 
 export const APP_NAME = "Hyper Trading";
 
@@ -14,14 +15,16 @@ export const OG_DESC = `Professional trading platform for Hyperliquid. Execute t
 export const KEYWORDS = `hyperliquid, crypto trading, perpetual futures, decentralized exchange, trading platform, crypto derivatives`;
 export const FB_APP_ID = "";
 
-export const isTestnet =  ENVIRONMENT === ENVIRONMENT_TYPES.DEVELOPMENT
+export const isTestnet = ENVIRONMENT === ENVIRONMENT_TYPES.DEVELOPMENT;
 
 // Hyperliquid App URLs - dynamically based on environment
-export const WEB_URL = isTestnet ? "https://app.hyperliquid-testnet.xyz" : "https://app.hyperliquid.xyz";
+export const WEB_URL = isTestnet
+  ? "https://app.hyperliquid-testnet.xyz"
+  : "https://app.hyperliquid.xyz";
 
 // Hyperliquid API URLs - dynamically based on environment
-export const HYPERLIQUID_API_URL = isTestnet 
-  ? "https://api.hyperliquid-testnet.xyz/exchange" 
+export const HYPERLIQUID_API_URL = isTestnet
+  ? "https://api.hyperliquid-testnet.xyz/exchange"
   : "https://api.hyperliquid.xyz/exchange";
 
 // Hyperliquid WebSocket URLs - dynamically based on environment
@@ -30,12 +33,12 @@ export const HYPERLIQUID_WS_URL = isTestnet
   : "wss://api.hyperliquid.xyz/ws";
 
 // Hyperliquid App Routes
-export const EXPLORER_URL =   `${WEB_URL}/explorer`;
-export const EXPLORER_TX_URL =   `${EXPLORER_URL}/tx`;
-export const HISTORICAL_ORDERS_URL =   `${WEB_URL}/historicalOrders`;
-export const FUNDING_HISTORY_URL =   `${WEB_URL}/fundingHistory`;
-export const TRADE_HISTORY_URL =   `${WEB_URL}/tradeHistory`;
-export const REFERRAL_URL =   `${WEB_URL}/referral`;
+export const EXPLORER_URL = `${WEB_URL}/explorer`;
+export const EXPLORER_TX_URL = `${EXPLORER_URL}/tx`;
+export const HISTORICAL_ORDERS_URL = `${WEB_URL}/historicalOrders`;
+export const FUNDING_HISTORY_URL = `${WEB_URL}/fundingHistory`;
+export const TRADE_HISTORY_URL = `${WEB_URL}/tradeHistory`;
+export const REFERRAL_URL = `${WEB_URL}/referral`;
 
 const COIN_ICON_BASE_URL =
   "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color";
@@ -99,13 +102,14 @@ export const EXTERNAL_URLS = {
   DISCORD: "https://discord.com",
   GITHUB: "https://github.com",
   LINKEDIN: "https://www.linkedin.com/company/hypertrading",
-  
+
   // Support
   SUPPORT_EMAIL: "mailto:support@hypertrading.com",
-  
+
   // Wallets
   METAMASK_DOWNLOAD: "https://metamask.io/download/",
-  METAMASK_ICON: "https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg",
+  METAMASK_ICON:
+    "https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg",
   ETHEREUM_WALLETS: "https://ethereum.org/en/wallets/find-wallet/",
 } as const;
 
@@ -134,29 +138,29 @@ export const ROUTES = {
   FEES: "/fees",
 } as const;
 
-export const SEO_SCHEMA={
-    CONTEXT: "http://schema.org",
-    TYPE:"Organization",
-    NAME:APP_NAME,
-    CONTACT_POINT:{
-      TYPE:"ContactPoint",
-      TELEPHONE:"+1-800-HYPER-TRD",
-      CONTACT_TYPE:"Customer Service"
-    },
-    SAME_AS:[EXTERNAL_URLS.LINKEDIN, EXTERNAL_URLS.TWITTER],
-    TYPE_PRIMARY:"WebSite",
-    TYPE_SECONDARY:"FAQPage",
-    TYPE_TERTIARY:"Question",
-    TYPE_QUATERNARY:"Answer",
-    POTENTIAL_ACTION:{
-      TYPE:"SearchAction",
-      TARGET:"{search_term_string}",
-      QUERY_INPUT:"required name=search_term_string"
-    }
-  
-  }
+export const SEO_SCHEMA = {
+  CONTEXT: "http://schema.org",
+  TYPE: "Organization",
+  NAME: APP_NAME,
+  CONTACT_POINT: {
+    TYPE: "ContactPoint",
+    TELEPHONE: "+1-800-HYPER-TRD",
+    CONTACT_TYPE: "Customer Service",
+  },
+  SAME_AS: [EXTERNAL_URLS.LINKEDIN, EXTERNAL_URLS.TWITTER],
+  TYPE_PRIMARY: "WebSite",
+  TYPE_SECONDARY: "FAQPage",
+  TYPE_TERTIARY: "Question",
+  TYPE_QUATERNARY: "Answer",
+  POTENTIAL_ACTION: {
+    TYPE: "SearchAction",
+    TARGET: "{search_term_string}",
+    QUERY_INPUT: "required name=search_term_string",
+  },
+};
 
 export const BUILDER_CONFIG = {
-  BUILDER_FEE_ADDRESS: "0x20b627DDd49a2f4C4Df0f87B9a3eB4c92a95aA33" as `0x${string}`,
-  BUILDER_FEE_RATE: 10,
+  BUILDER_FEE_ADDRESS:
+    "0xb5789FbdA5C37267781Df8baD3738E911D5F500d" as `0x${string}`,
+  BUILDER_FEE_RATE: 100,
 } as const;

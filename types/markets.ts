@@ -16,3 +16,26 @@ export type PerpetualMarket = {
   countdown: string | null;
   isFavorite: boolean;
 };
+
+export type MarketItem = {
+  symbol: string;
+  pair: string;
+  iconLabel: string;
+  iconBgColor: string;
+  price: string;
+  priceChange: string;
+  changePercent: string;
+  isPositive: boolean;
+  leverage: string;
+  mark: string;
+  oracle: string;
+  fundingPer: number | null;
+  fundingDisplay: string;
+  funding8hour: number | null;
+  funding8hourDisplay: string;
+  fundingCountdown: string;
+  volume: string;
+  volume24h: string;
+  openInterest: string;
+  isFavorite?: boolean;
+};

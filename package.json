@@ -29,6 +29,7 @@
     "@reown/appkit-react-native": "^2.0.2",
     "@walletconnect/react-native-compat": "^2.23.6",
     "clsx": "^2.1.1",
+    "ethers": "^6.16.0",
     "event-target-polyfill": "^0.0.4",
     "expo": "~54.0.33",
     "expo-application": "~7.0.8",

@@ -4,6 +4,7 @@ import { AppText } from "@/components/ui/app-text";
 import { getCoinIconUrls } from "@/lib/config";
 import { VARIANT_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils/tailwind-configs";
+import type { MarketItem } from "@/types/markets";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -21,29 +22,6 @@ const VARIANTS = {
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;
-
-export type MarketItem = {
-  symbol: string;
-  pair: string;
-  iconLabel: string;
-  iconBgColor: string;
-  price: string;
-  priceChange: string;
-  changePercent: string;
-  isPositive: boolean;
-  leverage: string;
-  mark: string;
-  oracle: string;
-  fundingPer: number | null;
-  fundingDisplay: string;
-  funding8hour: number | null;
-  funding8hourDisplay: string;
-  fundingCountdown: string;
-  volume: string;
-  volume24h: string;
-  openInterest: string;
-  isFavorite?: boolean;
-};
 
 type Props = {
   variant?: VariantKeys;

@@ -51,12 +51,20 @@ export const AppButton: React.FC<Props> = ({
   return (
     <TouchableOpacity
       disabled={isDisabled || isLoading}
-      className={cn(baseClassName, className)}
+      className={cn(
+        baseClassName,
+        (isDisabled || isLoading) && "opacity-90",
+        className,
+      )}
       activeOpacity={0.7}
       {...props}
     >
       {isLoading && (
-        <ActivityIndicator size="small" color="#FFFFFF" className="mr-2" />
+        <ActivityIndicator
+          size="small"
+          color="#FFFFFF"
+          className="pr-1.5"
+        />
       )}
       {children}
     </TouchableOpacity>

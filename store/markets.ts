@@ -1,6 +1,6 @@
 import { infoClient, subscriptionClient } from "@/lib/clients/hyperliquid";
 import { errorHandler } from "@/lib/utils/error-handler";
-import type { PerpetualMarket } from "@/types/markets";
+import type { MarketItem, PerpetualMarket } from "@/types/markets";
 import type { ISubscription } from "@nktkas/hyperliquid";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
@@ -11,12 +11,12 @@ const FAVORITES_STORAGE_KEY = "market-favorites";
 type MarketStore = {
   markets: Map<string, PerpetualMarket>;
   favoriteSymbols: string[];
-  selectedMarket: string | null;
+  selectedMarket: MarketItem | null;
   isLoading: boolean;
 
   fetchMarkets: () => Promise<Map<string, PerpetualMarket>>;
   setMarkets: (markets: Map<string, PerpetualMarket>) => void;
-  setSelectedMarket: (coin: string | null) => void;
+  setSelectedMarket: (market: MarketItem | null) => void;
   addToFavorite: (symbol: string) => void;
   removeFromFavorite: (symbol: string) => void;
   getLiveMarketUpdates: (
@@ -183,8 +183,8 @@ export const useMarketStore = create<MarketStore>()(
           set({ markets });
         },
 
-        setSelectedMarket: (coin) => {
-          set({ selectedMarket: coin });
+        setSelectedMarket: (market) => {
+          set({ selectedMarket: market });
         },
 
         addToFavorite: (symbol) => {

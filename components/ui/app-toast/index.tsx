@@ -424,7 +424,7 @@ export const AppToast: React.FC<AppToastProps> = ({ position = DEFAULT_POSITION 
     <View
       pointerEvents="box-none"
       className={containerClassName}
-      style={containerStyle}
+      style={[styles.overlayContainer, containerStyle]}
       onLayout={onContainerLayout}
     >
       {positionedToasts.map((toast) => (
@@ -496,6 +496,11 @@ export const AppToast: React.FC<AppToastProps> = ({ position = DEFAULT_POSITION 
 };
 
 const styles = StyleSheet.create({
+  overlayContainer: {
+    // Ensure toast overlay renders above other absolute/fixed layers.
+    zIndex: 99999,
+    elevation: 99999,
+  },
   toastShadow: {
     shadowColor: "#000",
     shadowOpacity: Platform.OS === "ios" ? 0.28 : 0.2,

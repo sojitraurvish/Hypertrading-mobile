@@ -1,9 +1,12 @@
 import { MarketAccountOverview } from "@/components/sections/markets/account-overview";
+import TransferModal from "@/components/sections/markets/transfer-modal";
+import { appToast } from "@/components/ui/app-toast";
 import { infoClient } from "@/lib/clients/hyperliquid";
 import { useBottomPannelStore } from "@/store/bottom-pannel";
 import type { Position } from "@/types/bottom-pannel";
 import type { ISubscription } from "@nktkas/hyperliquid";
-import { useAccount } from "@reown/appkit-react-native";
+import { useAccount, useProvider } from "@reown/appkit-react-native";
+import { BrowserProvider } from "ethers";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
 type Props = {
@@ -18,6 +21,7 @@ export const BottomPannel: React.FC<Props> = ({
   enableDataSync = true,
 }) => {
   const { address: userAddress } = useAccount();
+  const { provider: walletProvider } = useProvider();
   const balances = useBottomPannelStore((state) => state.balances);
   const isBalancesLoading = useBottomPannelStore(
     (state) => state.isBalancesLoading,
@@ -92,6 +96,24 @@ export const BottomPannel: React.FC<Props> = ({
   );
   const getLiveHistoricalOrders = useBottomPannelStore(
     (state) => state.getLiveHistoricalOrders,
+  );
+  const isTransferModalOpen = useBottomPannelStore(
+    (state) => state.isTransferModalOpen,
+  );
+  const transferDirection = useBottomPannelStore(
+    (state) => state.transferDirection,
+  );
+  const isTransferLoading = useBottomPannelStore(
+    (state) => state.isTransferLoading,
+  );
+  const openTransferModal = useBottomPannelStore(
+    (state) => state.openTransferModal,
+  );
+  const closeTransferModal = useBottomPannelStore(
+    (state) => state.closeTransferModal,
+  );
+  const transferUsdcBetweenAccounts = useBottomPannelStore(
+    (state) => state.transferUsdcBetweenAccounts,
   );
 
   const activeAccountTab = useBottomPannelStore(
@@ -449,64 +471,165 @@ export const BottomPannel: React.FC<Props> = ({
   //   return openOrders.filter((item) => item?.coin?.toUpperCase() === normalizedCoin);
   // }, [coin, openOrders]);
   const filteredOpenOrders = openOrders;
+  const parseAvailableAmount = useCallback((balanceValue?: string) => {
+    if (!balanceValue) return "0";
+    const [value] = balanceValue.split(" ");
+    const parsedValue = Number.parseFloat(value);
+    if (!Number.isFinite(parsedValue) || parsedValue <= 0) return "0";
+    return parsedValue.toFixed(2);
+  }, []);
+  const perpsAvailable = useMemo(() => {
+    const perps = balances.find((balance) =>
+      balance.coin.toLowerCase().includes("perps"),
+    );
+    return parseAvailableAmount(perps?.available_balance);
+  }, [balances, parseAvailableAmount]);
+  const spotAvailable = useMemo(() => {
+    const spot = balances.find((balance) =>
+      balance.coin.toLowerCase().includes("spot"),
+    );
+    return parseAvailableAmount(spot?.available_balance);
+  }, [balances, parseAvailableAmount]);
+  const getReliableSigner = useCallback(async () => {
+    if (!walletProvider) return null;
+    try {
+      const provider = new BrowserProvider(walletProvider);
+      return await provider.getSigner();
+    } catch {
+      return null;
+    }
+  }, [walletProvider]);
+  const handleBalanceTransfer = useCallback(
+    (direction: "toPerp" | "toSpot") => {
+      openTransferModal(direction);
+    },
+    [openTransferModal],
+  );
+  const handleTransferConfirm = useCallback(
+    async (amount: string, toPerp: boolean) => {
+      const signer = await getReliableSigner();
+      if (!signer) {
+        appToast.error({
+          message:
+            "Wallet signer unavailable. Please reconnect your wallet and try again.",
+        });
+        return;
+      }
+
+      const response = await transferUsdcBetweenAccounts({
+        signer,
+        amount,
+        toPerp,
+      });
+
+      if (!response.success) {
+        appToast.error({ message: response.error || "Transfer failed." });
+        return;
+      }
+
+      appToast.success({
+        message: `Transferred ${amount} USDC from ${toPerp ? "Spot to Perps" : "Perps to Spot"}.`,
+      });
+      closeTransferModal();
+
+      if (userAddress?.startsWith("0x")) {
+        const rows = await getAllBalances({
+          publicKey: userAddress as `0x${string}`,
+        });
+        setBalances(rows);
+      }
+    },
+    [
+      closeTransferModal,
+      getAllBalances,
+      getReliableSigner,
+      setBalances,
+      transferUsdcBetweenAccounts,
+      userAddress,
+    ],
+  );
 
   if (mode === "header") {
     return (
-      <MarketAccountOverview
-        mode="header"
-        activeTab={activeAccountTab}
-        expandedCards={expandedAccountCards}
-        balances={balances}
-        positions={filteredPositions}
-        openOrders={filteredOpenOrders}
-        tradeHistory={tradeHistory}
-        userFundings={userFundings}
-        historicalOrders={historicalOrders}
-        isBalancesLoading={isBalancesLoading}
-        isPositionsLoading={isPositionsLoading}
-        isOpenOrdersLoading={isOpenOrdersLoading}
-        isTradeHistoryLoading={isTradeHistoryLoading}
-        isUserFundingsLoading={isUserFundingsLoading}
-        isHistoricalOrdersLoading={isHistoricalOrdersLoading}
-        balancesError={balancesError}
-        positionsError={balancesError}
-        openOrdersError={balancesError}
-        tradeHistoryError={balancesError}
-        fundingHistoryError={balancesError}
-        orderHistoryError={balancesError}
-        onTabChange={setActiveAccountTab}
-        onToggleCard={handleToggleAccountCard}
-      />
+      <>
+        <MarketAccountOverview
+          mode="header"
+          activeTab={activeAccountTab}
+          expandedCards={expandedAccountCards}
+          balances={balances}
+          positions={filteredPositions}
+          openOrders={filteredOpenOrders}
+          tradeHistory={tradeHistory}
+          userFundings={userFundings}
+          historicalOrders={historicalOrders}
+          isBalancesLoading={isBalancesLoading}
+          isPositionsLoading={isPositionsLoading}
+          isOpenOrdersLoading={isOpenOrdersLoading}
+          isTradeHistoryLoading={isTradeHistoryLoading}
+          isUserFundingsLoading={isUserFundingsLoading}
+          isHistoricalOrdersLoading={isHistoricalOrdersLoading}
+          balancesError={balancesError}
+          positionsError={balancesError}
+          openOrdersError={balancesError}
+          tradeHistoryError={balancesError}
+          fundingHistoryError={balancesError}
+          orderHistoryError={balancesError}
+          onTabChange={setActiveAccountTab}
+          onToggleCard={handleToggleAccountCard}
+          onBalanceTransfer={handleBalanceTransfer}
+        />
+        <TransferModal
+          isOpen={isTransferModalOpen}
+          onClose={closeTransferModal}
+          direction={transferDirection}
+          perpsAvailable={perpsAvailable}
+          spotAvailable={spotAvailable}
+          isSubmitting={isTransferLoading}
+          onConfirm={handleTransferConfirm}
+        />
+      </>
     );
   }
 
   if (mode === "content") {
     return (
-      <MarketAccountOverview
-        mode="content"
-        activeTab={activeAccountTab}
-        expandedCards={expandedAccountCards}
-        balances={balances}
-        positions={filteredPositions}
-        openOrders={filteredOpenOrders}
-        tradeHistory={tradeHistory}
-        userFundings={userFundings}
-        historicalOrders={historicalOrders}
-        isBalancesLoading={isBalancesLoading}
-        isPositionsLoading={isPositionsLoading}
-        isOpenOrdersLoading={isOpenOrdersLoading}
-        isTradeHistoryLoading={isTradeHistoryLoading}
-        isUserFundingsLoading={isUserFundingsLoading}
-        isHistoricalOrdersLoading={isHistoricalOrdersLoading}
-        balancesError={balancesError}
-        positionsError={balancesError}
-        openOrdersError={balancesError}
-        tradeHistoryError={balancesError}
-        fundingHistoryError={balancesError}
-        orderHistoryError={balancesError}
-        onTabChange={setActiveAccountTab}
-        onToggleCard={handleToggleAccountCard}
-      />
+      <>
+        <MarketAccountOverview
+          mode="content"
+          activeTab={activeAccountTab}
+          expandedCards={expandedAccountCards}
+          balances={balances}
+          positions={filteredPositions}
+          openOrders={filteredOpenOrders}
+          tradeHistory={tradeHistory}
+          userFundings={userFundings}
+          historicalOrders={historicalOrders}
+          isBalancesLoading={isBalancesLoading}
+          isPositionsLoading={isPositionsLoading}
+          isOpenOrdersLoading={isOpenOrdersLoading}
+          isTradeHistoryLoading={isTradeHistoryLoading}
+          isUserFundingsLoading={isUserFundingsLoading}
+          isHistoricalOrdersLoading={isHistoricalOrdersLoading}
+          balancesError={balancesError}
+          positionsError={balancesError}
+          openOrdersError={balancesError}
+          tradeHistoryError={balancesError}
+          fundingHistoryError={balancesError}
+          orderHistoryError={balancesError}
+          onTabChange={setActiveAccountTab}
+          onToggleCard={handleToggleAccountCard}
+          onBalanceTransfer={handleBalanceTransfer}
+        />
+        <TransferModal
+          isOpen={isTransferModalOpen}
+          onClose={closeTransferModal}
+          direction={transferDirection}
+          perpsAvailable={perpsAvailable}
+          spotAvailable={spotAvailable}
+          isSubmitting={isTransferLoading}
+          onConfirm={handleTransferConfirm}
+        />
+      </>
     );
   }
 
@@ -536,6 +659,7 @@ export const BottomPannel: React.FC<Props> = ({
         orderHistoryError={balancesError}
         onTabChange={setActiveAccountTab}
         onToggleCard={handleToggleAccountCard}
+        onBalanceTransfer={handleBalanceTransfer}
       />
       <MarketAccountOverview
         mode="content"
@@ -561,6 +685,16 @@ export const BottomPannel: React.FC<Props> = ({
         orderHistoryError={balancesError}
         onTabChange={setActiveAccountTab}
         onToggleCard={handleToggleAccountCard}
+        onBalanceTransfer={handleBalanceTransfer}
+      />
+      <TransferModal
+        isOpen={isTransferModalOpen}
+        onClose={closeTransferModal}
+        direction={transferDirection}
+        perpsAvailable={perpsAvailable}
+        spotAvailable={spotAvailable}
+        isSubmitting={isTransferLoading}
+        onConfirm={handleTransferConfirm}
       />
     </>
   );

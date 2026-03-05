@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Feather } from "@expo/vector-icons";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -11,7 +18,6 @@ import {
   type LayoutChangeEvent,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
 
 import { AppText } from "@/components/ui/app-text";
 import { cn } from "@/lib/utils/tailwind-configs";
@@ -222,26 +228,34 @@ const getContainerPositionStyle = (
   };
 };
 
-const LoadingIndicator = () => <ActivityIndicator size="small" color="#4ADE80" />;
+const LoadingIndicator = () => (
+  <ActivityIndicator size="small" color="#4ADE80" />
+);
 
 const ToastIcon: React.FC<{ variant: ToastVariant }> = ({ variant }) => {
   if (variant === "loading") {
     return <LoadingIndicator />;
   }
 
-  const iconName: Record<Exclude<ToastVariant, "loading">, "check-circle" | "x-circle" | "info" | "alert-triangle" | "bell"> =
-    {
-      success: "check-circle",
-      error: "x-circle",
-      info: "info",
-      warning: "alert-triangle",
-      notification: "bell",
-    };
+  const iconName: Record<
+    Exclude<ToastVariant, "loading">,
+    "check-circle" | "x-circle" | "info" | "alert-triangle" | "bell"
+  > = {
+    success: "check-circle",
+    error: "x-circle",
+    info: "info",
+    warning: "alert-triangle",
+    notification: "bell",
+  };
 
-  return <Feather name={iconName[variant]} size={16} color={ICON_COLORS[variant]} />;
+  return (
+    <Feather name={iconName[variant]} size={16} color={ICON_COLORS[variant]} />
+  );
 };
 
-export const AppToast: React.FC<AppToastProps> = ({ position = DEFAULT_POSITION }) => {
+export const AppToast: React.FC<AppToastProps> = ({
+  position = DEFAULT_POSITION,
+}) => {
   const insets = useSafeAreaInsets();
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const toastsRef = useRef<ToastItem[]>([]);
@@ -251,18 +265,21 @@ export const AppToast: React.FC<AppToastProps> = ({ position = DEFAULT_POSITION 
   >({});
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const getAnimatedValues = useCallback((toast: Pick<ToastItem, "id" | "position">) => {
-    const existing = animatedMap.current[toast.id];
-    if (existing) return existing;
+  const getAnimatedValues = useCallback(
+    (toast: Pick<ToastItem, "id" | "position">) => {
+      const existing = animatedMap.current[toast.id];
+      if (existing) return existing;
 
-    const fromTop = toast.position.startsWith("top");
-    const values = {
-      opacity: new Animated.Value(0),
-      translateY: new Animated.Value(fromTop ? -12 : 12),
-    };
-    animatedMap.current[toast.id] = values;
-    return values;
-  }, []);
+      const fromTop = toast.position.startsWith("top");
+      const values = {
+        opacity: new Animated.Value(0),
+        translateY: new Animated.Value(fromTop ? -12 : 12),
+      };
+      animatedMap.current[toast.id] = values;
+      return values;
+    },
+    [],
+  );
 
   const animateInToast = useCallback(
     (toast: Pick<ToastItem, "id" | "position">) => {

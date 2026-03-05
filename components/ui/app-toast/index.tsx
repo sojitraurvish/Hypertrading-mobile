@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  Modal,
   Platform,
   Pressable,
   StyleSheet,
@@ -64,51 +65,61 @@ type ToastListener = (event: ToastEvent) => void;
 const listeners = new Set<ToastListener>();
 const DEFAULT_DURATION = 4500;
 const DEFAULT_POSITION: ToastPosition = "top-center";
+const EXIT_ANIMATION_DURATION = 300;
 let toastId = 0;
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
-  success: "bg-bg-secondary-dark border border-green-500/25",
-  error: "bg-bg-secondary-dark border border-red-500/25",
-  info: "bg-bg-secondary-dark border border-border-secondary-dark",
-  warning: "bg-bg-secondary-dark border border-yellow-500/25",
-  notification: "bg-bg-secondary-dark border border-border-secondary-dark",
-  loading: "bg-bg-secondary-dark border border-border-secondary-dark",
+  success: "bg-[#0b1512] border border-green-400/30",
+  error: "bg-[#180d12] border border-red-400/32",
+  info: "bg-[#0b1320] border border-blue-400/30",
+  warning: "bg-[#1b1509] border border-amber-400/30",
+  notification: "bg-[#0f1520] border border-slate-300/24",
+  loading: "bg-[#0a1712] border border-emerald-400/28",
 };
 
 const TITLE_STYLES: Record<ToastVariant, string> = {
-  success: "text-green-400",
-  error: "text-red-400",
-  info: "text-text-primary-dark",
-  warning: "text-yellow-400",
-  notification: "text-text-primary-dark",
-  loading: "text-text-primary-dark",
+  success: "text-green-300",
+  error: "text-red-300",
+  info: "text-blue-300",
+  warning: "text-amber-300",
+  notification: "text-slate-200",
+  loading: "text-emerald-300",
 };
 
 const MESSAGE_STYLES: Record<ToastVariant, string> = {
-  success: "text-text-secondary-dark",
-  error: "text-text-secondary-dark",
-  info: "text-text-secondary-dark",
-  warning: "text-text-secondary-dark",
-  notification: "text-text-secondary-dark",
-  loading: "text-text-secondary-dark",
+  success: "text-[#c7d2fe]",
+  error: "text-[#e2e8f0]",
+  info: "text-[#dbeafe]",
+  warning: "text-[#fef3c7]",
+  notification: "text-[#e2e8f0]",
+  loading: "text-[#dcfce7]",
 };
 
 const ICON_BG_STYLES: Record<ToastVariant, string> = {
-  success: "bg-green-500/15",
-  error: "bg-red-500/15",
-  info: "bg-blue-500/15",
-  warning: "bg-yellow-500/15",
-  notification: "bg-gray-500/20",
-  loading: "bg-green-500/15",
+  success: "bg-green-400/12",
+  error: "bg-red-400/14",
+  info: "bg-blue-400/14",
+  warning: "bg-yellow-400/14",
+  notification: "bg-slate-300/12",
+  loading: "bg-emerald-300/14",
 };
 
 const ICON_COLORS: Record<ToastVariant, string> = {
-  success: "#4ADE80",
+  success: "#22C55E",
   error: "#F87171",
   info: "#60A5FA",
-  warning: "#FACC15",
-  notification: "#D1D5DB",
-  loading: "#4ADE80",
+  warning: "#F59E0B",
+  notification: "#CBD5E1",
+  loading: "#34D399",
+};
+
+const ACCENT_STYLES: Record<ToastVariant, string> = {
+  success: "bg-green-400",
+  error: "bg-red-400",
+  info: "bg-blue-400",
+  warning: "bg-amber-400",
+  notification: "bg-slate-300",
+  loading: "bg-emerald-400",
 };
 
 const emit = (event: ToastEvent) => {
@@ -310,13 +321,13 @@ export const AppToast: React.FC<AppToastProps> = ({ position = DEFAULT_POSITION 
       Animated.parallel([
         Animated.timing(values.opacity, {
           toValue: 0,
-          duration: 180,
+          duration: EXIT_ANIMATION_DURATION,
           easing: Easing.in(Easing.cubic),
           useNativeDriver: true,
         }),
         Animated.timing(values.translateY, {
           toValue: toOffset,
-          duration: 180,
+          duration: EXIT_ANIMATION_DURATION,
           easing: Easing.in(Easing.cubic),
           useNativeDriver: true,
         }),
@@ -331,7 +342,28 @@ export const AppToast: React.FC<AppToastProps> = ({ position = DEFAULT_POSITION 
     const unsubscribe = subscribe((event) => {
       if (event.type === "show") {
         const nextToast: ToastItem = { ...event.toast, isExiting: false };
-        setToasts((current) => [...current, nextToast]);
+        setToasts((current) => {
+          const samePositionToasts = current.filter(
+            (toast) => toast.position === nextToast.position,
+          );
+          if (samePositionToasts.length < 2) {
+            return [...current, nextToast];
+          }
+
+          const oldestId = samePositionToasts[0]?.id;
+          if (!oldestId) return [...current, nextToast];
+
+          if (timeoutMap.current[oldestId]) {
+            clearTimeout(timeoutMap.current[oldestId]);
+            delete timeoutMap.current[oldestId];
+          }
+          delete animatedMap.current[oldestId];
+
+          return [
+            ...current.filter((toast) => toast.id !== oldestId),
+            nextToast,
+          ];
+        });
         animateInToast(nextToast);
         return;
       }
@@ -421,77 +453,109 @@ export const AppToast: React.FC<AppToastProps> = ({ position = DEFAULT_POSITION 
   };
 
   return (
-    <View
-      pointerEvents="box-none"
-      className={containerClassName}
-      style={[styles.overlayContainer, containerStyle]}
-      onLayout={onContainerLayout}
-    >
-      {positionedToasts.map((toast) => (
-        <Animated.View
-          key={toast.id}
-          className={cn(
-            "mb-2 rounded-2xl px-3.5 py-3 flex-row items-start gap-3",
-            VARIANT_STYLES[toast.variant],
-          )}
-          style={[
-            styles.toastShadow,
-            {
-              width: toastWidth,
-              opacity:
-                animatedMap.current[toast.id]?.opacity ??
-                new Animated.Value(1),
-              transform: [
-                {
-                  translateY:
-                    animatedMap.current[toast.id]?.translateY ??
-                    new Animated.Value(0),
-                },
-              ],
-            },
-          ]}
+    <Modal transparent statusBarTranslucent animationType="none" visible>
+      <View style={StyleSheet.absoluteFillObject}>
+        <Pressable
+          style={StyleSheet.absoluteFillObject}
+          onPress={() => appToast.dismiss()}
+          accessibilityRole="button"
+          accessibilityLabel="Dismiss toast notifications"
+        />
+        <View
+          pointerEvents="box-none"
+          className={containerClassName}
+          style={[styles.overlayContainer, containerStyle]}
+          onLayout={onContainerLayout}
         >
-          <View
-            className={cn(
-              "w-8 h-8 rounded-full items-center justify-center mt-0.5",
-              ICON_BG_STYLES[toast.variant],
-            )}
-          >
-            <ToastIcon variant={toast.variant} />
-          </View>
-
-          <View className="flex-1">
-            {toast.title ? (
-              <AppText
-                className={cn("text-[13px] font-semibold", TITLE_STYLES[toast.variant])}
-              >
-                {toast.title}
-              </AppText>
-            ) : null}
-
-            {toast.message ? (
-              <AppText
+          {positionedToasts.map((toast) => (
+            <Animated.View
+              key={toast.id}
+              className={cn(
+                "mb-2.5 overflow-hidden rounded-2xl px-3 py-3.5 flex-row gap-2.5",
+                toast.title ? "items-start" : "items-center",
+                VARIANT_STYLES[toast.variant],
+              )}
+              style={[
+                styles.toastShadow,
+                {
+                  width: toastWidth,
+                  opacity:
+                    animatedMap.current[toast.id]?.opacity ??
+                    new Animated.Value(1),
+                  transform: [
+                    {
+                      translateY:
+                        animatedMap.current[toast.id]?.translateY ??
+                        new Animated.Value(0),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <View
                 className={cn(
-                  "text-xs mt-0.5 leading-[17px]",
-                  MESSAGE_STYLES[toast.variant],
+                  "absolute left-0 top-0 bottom-0 w-[3px]",
+                  ACCENT_STYLES[toast.variant],
+                )}
+              />
+              <View
+                className={cn(
+                  "w-7 h-7 rounded-full items-center justify-center",
+                  toast.title ? "mt-0.5" : "",
+                  ICON_BG_STYLES[toast.variant],
                 )}
               >
-                {toast.message}
-              </AppText>
-            ) : null}
-          </View>
+                <ToastIcon variant={toast.variant} />
+              </View>
 
-          <Pressable
-            onPress={() => appToast.dismiss(toast.id)}
-            className="w-7 h-7 rounded-full items-center justify-center bg-bg-tertiary-dark"
-            hitSlop={8}
-            disabled={toast.isExiting}
-          >
-            <Feather name="x" size={14} color="#9CA3AF" />
-          </Pressable>
-        </Animated.View>
-      ))}
-    </View>
+              <View className={cn("flex-1", toast.title ? "" : "h-7 justify-center")}>
+                {toast.title ? (
+                  <AppText
+                    className={cn(
+                      "text-[13px] leading-[16px] font-semibold",
+                      TITLE_STYLES[toast.variant],
+                    )}
+                  >
+                    {toast.title}
+                  </AppText>
+                ) : null}
+
+                {toast.message ? (
+                  <AppText
+                    className={cn(
+                      "text-[13px] font-medium",
+                      toast.title ? "leading-[18px]" : "leading-[13px]",
+                      toast.title ? "mt-0.5" : "",
+                      MESSAGE_STYLES[toast.variant],
+                    )}
+                    style={[
+                      styles.toastMessageText,
+                      !toast.title ? styles.singleLineMessageText : null,
+                    ]}
+                    numberOfLines={toast.title ? undefined : 1}
+                    ellipsizeMode="tail"
+                  >
+                    {toast.message}
+                  </AppText>
+                ) : null}
+              </View>
+
+              <Pressable
+                onPress={() => appToast.dismiss(toast.id)}
+                className={cn(
+                  "w-7 h-7 rounded-full items-center justify-center bg-black/25 border border-white/10",
+                  toast.title ? "mt-0.5" : "",
+                )}
+                hitSlop={8}
+                disabled={toast.isExiting}
+              >
+                <Feather name="x" size={14} color="#9CA3AF" />
+              </Pressable>
+            </Animated.View>
+          ))}
+        </View>
+      </View>
+    </Modal>
   );
 };
 
@@ -503,10 +567,17 @@ const styles = StyleSheet.create({
   },
   toastShadow: {
     shadowColor: "#000",
-    shadowOpacity: Platform.OS === "ios" ? 0.28 : 0.2,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
+    shadowOpacity: Platform.OS === "ios" ? 0.24 : 0.16,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+  },
+  toastMessageText: {
+    includeFontPadding: false,
+    textAlignVertical: "center",
+  },
+  singleLineMessageText: {
+    paddingTop: 1,
   },
 });
 

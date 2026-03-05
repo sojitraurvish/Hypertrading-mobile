@@ -1,6 +1,7 @@
 import { AppText } from "@/components/ui/app-text";
 import { VARIANT_TYPES } from "@/lib/constants";
 import { addDecimals } from "@/lib/utils/decimals";
+import { cn } from "@/lib/utils/tailwind-configs";
 import type { OrderBookData } from "@/store/order-book";
 import React, { useEffect, useRef } from "react";
 import { Animated, Easing, View } from "react-native";
@@ -11,6 +12,7 @@ type OrderRowProps = {
   maxTotal: number;
   currency: string;
   isHighlighted?: boolean;
+  isUserOrder?: boolean;
   compact?: boolean;
 };
 
@@ -20,6 +22,7 @@ export const OrderRow: React.FC<OrderRowProps> = ({
   maxTotal,
   currency,
   isHighlighted = false,
+  isUserOrder = false,
 }) => {
   const priceNum = Number.parseFloat(order.price) || 0;
   const sizeNum = Number.parseFloat(order.size) || 0;
@@ -53,7 +56,12 @@ export const OrderRow: React.FC<OrderRowProps> = ({
   }, [highlightOpacity, isHighlighted, order.size, order.total]);
 
   return (
-    <View className="relative flex-row items-center px-2 py-[3px] border-b border-border-primary-dark/10 overflow-hidden">
+    <View
+      className={cn(
+        "relative flex-row items-center px-2 py-[3px] border-b border-border-primary-dark/10 overflow-hidden",
+        isUserOrder && "border-l-2 border-l-[#facc15] bg-[#facc15]/[0.06]",
+      )}
+    >
       <Animated.View
         className={
           isAsk
@@ -76,6 +84,16 @@ export const OrderRow: React.FC<OrderRowProps> = ({
           }
           style={{ opacity: highlightOpacity }}
         />
+      ) : null}
+      {isUserOrder ? (
+        <View className="absolute right-1.5 top-1 rounded-sm border border-[#facc15]/60 bg-[#facc15]/10 px-1">
+          <AppText
+            variant={VARIANT_TYPES.NOT_SELECTED}
+            className="text-[8px] leading-[10px] font-bold text-[#facc15]"
+          >
+            OPEN
+          </AppText>
+        </View>
       ) : null}
       <AppText
         variant={VARIANT_TYPES.NOT_SELECTED}

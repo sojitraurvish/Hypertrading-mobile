@@ -10,6 +10,7 @@ type OrderListProps = {
   currency: string;
   hideScrollbar?: boolean;
   highlightedPrices?: Set<string>;
+  openOrderPriceKeys?: Set<string>;
   compact?: boolean;
 };
 
@@ -19,6 +20,7 @@ export const OrderList: React.FC<OrderListProps> = ({
   maxTotal,
   currency,
   highlightedPrices,
+  openOrderPriceKeys,
   compact = false,
 }) => {
   const displayOrders = useMemo(
@@ -36,6 +38,7 @@ export const OrderList: React.FC<OrderListProps> = ({
           maxTotal={maxTotal}
           currency={currency}
           isHighlighted={highlightedPrices?.has(order.price)}
+          isUserOrder={openOrderPriceKeys?.has(order.price)}
           compact={compact}
         />
       ))}

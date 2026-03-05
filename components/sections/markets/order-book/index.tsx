@@ -3,6 +3,7 @@ import { AppDropdown } from "@/components/ui/app-dropdown";
 import { AppText } from "@/components/ui/app-text";
 import { VARIANT_TYPES } from "@/lib/constants";
 import { addDecimals } from "@/lib/utils/decimals";
+import { useBottomPannelStore } from "@/store/bottom-pannel";
 import { useOrderBookStore } from "@/store/order-book";
 import { Feather } from "@expo/vector-icons";
 import type { ISubscription, L2BookParameters } from "@nktkas/hyperliquid";
@@ -147,6 +148,14 @@ const ShimmerSpreadIndicator: React.FC = () => {
 };
 
 export const OrderBook: React.FC<Props> = ({ currency }) => {
+  const normalizePriceKey = (value: string | number): string | null => {
+    const parsedValue = Number.parseFloat(String(value));
+    if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
+      return null;
+    }
+
+    return parsedValue.toFixed(8).replace(/\.?0+$/, "");
+  };
   const formatTwoDecimals = (value: number) => addDecimals(value, 2).toFixed(2);
   const [activeTab, setActiveTab] = useState<"orderbook" | "trades">(
     "orderbook",
@@ -176,6 +185,7 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
     getLiveOrderBook,
     getLiveTrades,
   } = useOrderBookStore();
+  const userOpenOrders = useBottomPannelStore((state) => state.userOpenOrders);
 
   useEffect(() => {
     setDisplayCurrency(currency);
@@ -186,9 +196,127 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
     [precision],
   );
 
+  const {
+    askOpenOrderPriceKeys,
+    bidOpenOrderPriceKeys,
+    askOpenOrderSizeByPrice,
+    bidOpenOrderSizeByPrice,
+  } = useMemo(() => {
+    const askOrderPrices = new Set<string>();
+    const bidOrderPrices = new Set<string>();
+    const askOrderSizeMap = new Map<string, number>();
+    const bidOrderSizeMap = new Map<string, number>();
+    const normalizedCoin = currency.toUpperCase();
+
+    userOpenOrders.forEach((rawOrder) => {
+      const order = rawOrder as Record<string, unknown>;
+      const orderCoin = String(order.coin ?? "").toUpperCase();
+      if (orderCoin !== normalizedCoin) {
+        return;
+      }
+
+      const orderSide = String(order.side ?? "").toUpperCase();
+      const normalizedPrice = normalizePriceKey(String(order.limitPx ?? ""));
+      if (!normalizedPrice) {
+        return;
+      }
+
+      const parsedSize = Number.parseFloat(String(order.sz ?? "0"));
+      if (!Number.isFinite(parsedSize) || parsedSize <= 0) {
+        return;
+      }
+
+      if (orderSide === "A") {
+        askOrderPrices.add(normalizedPrice);
+        askOrderSizeMap.set(
+          normalizedPrice,
+          (askOrderSizeMap.get(normalizedPrice) ?? 0) + parsedSize,
+        );
+      } else if (orderSide === "B") {
+        bidOrderPrices.add(normalizedPrice);
+        bidOrderSizeMap.set(
+          normalizedPrice,
+          (bidOrderSizeMap.get(normalizedPrice) ?? 0) + parsedSize,
+        );
+      }
+    });
+
+    return {
+      askOpenOrderPriceKeys: askOrderPrices,
+      bidOpenOrderPriceKeys: bidOrderPrices,
+      askOpenOrderSizeByPrice: askOrderSizeMap,
+      bidOpenOrderSizeByPrice: bidOrderSizeMap,
+    };
+  }, [currency, userOpenOrders]);
+
+  const asksWithUserOrders = useMemo(() => {
+    const nextAsks = [...asks];
+    const existingAskPrices = new Set(
+      nextAsks.map((ask) => normalizePriceKey(ask.price)).filter(Boolean),
+    );
+
+    askOpenOrderSizeByPrice.forEach((size, priceKey) => {
+      if (existingAskPrices.has(priceKey)) {
+        return;
+      }
+
+      nextAsks.push({
+        price: priceKey,
+        size: addDecimals(size, 6).toString(),
+        total: "0",
+      });
+    });
+
+    nextAsks.sort((a, b) => Number(a.price) - Number(b.price));
+    let cumulativeTotal = 0;
+
+    return nextAsks.map((ask) => {
+      const sizeNum = Number.parseFloat(ask.size) || 0;
+      cumulativeTotal += sizeNum;
+      return {
+        ...ask,
+        total: addDecimals(cumulativeTotal).toString(),
+      };
+    });
+  }, [asks, askOpenOrderSizeByPrice]);
+
+  const bidsWithUserOrders = useMemo(() => {
+    const nextBids = [...bids];
+    const existingBidPrices = new Set(
+      nextBids.map((bid) => normalizePriceKey(bid.price)).filter(Boolean),
+    );
+
+    bidOpenOrderSizeByPrice.forEach((size, priceKey) => {
+      if (existingBidPrices.has(priceKey)) {
+        return;
+      }
+
+      nextBids.push({
+        price: priceKey,
+        size: addDecimals(size, 6).toString(),
+        total: "0",
+      });
+    });
+
+    nextBids.sort((a, b) => Number(b.price) - Number(a.price));
+    let cumulativeTotal = 0;
+
+    return nextBids.map((bid) => {
+      const sizeNum = Number.parseFloat(bid.size) || 0;
+      cumulativeTotal += sizeNum;
+      return {
+        ...bid,
+        total: addDecimals(cumulativeTotal).toString(),
+      };
+    });
+  }, [bids, bidOpenOrderSizeByPrice]);
+
   const allTotals = useMemo(
-    () => [...asks, ...bids].map((item) => Number.parseFloat(item.total) || 0),
-    [asks, bids],
+    () =>
+      [...asksWithUserOrders, ...bidsWithUserOrders].map(
+        (item) => Number.parseFloat(item.total) || 0,
+      ),
+    [asksWithUserOrders, bidsWithUserOrders],
   );
   const maxTotal = useMemo(() => Math.max(...allTotals, 1), [allTotals]);
   useEffect(() => {
@@ -389,11 +517,12 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
               >
                 {hasReceivedOrderBookData ? (
                   <OrderList
-                    orders={asks}
+                    orders={asksWithUserOrders}
                     isAsk
                     maxTotal={maxTotal}
                     currency={displayCurrency}
                     highlightedPrices={highlightedAskPrices}
+                    openOrderPriceKeys={askOpenOrderPriceKeys}
                   />
                 ) : (
                   <ShimmerOrderRows />
@@ -433,11 +562,12 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
               >
                 {hasReceivedOrderBookData ? (
                   <OrderList
-                    orders={bids}
+                    orders={bidsWithUserOrders}
                     isAsk={false}
                     maxTotal={maxTotal}
                     currency={displayCurrency}
                     highlightedPrices={highlightedBidPrices}
+                    openOrderPriceKeys={bidOpenOrderPriceKeys}
                   />
                 ) : (
                   <ShimmerOrderRows />

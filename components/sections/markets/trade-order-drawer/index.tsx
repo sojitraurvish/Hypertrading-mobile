@@ -588,8 +588,15 @@ export const TradeOrderDrawer: React.FC<Props> = ({
     );
   }, [sizeInputValueForSelectedMarket]);
 
+  const isLimitPriceEmpty = useMemo(() => {
+    return orderType === "limit" && !limitOrderPrice.trim();
+  }, [limitOrderPrice, orderType]);
+
   const isPlaceOrderDisabled =
-    isPlaceOrderLoading || isSizeExceedsMax || !hasValidOrderSize;
+    isPlaceOrderLoading ||
+    isSizeExceedsMax ||
+    !hasValidOrderSize ||
+    isLimitPriceEmpty;
 
   useEffect(() => {
     if (isManualSizeInput) return;
@@ -716,8 +723,6 @@ export const TradeOrderDrawer: React.FC<Props> = ({
     setIsPlaceOrderLoading(true);
 
     try {
-      appToast.info({ message: "hy urvish" });
-
       const isApprovedBuilderFee = await checkBuilderFeeStatus({
         userPublicKeyParam: address as `0x${string}`,
       });
@@ -761,24 +766,24 @@ export const TradeOrderDrawer: React.FC<Props> = ({
         r: false,
       };
 
-       // Map TIF dropdown values to API format
-       const tifMap: Record<"GTC" | "IOC" | "ALO", "Gtc" | "Ioc" | "Alo"> = {
-        "GTC": "Gtc",
-        "IOC": "Ioc",
-        "ALO": "Alo"
+      // Map TIF dropdown values to API format
+      const tifMap: Record<"GTC" | "IOC" | "ALO", "Gtc" | "Ioc" | "Alo"> = {
+        GTC: "Gtc",
+        IOC: "Ioc",
+        ALO: "Alo",
       };
-      
-        // Add tif only for Limit orders
-        if (orderType === "limit") {
-          orderParams.tif = tifMap[timeInForce];
-        }
+
+      // Add tif only for Limit orders
+      if (orderType === "limit") {
+        orderParams.tif = tifMap[timeInForce];
+      }
       console.log("orderParams", orderParams);
 
       const isOrderPlaced = await placeOrderWithAgent(orderParams);
       if (isOrderPlaced) {
         if (orderType === "limit") {
           setActiveAccountTab("openOrders");
-        }else if (orderType === "market") {
+        } else if (orderType === "market") {
           setActiveAccountTab("positions");
         }
         onClose();

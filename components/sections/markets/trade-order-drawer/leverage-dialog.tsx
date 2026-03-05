@@ -178,7 +178,7 @@ const LeverageDialog: React.FC<LeverageDialogProps> = ({
         onPress={handleConfirm}
         isLoading={isSubmitting}
         isDisabled={isSubmitting}
-        className="mt-5 h-11 rounded-xl bg-[#2fb67c] items-center justify-center"
+        className="mt-5 h-11 rounded-xl bg-[#2fb67c] flex-row items-center justify-center"
       >
         <AppText
           variant={VARIANT_TYPES.NOT_SELECTED}

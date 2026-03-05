@@ -98,7 +98,7 @@ const MarginModeDialog: React.FC<MarginModeDialogProps> = ({
           variant={VARIANT_TYPES.NOT_SELECTED}
           onPress={() => setTempMode("isolated")}
           className={cn(
-            "w-full rounded-xl border p-3.5",
+            "w-full rounded-xl border p-3.5 ",
             tempMode === "isolated"
               ? "bg-[#0f251b] border-[#2d815f]"
               : "bg-bg-secondary-dark/50 border-border-primary-dark/60",
@@ -146,7 +146,7 @@ const MarginModeDialog: React.FC<MarginModeDialogProps> = ({
         onPress={handleConfirm}
         isLoading={isSubmitting}
         isDisabled={isSubmitting}
-        className="mt-4 h-11 rounded-xl bg-[#2fb67c] items-center justify-center"
+        className="mt-4 h-11 rounded-xl bg-[#2fb67c] flex-row items-center justify-center"
       >
         <AppText
           variant={VARIANT_TYPES.NOT_SELECTED}

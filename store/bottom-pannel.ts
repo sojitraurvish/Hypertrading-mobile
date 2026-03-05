@@ -1,4 +1,8 @@
-import { infoClient, subscriptionClient } from "@/lib/clients/hyperliquid";
+import {
+  getUserExchangeClient,
+  infoClient,
+  subscriptionClient,
+} from "@/lib/clients/hyperliquid";
 import { addDecimals } from "@/lib/utils/decimals";
 import { errorHandler } from "@/lib/utils/error-handler";
 import {
@@ -48,6 +52,16 @@ type BottomPannelStore = {
     publicKey: `0x${string}`,
     setBalances: (balances: Balance[]) => void,
   ) => Promise<ISubscription | null>;
+  isTransferModalOpen: boolean;
+  transferDirection: "toPerp" | "toSpot";
+  isTransferLoading: boolean;
+  openTransferModal: (direction: "toPerp" | "toSpot") => void;
+  closeTransferModal: () => void;
+  transferUsdcBetweenAccounts: (params: {
+    signer: unknown;
+    amount: string;
+    toPerp: boolean;
+  }) => Promise<{ success: boolean; error?: string }>;
 
   userPositions: Position[];
   setUserPositions: (
@@ -143,6 +157,9 @@ const INITIAL_STATE = {
   isError: null as string | null,
   activeAccountTab: "balances" as const,
   expandedAccountCards: {} as Record<string, boolean>,
+  isTransferModalOpen: false,
+  transferDirection: "toSpot" as const,
+  isTransferLoading: false,
 };
 
 export const useBottomPannelStore = create<BottomPannelStore>()(
@@ -202,14 +219,14 @@ export const useBottomPannelStore = create<BottomPannelStore>()(
               },
             ];
 
-            // if (spotTotal > 0) {
-            //   rows.push({
-            //     coin: "USDC (Spot)",
-            //     total_balance: `${addDecimals(spotTotal)} USDC`,
-            //     available_balance: `${addDecimals(spotAvailable)} USDC`,
-            //     usdc_value: addDecimals(spotTotal),
-            //   });
-            // }
+            if (spotTotal > 0) {
+              rows.push({
+                coin: "USDC (Spot)",
+                total_balance: `${addDecimals(spotTotal)} USDC`,
+                available_balance: `${addDecimals(spotAvailable)} USDC`,
+                usdc_value: addDecimals(spotTotal),
+              });
+            }
 
             return rows;
           } catch (error) {
@@ -251,14 +268,14 @@ export const useBottomPannelStore = create<BottomPannelStore>()(
                   },
                 ];
 
-                // if (spotTotal > 0) {
-                //   rows.push({
-                //     coin: "USDC (Spot)",
-                //     total_balance: `${addDecimals(spotTotal)} USDC`,
-                //     available_balance: `${addDecimals(spotAvailable)} USDC`,
-                //     usdc_value: addDecimals(spotTotal),
-                //   });
-                // }
+                if (spotTotal > 0) {
+                  rows.push({
+                    coin: "USDC (Spot)",
+                    total_balance: `${addDecimals(spotTotal)} USDC`,
+                    available_balance: `${addDecimals(spotAvailable)} USDC`,
+                    usdc_value: addDecimals(spotTotal),
+                  });
+                }
 
                 setBalances(rows);
               },
@@ -268,6 +285,51 @@ export const useBottomPannelStore = create<BottomPannelStore>()(
           } catch (error) {
             errorHandler(error, "Balances Stream Error");
             return null;
+          }
+        },
+        openTransferModal: (direction) => {
+          set({
+            isTransferModalOpen: true,
+            transferDirection: direction,
+          });
+        },
+        closeTransferModal: () => {
+          set({
+            isTransferModalOpen: false,
+          });
+        },
+        transferUsdcBetweenAccounts: async ({ signer, amount, toPerp }) => {
+          if (!signer) {
+            return {
+              success: false,
+              error:
+                "Wallet client not available. Please reconnect and try again.",
+            };
+          }
+
+          set({ isTransferLoading: true });
+          try {
+            const exchangeClient = getUserExchangeClient(signer as any);
+            const result = await (exchangeClient as any).usdClassTransfer({
+              amount,
+              toPerp,
+            });
+
+            if (result?.status === "ok") {
+              return { success: true };
+            }
+
+            return {
+              success: false,
+              error: errorHandler(result?.response || "Transfer failed"),
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: errorHandler(error),
+            };
+          } finally {
+            set({ isTransferLoading: false });
           }
         },
 

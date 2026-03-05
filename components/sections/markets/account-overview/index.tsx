@@ -459,6 +459,7 @@ type MarketAccountOverviewProps = {
   orderHistoryError?: string | null;
   onTabChange: (tab: TabKey) => void;
   onToggleCard: (cardId: string) => void;
+  onBalanceTransfer?: (direction: "toPerp" | "toSpot") => void;
   mode?: "header" | "content";
 };
 
@@ -485,6 +486,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
   orderHistoryError = null,
   onTabChange,
   onToggleCard,
+  onBalanceTransfer,
   mode = "content",
 }) => {
   const markets = useMarketStore((state) => state.markets);
@@ -963,6 +965,20 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                 ? orderHistoryToCard(item as HistoricalOrder, idx)
                 : null;
           const balance = isBalance ? (item as Balance) : null;
+          const balanceCoin = String(balance?.coin ?? "").toLowerCase();
+          const transferDirection = isBalance
+            ? balanceCoin.includes("perps")
+              ? ("toSpot" as const)
+              : balanceCoin.includes("spot")
+                ? ("toPerp" as const)
+                : null
+            : null;
+          const transferLabel =
+            transferDirection === "toSpot"
+              ? "Transfer to Spot"
+              : transferDirection === "toPerp"
+                ? "Transfer to Perps"
+                : null;
           const positionItem = isPosition ? (item as Position) : null;
           const openOrder = isOpenOrder ? (item as OpenOrder) : null;
           const openOrderData = isOpenOrder
@@ -1428,6 +1444,23 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                       ) : null}
                     </View>
                     <View className="flex-row items-center gap-1.5">
+                      {isBalance &&
+                      transferDirection &&
+                      transferLabel &&
+                      onBalanceTransfer ? (
+                        <AppButton
+                          variant={VARIANT_TYPES.NOT_SELECTED}
+                          className="h-6 px-2 rounded-md border border-[#2d815f] bg-[#0a3a2a] items-center justify-center"
+                          onPress={() => onBalanceTransfer(transferDirection)}
+                        >
+                          <AppText
+                            variant={VARIANT_TYPES.NOT_SELECTED}
+                            className="text-[9px] font-semibold text-[#52f2a8] uppercase tracking-[0.6px]"
+                          >
+                            {transferLabel}
+                          </AppText>
+                        </AppButton>
+                      ) : null}
                       {isOpenOrder ? (
                         <AppButton
                           variant={VARIANT_TYPES.NOT_SELECTED}

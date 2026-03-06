@@ -517,7 +517,7 @@ export const AppToast: React.FC<AppToastProps> = ({
               />
               <View
                 className={cn(
-                  "w-7 h-7 rounded-full items-center justify-center",
+                  "w-7 h-7 rounded-full items-center justify-center self-center",
                   toast.title ? "mt-0.5" : "",
                   ICON_BG_STYLES[toast.variant],
                 )}
@@ -525,7 +525,12 @@ export const AppToast: React.FC<AppToastProps> = ({
                 <ToastIcon variant={toast.variant} />
               </View>
 
-              <View className={cn("flex-1", toast.title ? "" : "h-7 justify-center")}>
+              <View
+                className={cn(
+                  "flex-1 self-center",
+                  toast.title ? "" : "min-h-7 justify-center",
+                )}
+              >
                 {toast.title ? (
                   <AppText
                     className={cn(
@@ -541,7 +546,7 @@ export const AppToast: React.FC<AppToastProps> = ({
                   <AppText
                     className={cn(
                       "text-[13px] font-medium",
-                      toast.title ? "leading-[18px]" : "leading-[13px]",
+                      toast.title ? "leading-[18px]" : "leading-4",
                       toast.title ? "mt-0.5" : "",
                       MESSAGE_STYLES[toast.variant],
                     )}
@@ -560,7 +565,7 @@ export const AppToast: React.FC<AppToastProps> = ({
               <Pressable
                 onPress={() => appToast.dismiss(toast.id)}
                 className={cn(
-                  "w-7 h-7 rounded-full items-center justify-center bg-black/25 border border-white/10",
+                  "w-7 h-7 rounded-full items-center justify-center self-center bg-black/25 border border-white/10",
                   toast.title ? "mt-0.5" : "",
                 )}
                 hitSlop={8}
@@ -594,7 +599,8 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
   },
   singleLineMessageText: {
-    paddingTop: 1,
+    paddingTop: 0,
+    paddingBottom: 0,
   },
 });
 

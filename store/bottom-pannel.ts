@@ -1,4 +1,6 @@
 import {
+  getAgentExchangeClient,
+  getSymbolConverter,
   getUserExchangeClient,
   infoClient,
   subscriptionClient,
@@ -13,6 +15,7 @@ import {
   Position,
   TradeHistory,
 } from "@/types/bottom-pannel";
+import { appToast } from "@/components/ui/app-toast";
 import type { ISubscription } from "@nktkas/hyperliquid";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
@@ -62,6 +65,14 @@ type BottomPannelStore = {
     amount: string;
     toPerp: boolean;
   }) => Promise<{ success: boolean; error?: string }>;
+  isCancellingOrdersWithAgentLoading: boolean;
+  cancelOrdersWithAgent: ({
+    agentPrivateKey,
+    orders,
+  }: {
+    agentPrivateKey: `0x${string}`;
+    orders: { orderId: string; a: string }[];
+  }) => Promise<boolean>;
 
   userPositions: Position[];
   setUserPositions: (
@@ -160,6 +171,7 @@ const INITIAL_STATE = {
   isTransferModalOpen: false,
   transferDirection: "toSpot" as const,
   isTransferLoading: false,
+  isCancellingOrdersWithAgentLoading: false,
 };
 
 export const useBottomPannelStore = create<BottomPannelStore>()(
@@ -330,6 +342,37 @@ export const useBottomPannelStore = create<BottomPannelStore>()(
             };
           } finally {
             set({ isTransferLoading: false });
+          }
+        },
+        cancelOrdersWithAgent: async ({ agentPrivateKey, orders }) => {
+          set({ isCancellingOrdersWithAgentLoading: true, isError: null });
+
+          try {
+            const conv = await getSymbolConverter();
+            const agentExchangeClient = getAgentExchangeClient(agentPrivateKey);
+            const cancels = orders.map(({ orderId, a }) => {
+              const assetId = conv.getAssetId(a) as number;
+              return { a: assetId, o: orderId };
+            });
+
+            const resp = await agentExchangeClient.cancel({ cancels });
+
+            if (resp.status === "ok") {
+              orders.forEach(({ a, orderId }) => {
+                appToast.success({
+                  message: `${a} order ${orderId} cancelled successfully.`,
+                });
+              });
+              return true;
+            }
+
+            set({ isError: resp.response.type });
+            return false;
+          } catch (error) {
+            set({ isError: errorHandler(error) });
+            return false;
+          } finally {
+            set({ isCancellingOrdersWithAgentLoading: false });
           }
         },
 

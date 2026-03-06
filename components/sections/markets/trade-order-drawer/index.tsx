@@ -4,6 +4,7 @@ import MarginModeDialog from "@/components/sections/markets/trade-order-drawer/m
 import MaxSlippageDialog from "@/components/sections/markets/trade-order-drawer/max-slippage-dialog";
 import SizeInput from "@/components/sections/markets/trade-order-drawer/size-input";
 import SizeSlider from "@/components/sections/markets/trade-order-drawer/size-slider";
+import { TakeProfitStopLossInputs } from "@/components/sections/markets/trade-order-drawer/take-profit-stop-loss-inputs";
 import TIFDropdown from "@/components/sections/markets/trade-order-drawer/tif-dropdown";
 import { AppButton } from "@/components/ui/app-button";
 import AppDrawer from "@/components/ui/app-drawer";
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils/tailwind-configs";
 import { useBottomPannelStore } from "@/store/bottom-pannel";
 import { useMarketStore } from "@/store/markets";
 import { useTradeOrderDrawerStore } from "@/store/trade-order-drawer";
+import { ORDER_DIRECTION, type TpSlValidationError } from "@/types/tpsl";
 import type { PlaceOrderWithAgentParams } from "@/types/trade-order-drawer";
 import { Feather } from "@expo/vector-icons";
 import type { ISubscription } from "@nktkas/hyperliquid";
@@ -137,6 +139,20 @@ export const TradeOrderDrawer: React.FC<Props> = ({
   const [isLeverageDialogOpen, setIsLeverageDialogOpen] = useState(false);
   const [isMaxSlippageDialogOpen, setIsMaxSlippageDialogOpen] = useState(false);
   const [isPlaceOrderLoading, setIsPlaceOrderLoading] = useState(false);
+  const [takeProfitPrice, setTakeProfitPrice] = useState<number | undefined>(
+    undefined,
+  );
+  const [stopLossPrice, setStopLossPrice] = useState<number | undefined>(
+    undefined,
+  );
+  const [tpslVariant, setTpslVariant] = useState<"percent" | "dollar">(
+    "percent",
+  );
+  const [tpslValidationError, setTpslValidationError] =
+    useState<TpSlValidationError>({
+      takeProfitError: false,
+      stopLossError: false,
+    });
   const { address } = useAccount();
   const { checkApprovalStatus, agentPrivateKey } = useApiWallet({
     userPublicKey: address as `0x${string}`,
@@ -596,7 +612,10 @@ export const TradeOrderDrawer: React.FC<Props> = ({
     isPlaceOrderLoading ||
     isSizeExceedsMax ||
     !hasValidOrderSize ||
-    isLimitPriceEmpty;
+    isLimitPriceEmpty ||
+    (isTpSlEnabled &&
+      (tpslValidationError.takeProfitError ||
+        tpslValidationError.stopLossError));
 
   useEffect(() => {
     if (isManualSizeInput) return;
@@ -717,6 +736,17 @@ export const TradeOrderDrawer: React.FC<Props> = ({
     // setIsManualSizeInput(false); // Reset manual input flag
   }, [coin, setMarkPrice]);
 
+  useEffect(() => {
+    if (!isTpSlEnabled) {
+      setTakeProfitPrice(undefined);
+      setStopLossPrice(undefined);
+      setTpslValidationError({
+        takeProfitError: false,
+        stopLossError: false,
+      });
+    }
+  }, [isTpSlEnabled]);
+
   const handlePlaceOrderPress = async () => {
     if (isPlaceOrderLoading) return;
 
@@ -776,6 +806,15 @@ export const TradeOrderDrawer: React.FC<Props> = ({
       // Add tif only for Limit orders
       if (orderType === "limit") {
         orderParams.tif = tifMap[timeInForce];
+      }
+
+      if (isTpSlEnabled) {
+        if (takeProfitPrice !== undefined) {
+          orderParams.takeProfitPrice = takeProfitPrice;
+        }
+        if (stopLossPrice !== undefined) {
+          orderParams.stopLossPrice = stopLossPrice;
+        }
       }
       console.log("orderParams", orderParams);
 
@@ -1047,7 +1086,6 @@ export const TradeOrderDrawer: React.FC<Props> = ({
               </View>
             ) : null}
 
-            {/*
             <AppButton
               variant={VARIANT_TYPES.NOT_SELECTED}
               onPress={() => setIsTpSlEnabled((prev) => !prev)}
@@ -1072,7 +1110,42 @@ export const TradeOrderDrawer: React.FC<Props> = ({
                 Take Profit / Stop Loss
               </AppText>
             </AppButton>
-            */}
+
+            {isTpSlEnabled ? (
+              <TakeProfitStopLossInputs
+                entryPrice={
+                  orderType === "limit"
+                    ? Number.parseFloat(limitOrderPrice) || undefined
+                    : markPrice || undefined
+                }
+                direction={
+                  selectedSide === "long"
+                    ? ORDER_DIRECTION.LONG
+                    : ORDER_DIRECTION.SHORT
+                }
+                leverage={userLeverage}
+                takeProfitPrice={takeProfitPrice}
+                stopLossPrice={stopLossPrice}
+                onTakeProfitPriceChange={setTakeProfitPrice}
+                onStopLossPriceChange={setStopLossPrice}
+                szDecimals={normalizedSzDecimals}
+                priceLabel="entry"
+                positionSize={
+                  Number.parseFloat(sizeInputValueForSelectedMarket) > 0
+                    ? Number.parseFloat(sizeInputValueForSelectedMarket)
+                    : undefined
+                }
+                thresholdPrice={
+                  orderType === "limit"
+                    ? Number.parseFloat(limitOrderPrice) || null
+                    : markPrice || null
+                }
+                tpslVariant={tpslVariant}
+                setTpslVariant={setTpslVariant}
+                disabled={isLoadingTradeOrderDrawer || sliderValue === 0}
+                onValidationChange={setTpslValidationError}
+              />
+            ) : null}
 
             <AppButton
               variant={VARIANT_TYPES.NOT_SELECTED}

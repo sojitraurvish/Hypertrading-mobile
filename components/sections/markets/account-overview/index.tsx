@@ -460,6 +460,17 @@ type MarketAccountOverviewProps = {
   onTabChange: (tab: TabKey) => void;
   onToggleCard: (cardId: string) => void;
   onBalanceTransfer?: (direction: "toPerp" | "toSpot") => void;
+  onOpenOrderCancel?: (params: {
+    oid: number;
+    coin: string;
+    agentPrivateKey: `0x${string}`;
+  }) => void;
+  onClosePositionLimit?: (position: Position) => Promise<void> | void;
+  onClosePositionMarket?: (position: Position) => Promise<void> | void;
+  onReversePositionMarket?: (position: Position) => Promise<void> | void;
+  onOpenOrdersCancelAll?: () => void;
+  isOpenOrdersCancelLoading?: boolean;
+  agentPrivateKey?: string;
   mode?: "header" | "content";
 };
 
@@ -487,6 +498,13 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
   onTabChange,
   onToggleCard,
   onBalanceTransfer,
+  onOpenOrderCancel,
+  onClosePositionLimit,
+  onClosePositionMarket,
+  onReversePositionMarket,
+  onOpenOrdersCancelAll,
+  isOpenOrdersCancelLoading = false,
+  agentPrivateKey,
   mode = "content",
 }) => {
   const markets = useMarketStore((state) => state.markets);
@@ -690,48 +708,68 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
               </View>
             </GestureScrollView>
           </View>
-          <AppButton
-            variant={VARIANT_TYPES.NOT_SELECTED}
-            className="h-9 w-9 rounded-lg border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
-            onPress={() => {
-              const shouldExpand = !allRowsExpanded;
-              if (activeTab === "balances") {
-                balanceCardIds.forEach((id) => {
+          <View className="flex-row items-center gap-2">
+            {activeTab === "openOrders" &&
+            openOrders.length > 0 &&
+            onOpenOrdersCancelAll ? (
+              <AppButton
+                variant={VARIANT_TYPES.NOT_SELECTED}
+                className="h-9 px-2.5 rounded-lg border border-[#7f1d2b] bg-[#251217] flex-row items-center justify-center"
+                isLoading={isOpenOrdersCancelLoading}
+                isDisabled={isOpenOrdersLoading}
+                onPress={onOpenOrdersCancelAll}
+              >
+                <AppText
+                  variant={VARIANT_TYPES.NOT_SELECTED}
+                  className="text-[10px] font-semibold text-[#fb7185] uppercase tracking-[0.6px]"
+                >
+                  Cancel All
+                </AppText>
+              </AppButton>
+            ) : null}
+            <AppButton
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="h-9 w-9 rounded-lg border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+              onPress={() => {
+                const shouldExpand = !allRowsExpanded;
+                if (activeTab === "balances") {
+                  balanceCardIds.forEach((id) => {
+                    const isOpen = Boolean(expandedCards[id]);
+                    if (shouldExpand && !isOpen) onToggleCard(id);
+                    if (!shouldExpand && isOpen) onToggleCard(id);
+                  });
+                  return;
+                }
+                if (activeTab === "positions") {
+                  positionCardIds.forEach((id) => {
+                    const isOpen = Boolean(expandedCards[id]);
+                    if (shouldExpand && !isOpen) onToggleCard(id);
+                    if (!shouldExpand && isOpen) onToggleCard(id);
+                  });
+                  return;
+                }
+                if (activeTab === "openOrders") {
+                  openOrderCardIds.forEach((id) => {
+                    const isOpen = Boolean(expandedCards[id]);
+                    if (shouldExpand && !isOpen) onToggleCard(id);
+                    if (!shouldExpand && isOpen) onToggleCard(id);
+                  });
+                  return;
+                }
+                activeHistoryCardIds.forEach((id) => {
                   const isOpen = Boolean(expandedCards[id]);
                   if (shouldExpand && !isOpen) onToggleCard(id);
                   if (!shouldExpand && isOpen) onToggleCard(id);
                 });
-                return;
-              }
-              if (activeTab === "positions") {
-                positionCardIds.forEach((id) => {
-                  const isOpen = Boolean(expandedCards[id]);
-                  if (shouldExpand && !isOpen) onToggleCard(id);
-                  if (!shouldExpand && isOpen) onToggleCard(id);
-                });
-                return;
-              }
-              if (activeTab === "openOrders") {
-                openOrderCardIds.forEach((id) => {
-                  const isOpen = Boolean(expandedCards[id]);
-                  if (shouldExpand && !isOpen) onToggleCard(id);
-                  if (!shouldExpand && isOpen) onToggleCard(id);
-                });
-                return;
-              }
-              activeHistoryCardIds.forEach((id) => {
-                const isOpen = Boolean(expandedCards[id]);
-                if (shouldExpand && !isOpen) onToggleCard(id);
-                if (!shouldExpand && isOpen) onToggleCard(id);
-              });
-            }}
-          >
-            <Feather
-              name={allRowsExpanded ? "minimize-2" : "maximize-2"}
-              size={13}
-              color={allRowsExpanded ? "#94a3b8" : "#50fa7b"}
-            />
-          </AppButton>
+              }}
+            >
+              <Feather
+                name={allRowsExpanded ? "minimize-2" : "maximize-2"}
+                size={13}
+                color={allRowsExpanded ? "#94a3b8" : "#50fa7b"}
+              />
+            </AppButton>
+          </View>
         </View>
       </View>
     );
@@ -1055,6 +1093,30 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
           const openOrderId = String(
             openOrderData?.oid ?? openOrderData?.orderId ?? idx,
           );
+          const openOrderOid = Number(
+            openOrderData?.oid ?? openOrderData?.orderId ?? Number.NaN,
+          );
+          const openOrderCoin = String(
+            openOrderData?.coin ?? openOrder?.coin ?? "",
+          );
+          const canCancelOpenOrder =
+            isOpenOrder &&
+            Number.isFinite(openOrderOid) &&
+            openOrderOid > 0 &&
+            openOrderCoin.length > 0 &&
+            Boolean(onOpenOrderCancel);
+          const canClosePositionMarket =
+            isPosition &&
+            Boolean(positionItem?.position?.coin) &&
+            Boolean(onClosePositionMarket);
+          const canClosePositionLimit =
+            isPosition &&
+            Boolean(positionItem?.position?.coin) &&
+            Boolean(onClosePositionLimit);
+          const canReversePositionMarket =
+            isPosition &&
+            Boolean(positionItem?.position?.coin) &&
+            Boolean(onReversePositionMarket);
           const position = positionItem?.position;
           const positionCoin = isPosition
             ? (position?.coin ?? "Unknown")
@@ -1465,7 +1527,19 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                         <AppButton
                           variant={VARIANT_TYPES.NOT_SELECTED}
                           className="h-6 px-2 rounded-md border border-[#7f1d2b] bg-[#251217] items-center justify-center"
-                          onPress={() => {}}
+                          isDisabled={
+                            !canCancelOpenOrder || isOpenOrdersCancelLoading
+                          }
+                          onPress={() => {
+                            if (agentPrivateKey) {
+                              onOpenOrderCancel?.({
+                                oid: openOrderOid,
+                                coin: openOrderCoin,
+                                agentPrivateKey:
+                                  agentPrivateKey as `0x${string}`,
+                              });
+                            }
+                          }}
                         >
                           <AppText
                             variant={VARIANT_TYPES.NOT_SELECTED}
@@ -1662,6 +1736,74 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                           </View>
                         ) : null}
                       </View>
+                    </View>
+                  ) : null}
+
+                  {isPosition ? (
+                    <View className="mt-2.5 flex-row items-center gap-2">
+                      <AppButton
+                        variant={VARIANT_TYPES.NOT_SELECTED}
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+                        isDisabled={!canClosePositionLimit}
+                        onPress={() => {
+                          if (positionItem) {
+                            void onClosePositionLimit?.(positionItem);
+                          }
+                        }}
+                      >
+                        <AppText
+                          variant={VARIANT_TYPES.NOT_SELECTED}
+                          className="text-[10px] font-semibold uppercase tracking-[0.7px] text-text-secondary-dark"
+                        >
+                          Limit
+                        </AppText>
+                      </AppButton>
+                      <AppButton
+                        variant={VARIANT_TYPES.NOT_SELECTED}
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+                        isDisabled={!canClosePositionMarket}
+                        onPress={() => {
+                          if (positionItem) {
+                            void onClosePositionMarket?.(positionItem);
+                          }
+                        }}
+                      >
+                        <AppText
+                          variant={VARIANT_TYPES.NOT_SELECTED}
+                          className="text-[10px] font-semibold uppercase tracking-[0.7px] text-text-secondary-dark"
+                        >
+                          Market
+                        </AppText>
+                      </AppButton>
+                      <AppButton
+                        variant={VARIANT_TYPES.NOT_SELECTED}
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+                        isDisabled={!canReversePositionMarket}
+                        onPress={() => {
+                          if (positionItem) {
+                            void onReversePositionMarket?.(positionItem);
+                          }
+                        }}
+                      >
+                        <AppText
+                          variant={VARIANT_TYPES.NOT_SELECTED}
+                          className="text-[10px] font-semibold uppercase tracking-[0.7px] text-text-secondary-dark"
+                        >
+                          Reverse
+                        </AppText>
+                      </AppButton>
+                      <AppButton
+                        variant={VARIANT_TYPES.NOT_SELECTED}
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+                        onPress={() => {}}
+                      >
+                        <AppText
+                          variant={VARIANT_TYPES.NOT_SELECTED}
+                          className="text-[10px] font-semibold uppercase tracking-[0.7px] text-text-secondary-dark"
+                        >
+                          TP/SL
+                        </AppText>
+                      </AppButton>
                     </View>
                   ) : null}
                 </View>

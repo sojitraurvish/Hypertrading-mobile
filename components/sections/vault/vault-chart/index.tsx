@@ -34,6 +34,21 @@ export type VaultTradeMarker = {
   side: "buy" | "sell";
   price?: number;
   label?: string;
+  position?: "aboveBar" | "belowBar";
+  color?: string;
+  size?: number;
+  id?: string;
+};
+
+export type VaultPnlOverlay = {
+  price: number;
+  label: string;
+  color?: string;
+};
+export type VaultLiquidationOverlay = {
+  price: number;
+  label: string;
+  color?: string;
 };
 
 type Props = {
@@ -47,6 +62,8 @@ type Props = {
   candles: VaultChartCandle[];
   volumes: VaultChartVolume[];
   markers?: VaultTradeMarker[];
+  pnlOverlay?: VaultPnlOverlay | null;
+  liquidationOverlay?: VaultLiquidationOverlay | null;
   isLoading: boolean;
   error: string | null;
   onRetry: () => void;
@@ -71,7 +88,19 @@ type ChartPayload = {
     color: string;
     shape: "circle";
     text: string;
+    size?: number;
+    id?: string;
   }[];
+  pnlOverlay?: {
+    price: number;
+    label: string;
+    color: string;
+  };
+  liquidationOverlay?: {
+    price: number;
+    label: string;
+    color: string;
+  };
 };
 
 type IntervalOption = {
@@ -143,6 +172,8 @@ const makePayload = (
   candles: VaultChartCandle[],
   volumes: VaultChartVolume[],
   markers: VaultTradeMarker[],
+  pnlOverlay: VaultPnlOverlay | null,
+  liquidationOverlay: VaultLiquidationOverlay | null,
 ): ChartPayload => {
   const safeCandles = candles
     .map((item) => ({
@@ -219,25 +250,74 @@ const makePayload = (
   });
 
   const safeMarkers = markers
-    .map((item) => {
+    .reduce<ChartPayload["markers"]>((acc, item) => {
       const time = toUnixSeconds(Number(item.time));
-      if (!Number.isFinite(time)) return null;
-      return {
+      if (!Number.isFinite(time)) return acc;
+
+      const marker: ChartPayload["markers"][number] = {
         time,
         position:
-          item.side === "buy" ? ("belowBar" as const) : ("aboveBar" as const),
-        color: item.side === "buy" ? "#22c55e" : "#ef4444",
-        shape: "circle" as const,
+          item.position ??
+          (item.side === "buy" ? ("belowBar" as const) : ("aboveBar" as const)),
+        color: item.color ?? (item.side === "buy" ? "#22c55e" : "#ef4444"),
+        shape: "circle",
         text: item.label ?? (item.side === "buy" ? "B" : "S"),
       };
-    })
-    .filter((item): item is ChartPayload["markers"][number] => item !== null)
+
+      if (
+        typeof item.size === "number" &&
+        Number.isFinite(item.size) &&
+        item.size > 0
+      ) {
+        marker.size = item.size;
+      }
+      if (typeof item.id === "string" && item.id.length > 0) {
+        marker.id = item.id;
+      }
+
+      acc.push(marker);
+      return acc;
+    }, [])
     .sort((a, b) => a.time - b.time);
+
+  const safePnlOverlay =
+    pnlOverlay &&
+    Number.isFinite(Number(pnlOverlay.price)) &&
+    Number(pnlOverlay.price) > 0 &&
+    typeof pnlOverlay.label === "string" &&
+    pnlOverlay.label.length > 0
+      ? {
+          price: Number(pnlOverlay.price),
+          label: pnlOverlay.label,
+          color:
+            typeof pnlOverlay.color === "string" && pnlOverlay.color.length > 0
+              ? pnlOverlay.color
+              : "#22c55e",
+        }
+      : undefined;
+  const safeLiquidationOverlay =
+    liquidationOverlay &&
+    Number.isFinite(Number(liquidationOverlay.price)) &&
+    Number(liquidationOverlay.price) > 0 &&
+    typeof liquidationOverlay.label === "string" &&
+    liquidationOverlay.label.length > 0
+      ? {
+          price: Number(liquidationOverlay.price),
+          label: liquidationOverlay.label,
+          color:
+            typeof liquidationOverlay.color === "string" &&
+            liquidationOverlay.color.length > 0
+              ? liquidationOverlay.color
+              : "#ec4899",
+        }
+      : undefined;
 
   return {
     candles: filteredCandles,
     volumes: safeVolumes,
     markers: safeMarkers,
+    pnlOverlay: safePnlOverlay,
+    liquidationOverlay: safeLiquidationOverlay,
   };
 };
 
@@ -292,6 +372,10 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
       let candleSeries = null;
       let volumeSeries = null;
       let markerPrimitive = null;
+      let pnlPriceLine = null;
+      let pnlPriceLineKey = "";
+      let liquidationPriceLine = null;
+      let liquidationPriceLineKey = "";
       let lastCrosshairTime = null;
 
       const notifyNative = (payload) => {
@@ -424,9 +508,15 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
         });
 
         volumeSeries = chart.addSeries(LWC.HistogramSeries, {
-          priceFormat: { type: "volume" },
-          priceLineVisible: false,
-          lastValueVisible: false,
+          priceFormat: {
+            type: "price",
+            precision: 2,
+            minMove: 0.01,
+          },
+          priceLineVisible: true,
+          priceLineStyle: LWC.LineStyle.Dotted,
+          priceLineWidth: 1,
+          lastValueVisible: true,
           priceScaleId: "",
         });
         volumeSeries.priceScale().applyOptions({
@@ -466,11 +556,87 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
         volumeSeries.setData(payload.volumes || []);
         setMarkers(payload.markers || []);
 
+        const pnlOverlay = payload.pnlOverlay || null;
+        const nextPnlKey = pnlOverlay
+          ? [pnlOverlay.price, pnlOverlay.label, pnlOverlay.color].join("|")
+          : "";
+        if (nextPnlKey !== pnlPriceLineKey) {
+          pnlPriceLineKey = nextPnlKey;
+          if (pnlPriceLine && typeof candleSeries.removePriceLine === "function") {
+            candleSeries.removePriceLine(pnlPriceLine);
+            pnlPriceLine = null;
+          }
+          if (
+            pnlOverlay &&
+            Number.isFinite(Number(pnlOverlay.price)) &&
+            Number(pnlOverlay.price) > 0 &&
+            typeof candleSeries.createPriceLine === "function"
+          ) {
+            const lineColor =
+              typeof pnlOverlay.color === "string" && pnlOverlay.color
+                ? pnlOverlay.color
+                : "#22c55e";
+            pnlPriceLine = candleSeries.createPriceLine({
+              price: Number(pnlOverlay.price),
+              color: lineColor,
+              lineWidth: 1,
+              lineStyle: window.LightweightCharts.LineStyle.Dotted,
+              axisLabelVisible: true,
+              title: String(pnlOverlay.label || "PNL"),
+            });
+          }
+        }
+        const liquidationOverlay = payload.liquidationOverlay || null;
+        const nextLiquidationKey = liquidationOverlay
+          ? [
+              liquidationOverlay.price,
+              liquidationOverlay.label,
+              liquidationOverlay.color,
+            ].join("|")
+          : "";
+        if (nextLiquidationKey !== liquidationPriceLineKey) {
+          liquidationPriceLineKey = nextLiquidationKey;
+          if (
+            liquidationPriceLine &&
+            typeof candleSeries.removePriceLine === "function"
+          ) {
+            candleSeries.removePriceLine(liquidationPriceLine);
+            liquidationPriceLine = null;
+          }
+          if (
+            liquidationOverlay &&
+            Number.isFinite(Number(liquidationOverlay.price)) &&
+            Number(liquidationOverlay.price) > 0 &&
+            typeof candleSeries.createPriceLine === "function"
+          ) {
+            const lineColor =
+              typeof liquidationOverlay.color === "string" &&
+              liquidationOverlay.color
+                ? liquidationOverlay.color
+                : "#ec4899";
+            liquidationPriceLine = candleSeries.createPriceLine({
+              price: Number(liquidationOverlay.price),
+              color: lineColor,
+              lineWidth: 1,
+              lineStyle: window.LightweightCharts.LineStyle.Dotted,
+              axisLabelVisible: true,
+              title: String(liquidationOverlay.label || "Liq. Price"),
+            });
+          }
+        }
+
         const latestCandle = candles[candles.length - 1];
         if (latestCandle) {
           const isUp = Number(latestCandle.close) >= Number(latestCandle.open);
           candleSeries.applyOptions({
             priceLineColor: isUp ? "#22c55e" : "#ef4444",
+          });
+        }
+        const latestVolume = (payload.volumes || [])[payload.volumes.length - 1];
+        if (latestVolume) {
+          const isUpVolume = String(latestVolume.color || "").includes("22c55e");
+          volumeSeries.applyOptions({
+            priceLineColor: isUpVolume ? "#22c55e" : "#ef4444",
           });
         }
 
@@ -630,6 +796,8 @@ export const VaultChart: React.FC<Props> = ({
   candles,
   volumes,
   markers = [],
+  pnlOverlay = null,
+  liquidationOverlay = null,
   isLoading,
   error,
   onRetry,
@@ -668,8 +836,9 @@ export const VaultChart: React.FC<Props> = ({
     close: number;
   } | null>(null);
   const payload = useMemo(
-    () => makePayload(candles, volumes, markers),
-    [candles, volumes, markers],
+    () =>
+      makePayload(candles, volumes, markers, pnlOverlay, liquidationOverlay),
+    [candles, liquidationOverlay, markers, pnlOverlay, volumes],
   );
   const payloadJson = useMemo(() => JSON.stringify(payload), [payload]);
   const initialHtml = useMemo(() => makeChartHtml(EMPTY_PAYLOAD_JSON), []);

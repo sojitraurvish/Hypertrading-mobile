@@ -468,6 +468,7 @@ type MarketAccountOverviewProps = {
   onClosePositionLimit?: (position: Position) => Promise<void> | void;
   onClosePositionMarket?: (position: Position) => Promise<void> | void;
   onReversePositionMarket?: (position: Position) => Promise<void> | void;
+  onOpenPositionTpsl?: (position: Position) => Promise<void> | void;
   onOpenOrdersCancelAll?: () => void;
   isOpenOrdersCancelLoading?: boolean;
   agentPrivateKey?: string;
@@ -502,6 +503,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
   onClosePositionLimit,
   onClosePositionMarket,
   onReversePositionMarket,
+  onOpenPositionTpsl,
   onOpenOrdersCancelAll,
   isOpenOrdersCancelLoading = false,
   agentPrivateKey,
@@ -1163,6 +1165,42 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
           const positionFunding = isPosition
             ? Number(position?.cumFunding?.sinceOpen ?? 0)
             : 0;
+          const positionTpslOrders = isPosition
+            ? openOrders.filter((order) => {
+                const orderData = order as Record<string, unknown>;
+                return (
+                  Boolean(orderData?.isPositionTpsl) &&
+                  String(orderData?.coin ?? "") === positionCoin
+                );
+              })
+            : [];
+          const positionTakeProfitOrder = positionTpslOrders.find((order) =>
+            String(
+              (order as Record<string, unknown>)?.orderType ?? "",
+            ).includes("Take Profit"),
+          ) as Record<string, unknown> | undefined;
+          const positionStopLossOrder = positionTpslOrders.find((order) =>
+            String(
+              (order as Record<string, unknown>)?.orderType ?? "",
+            ).includes("Stop"),
+          ) as Record<string, unknown> | undefined;
+          const positionTakeProfitTrigger = String(
+            positionTakeProfitOrder?.triggerPx ?? "",
+          );
+          const positionStopLossTrigger = String(
+            positionStopLossOrder?.triggerPx ?? "",
+          );
+          const positionTakeProfitValue =
+            positionTakeProfitTrigger &&
+            Number.isFinite(Number(positionTakeProfitTrigger))
+              ? `${addDecimals(Number(positionTakeProfitTrigger), 3)}`
+              : "--";
+          const positionStopLossValue =
+            positionStopLossTrigger &&
+            Number.isFinite(Number(positionStopLossTrigger))
+              ? `${addDecimals(Number(positionStopLossTrigger), 3)}`
+              : "--";
+          const positionTpslDisplay = `${positionTakeProfitValue} / ${positionStopLossValue}`;
           const positionSide = positionSize >= 0 ? "Long" : "Short";
           const positionWithMark = isPosition
             ? (position as
@@ -1338,6 +1376,10 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                     label: "Funding",
                     value: formatFundingMoney(positionFunding),
                     tone: positionFunding <= 0 ? "positive" : "negative",
+                  },
+                  {
+                    label: "TP/SL",
+                    value: positionTpslDisplay,
                   },
                 ]
               : isOpenOrder
@@ -1794,15 +1836,22 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                       </AppButton>
                       <AppButton
                         variant={VARIANT_TYPES.NOT_SELECTED}
-                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
-                        onPress={() => {}}
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center gap-1.5"
+                        isDisabled={!positionItem || !onOpenPositionTpsl}
+                        onPress={() => {
+                          if (positionItem) {
+                            void onOpenPositionTpsl?.(positionItem);
+                          }
+                        }}
                       >
                         <AppText
                           variant={VARIANT_TYPES.NOT_SELECTED}
-                          className="text-[10px] font-semibold uppercase tracking-[0.7px] text-text-secondary-dark"
+                          className="text-[10px] font-semibold text-text-secondary-dark"
+                          numberOfLines={1}
                         >
-                          TP/SL
+                          {positionTpslDisplay}
                         </AppText>
+                        <Feather name="edit-3" size={10} color="#86efac" />
                       </AppButton>
                     </View>
                   ) : null}

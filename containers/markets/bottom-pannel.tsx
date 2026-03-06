@@ -1,10 +1,16 @@
 import { MarketAccountOverview } from "@/components/sections/markets/account-overview";
 import LimitCloseModal from "@/components/sections/markets/limit-close-modal";
+import PositionTpslModal from "@/components/sections/markets/position-tpsl-modal";
 import TransferModal from "@/components/sections/markets/transfer-modal";
 import { appToast } from "@/components/ui/app-toast";
 import { useBuilderFee } from "@/hooks/useBuilderFees";
 import { useApiWallet } from "@/hooks/useWallet";
-import { infoClient } from "@/lib/clients/hyperliquid";
+import {
+  getAgentExchangeClient,
+  getSymbolConverter,
+  infoClient,
+} from "@/lib/clients/hyperliquid";
+import { BUILDER_CONFIG } from "@/lib/config";
 import { addDecimals } from "@/lib/utils/decimals";
 import { useBottomPannelStore } from "@/store/bottom-pannel";
 import { useTradeOrderDrawerStore } from "@/store/trade-order-drawer";
@@ -24,6 +30,11 @@ type Props = {
   coin: string;
   mode?: "header" | "content" | "both";
   enableDataSync?: boolean;
+};
+
+type PositionTpslState = {
+  takeProfit?: { triggerPx: string; limitPx?: string; orderId?: string };
+  stopLoss?: { triggerPx: string; limitPx?: string; orderId?: string };
 };
 
 export const BottomPannel: React.FC<Props> = ({
@@ -166,6 +177,11 @@ export const BottomPannel: React.FC<Props> = ({
   const [limitClosePosition, setLimitClosePosition] = useState<Position | null>(
     null,
   );
+  const [isPositionTpslModalOpen, setIsPositionTpslModalOpen] = useState(false);
+  const [positionTpslTarget, setPositionTpslTarget] = useState<Position | null>(
+    null,
+  );
+  const [positionTpslSzDecimals, setPositionTpslSzDecimals] = useState(4);
   const balancesSubscriptionRef = useRef<ISubscription | null>(null);
   const positionsSubscriptionRef = useRef<ISubscription | null>(null);
   const openOrdersSubscriptionRef = useRef<ISubscription | null>(null);
@@ -542,6 +558,69 @@ export const BottomPannel: React.FC<Props> = ({
   //   return openOrders.filter((item) => item?.coin?.toUpperCase() === normalizedCoin);
   // }, [coin, openOrders]);
   const filteredOpenOrders = openOrders;
+  const existingPositionTpsl = useMemo<PositionTpslState>(() => {
+    const positionCoin = positionTpslTarget?.position?.coin;
+    if (!positionCoin) return {};
+
+    const tpslOrders = filteredOpenOrders.filter((order) => {
+      const orderData = order as Record<string, unknown>;
+      return (
+        Boolean(orderData?.isPositionTpsl) &&
+        String(orderData?.coin ?? "") === positionCoin
+      );
+    });
+
+    const takeProfitOrder = tpslOrders.find((order) =>
+      String((order as Record<string, unknown>)?.orderType ?? "").includes(
+        "Take Profit",
+      ),
+    ) as Record<string, unknown> | undefined;
+    const stopLossOrder = tpslOrders.find((order) =>
+      String((order as Record<string, unknown>)?.orderType ?? "").includes(
+        "Stop",
+      ),
+    ) as Record<string, unknown> | undefined;
+
+    return {
+      takeProfit: takeProfitOrder
+        ? {
+            triggerPx: String(takeProfitOrder.triggerPx ?? ""),
+            limitPx: String(takeProfitOrder.limitPx ?? "") || undefined,
+            orderId: String(takeProfitOrder.oid ?? ""),
+          }
+        : undefined,
+      stopLoss: stopLossOrder
+        ? {
+            triggerPx: String(stopLossOrder.triggerPx ?? ""),
+            limitPx: String(stopLossOrder.limitPx ?? "") || undefined,
+            orderId: String(stopLossOrder.oid ?? ""),
+          }
+        : undefined,
+    };
+  }, [filteredOpenOrders, positionTpslTarget?.position?.coin]);
+
+  const handleOpenPositionTpslModal = useCallback(
+    (positionItem: Position) => {
+      setPositionTpslTarget(positionItem);
+      setIsPositionTpslModalOpen(true);
+      setPositionTpslSzDecimals(4);
+      void resolveSzDecimals(positionItem.position.coin)
+        .then((decimals) => {
+          if (Number.isFinite(decimals)) {
+            setPositionTpslSzDecimals(decimals);
+          }
+        })
+        .catch(() => {
+          setPositionTpslSzDecimals(4);
+        });
+    },
+    [resolveSzDecimals],
+  );
+
+  const handleClosePositionTpslModal = useCallback(() => {
+    setIsPositionTpslModalOpen(false);
+    setPositionTpslTarget(null);
+  }, []);
   const parseAvailableAmount = useCallback((balanceValue?: string) => {
     if (!balanceValue) return "0";
     const [value] = balanceValue.split(" ");
@@ -1078,6 +1157,204 @@ export const BottomPannel: React.FC<Props> = ({
     ],
   );
 
+  const handlePlacePositionTpsl = useCallback(
+    async ({
+      takeProfitPrice,
+      stopLossPrice,
+      takeProfitLimitPrice,
+      stopLossLimitPrice,
+      orderSize,
+    }: {
+      takeProfitPrice?: number;
+      stopLossPrice?: number;
+      takeProfitLimitPrice?: number;
+      stopLossLimitPrice?: number;
+      orderSize?: number;
+    }) => {
+      const pos = positionTpslTarget?.position;
+      if (!pos) {
+        appToast.error({ message: "Unable to resolve position" });
+        return;
+      }
+      if (!agentPrivateKey || !userAddress?.startsWith("0x")) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      if (takeProfitPrice === undefined && stopLossPrice === undefined) {
+        appToast.error({ message: "Please enter TP or SL price" });
+        return;
+      }
+
+      const isApprovedBuilderFee = await checkBuilderFeeStatus({
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+      if (!isApprovedBuilderFee) {
+        appToast.error({
+          message: "Please approve the builder fee to place order",
+        });
+        return;
+      }
+
+      const isApproved = await checkApprovalStatus({
+        agentPublicKeyParam: agentWallet?.address as `0x${string}`,
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+      if (!isApproved) {
+        appToast.error({
+          message: "Please approve the agent wallet to place order",
+        });
+        return;
+      }
+
+      const szDecimals = await resolveSzDecimals(pos.coin);
+      const isLong = Number.parseFloat(pos.szi) > 0;
+      const sizeStr =
+        orderSize === 0
+          ? "0"
+          : orderSize && orderSize > 0
+            ? addDecimals(orderSize, szDecimals).toString()
+            : "0";
+
+      try {
+        const conv = await getSymbolConverter();
+        const assetId = conv.getAssetId(pos.coin);
+        const agentExchangeClient = getAgentExchangeClient(
+          agentPrivateKey as `0x${string}`,
+        );
+
+        const orders: Array<Record<string, unknown>> = [];
+        if (stopLossPrice !== undefined) {
+          orders.push({
+            a: String(assetId),
+            b: !isLong,
+            p:
+              stopLossLimitPrice !== undefined
+                ? String(stopLossLimitPrice)
+                : String(stopLossPrice),
+            r: true,
+            s: sizeStr,
+            t: {
+              trigger: {
+                isMarket: stopLossLimitPrice === undefined,
+                tpsl: "sl",
+                triggerPx: String(stopLossPrice),
+              },
+            },
+          });
+        }
+        if (takeProfitPrice !== undefined) {
+          orders.push({
+            a: String(assetId),
+            b: !isLong,
+            p:
+              takeProfitLimitPrice !== undefined
+                ? String(takeProfitLimitPrice)
+                : String(takeProfitPrice),
+            r: true,
+            s: sizeStr,
+            t: {
+              trigger: {
+                isMarket: takeProfitLimitPrice === undefined,
+                tpsl: "tp",
+                triggerPx: String(takeProfitPrice),
+              },
+            },
+          });
+        }
+
+        const response = await agentExchangeClient.order({
+          grouping: "positionTpsl",
+          orders: orders as any,
+          builder: {
+            b: BUILDER_CONFIG.BUILDER_FEE_ADDRESS,
+            f: BUILDER_CONFIG.BUILDER_FEE_RATE * 10,
+          },
+        });
+
+        if (response.status !== "ok") {
+          appToast.error({
+            message:
+              (response as { response?: { type?: string } })?.response?.type ||
+              "Failed to place TP/SL orders",
+          });
+          return;
+        }
+
+        appToast.success({ message: "TP/SL orders placed successfully" });
+        const ordersRows = await getUserOpenOrders({
+          publicKey: userAddress as `0x${string}`,
+        });
+        setOpenOrders(ordersRows);
+        handleClosePositionTpslModal();
+      } catch (error) {
+        console.error("Error placing TP/SL orders:", error);
+        appToast.error({ message: "Failed to place TP/SL orders" });
+        throw error;
+      }
+    },
+    [
+      agentPrivateKey,
+      agentWallet?.address,
+      checkApprovalStatus,
+      checkBuilderFeeStatus,
+      getUserOpenOrders,
+      handleClosePositionTpslModal,
+      positionTpslTarget,
+      resolveSzDecimals,
+      setOpenOrders,
+      userAddress,
+    ],
+  );
+
+  const handleCancelPositionTpsl = useCallback(
+    async (type: "tp" | "sl") => {
+      const pos = positionTpslTarget?.position;
+      if (!pos || !agentPrivateKey || !userAddress?.startsWith("0x")) {
+        appToast.error({ message: "Missing required information" });
+        return;
+      }
+
+      const orderToCancel =
+        type === "tp"
+          ? existingPositionTpsl.takeProfit
+          : existingPositionTpsl.stopLoss;
+
+      if (!orderToCancel?.orderId) {
+        appToast.error({ message: "No order found to cancel" });
+        return;
+      }
+
+      const success = await cancelOrdersWithAgent({
+        agentPrivateKey: agentPrivateKey as `0x${string}`,
+        orders: [{ orderId: orderToCancel.orderId, a: pos.coin }],
+      });
+
+      if (!success) {
+        appToast.error({ message: "Failed to cancel order" });
+        return;
+      }
+
+      appToast.success({
+        message: `${type === "tp" ? "Take Profit" : "Stop Loss"} order canceled`,
+      });
+      const ordersRows = await getUserOpenOrders({
+        publicKey: userAddress as `0x${string}`,
+      });
+      setOpenOrders(ordersRows);
+    },
+    [
+      agentPrivateKey,
+      cancelOrdersWithAgent,
+      existingPositionTpsl.stopLoss,
+      existingPositionTpsl.takeProfit,
+      getUserOpenOrders,
+      positionTpslTarget,
+      setOpenOrders,
+      userAddress,
+    ],
+  );
+
   if (mode === "header") {
     return (
       <>
@@ -1110,6 +1387,7 @@ export const BottomPannel: React.FC<Props> = ({
           onClosePositionLimit={handleOpenLimitCloseModal}
           onClosePositionMarket={handleClosePositionMarket}
           onReversePositionMarket={handleReversePositionMarket}
+          onOpenPositionTpsl={handleOpenPositionTpslModal}
           onOpenOrdersCancelAll={handleCancelAllOpenOrders}
           isOpenOrdersCancelLoading={isCancellingOrdersWithAgentLoading}
           agentPrivateKey={agentPrivateKey}
@@ -1129,6 +1407,15 @@ export const BottomPannel: React.FC<Props> = ({
           position={limitClosePosition}
           markPrice={markPrice}
           onConfirm={handleClosePositionLimit}
+        />
+        <PositionTpslModal
+          isOpen={isPositionTpslModalOpen}
+          onClose={handleClosePositionTpslModal}
+          position={positionTpslTarget}
+          szDecimals={positionTpslSzDecimals}
+          existingTpsl={existingPositionTpsl}
+          onConfirm={handlePlacePositionTpsl}
+          onCancelTpsl={handleCancelPositionTpsl}
         />
       </>
     );
@@ -1166,6 +1453,7 @@ export const BottomPannel: React.FC<Props> = ({
           onClosePositionLimit={handleOpenLimitCloseModal}
           onClosePositionMarket={handleClosePositionMarket}
           onReversePositionMarket={handleReversePositionMarket}
+          onOpenPositionTpsl={handleOpenPositionTpslModal}
           onOpenOrdersCancelAll={handleCancelAllOpenOrders}
           isOpenOrdersCancelLoading={isCancellingOrdersWithAgentLoading}
           agentPrivateKey={agentPrivateKey}
@@ -1185,6 +1473,15 @@ export const BottomPannel: React.FC<Props> = ({
           position={limitClosePosition}
           markPrice={markPrice}
           onConfirm={handleClosePositionLimit}
+        />
+        <PositionTpslModal
+          isOpen={isPositionTpslModalOpen}
+          onClose={handleClosePositionTpslModal}
+          position={positionTpslTarget}
+          szDecimals={positionTpslSzDecimals}
+          existingTpsl={existingPositionTpsl}
+          onConfirm={handlePlacePositionTpsl}
+          onCancelTpsl={handleCancelPositionTpsl}
         />
       </>
     );
@@ -1221,6 +1518,7 @@ export const BottomPannel: React.FC<Props> = ({
         onClosePositionLimit={handleOpenLimitCloseModal}
         onClosePositionMarket={handleClosePositionMarket}
         onReversePositionMarket={handleReversePositionMarket}
+        onOpenPositionTpsl={handleOpenPositionTpslModal}
         onOpenOrdersCancelAll={handleCancelAllOpenOrders}
         isOpenOrdersCancelLoading={isCancellingOrdersWithAgentLoading}
         agentPrivateKey={agentPrivateKey}
@@ -1254,6 +1552,7 @@ export const BottomPannel: React.FC<Props> = ({
         onClosePositionLimit={handleOpenLimitCloseModal}
         onClosePositionMarket={handleClosePositionMarket}
         onReversePositionMarket={handleReversePositionMarket}
+        onOpenPositionTpsl={handleOpenPositionTpslModal}
         onOpenOrdersCancelAll={handleCancelAllOpenOrders}
         isOpenOrdersCancelLoading={isCancellingOrdersWithAgentLoading}
         agentPrivateKey={agentPrivateKey}
@@ -1273,6 +1572,15 @@ export const BottomPannel: React.FC<Props> = ({
         position={limitClosePosition}
         markPrice={markPrice}
         onConfirm={handleClosePositionLimit}
+      />
+      <PositionTpslModal
+        isOpen={isPositionTpslModalOpen}
+        onClose={handleClosePositionTpslModal}
+        position={positionTpslTarget}
+        szDecimals={positionTpslSzDecimals}
+        existingTpsl={existingPositionTpsl}
+        onConfirm={handlePlacePositionTpsl}
+        onCancelTpsl={handleCancelPositionTpsl}
       />
     </>
   );

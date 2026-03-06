@@ -1,13 +1,24 @@
 import { MarketAccountOverview } from "@/components/sections/markets/account-overview";
+import LimitCloseModal from "@/components/sections/markets/limit-close-modal";
 import TransferModal from "@/components/sections/markets/transfer-modal";
 import { appToast } from "@/components/ui/app-toast";
+import { useBuilderFee } from "@/hooks/useBuilderFees";
+import { useApiWallet } from "@/hooks/useWallet";
 import { infoClient } from "@/lib/clients/hyperliquid";
+import { addDecimals } from "@/lib/utils/decimals";
 import { useBottomPannelStore } from "@/store/bottom-pannel";
+import { useTradeOrderDrawerStore } from "@/store/trade-order-drawer";
 import type { Position } from "@/types/bottom-pannel";
 import type { ISubscription } from "@nktkas/hyperliquid";
 import { useAccount, useProvider } from "@reown/appkit-react-native";
 import { BrowserProvider } from "ethers";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type Props = {
   coin: string;
@@ -115,6 +126,12 @@ export const BottomPannel: React.FC<Props> = ({
   const transferUsdcBetweenAccounts = useBottomPannelStore(
     (state) => state.transferUsdcBetweenAccounts,
   );
+  const cancelOrdersWithAgent = useBottomPannelStore(
+    (state) => state.cancelOrdersWithAgent,
+  );
+  const isCancellingOrdersWithAgentLoading = useBottomPannelStore(
+    (state) => state.isCancellingOrdersWithAgentLoading,
+  );
 
   const activeAccountTab = useBottomPannelStore(
     (state) => state.activeAccountTab,
@@ -130,6 +147,24 @@ export const BottomPannel: React.FC<Props> = ({
   );
   const toggleExpandedAccountCard = useBottomPannelStore(
     (state) => state.toggleExpandedAccountCard,
+  );
+  const { checkApprovalStatus, agentPrivateKey, agentWallet } = useApiWallet({
+    userPublicKey: userAddress as `0x${string}`,
+  });
+  const { checkBuilderFeeStatus } = useBuilderFee({
+    userPublicKey: userAddress as `0x${string}`,
+  });
+  const maxSlippage = useTradeOrderDrawerStore((state) => state.maxSlippage);
+  const placeOrderWithAgent = useTradeOrderDrawerStore(
+    (state) => state.placeOrderWithAgent,
+  );
+  const resolveSzDecimals = useTradeOrderDrawerStore(
+    (state) => state.resolveSzDecimals,
+  );
+  const markPrice = useTradeOrderDrawerStore((state) => state.markPrice);
+  const [isLimitCloseModalOpen, setIsLimitCloseModalOpen] = useState(false);
+  const [limitClosePosition, setLimitClosePosition] = useState<Position | null>(
+    null,
   );
   const balancesSubscriptionRef = useRef<ISubscription | null>(null);
   const positionsSubscriptionRef = useRef<ISubscription | null>(null);
@@ -150,6 +185,7 @@ export const BottomPannel: React.FC<Props> = ({
     if (!userAddress.startsWith("0x")) return;
 
     const loadTabData = async () => {
+      /*
       switch (activeAccountTab) {
         case "balances": {
           const rows = await getAllBalances({
@@ -194,11 +230,46 @@ export const BottomPannel: React.FC<Props> = ({
           break;
         }
       }
+      */
+
+      const [
+        balancesRows,
+        positionsRows,
+        tradeHistoryRows,
+        fundingHistoryRows,
+        historicalOrdersRows,
+        openOrdersRows,
+      ] = await Promise.all([
+        getAllBalances({
+          publicKey: userAddress as `0x${string}`,
+        }),
+        getUserPositions({
+          publicKey: userAddress as `0x${string}`,
+        }),
+        getUserTradeHistory({
+          publicKey: userAddress as `0x${string}`,
+        }),
+        getUserFundings({
+          publicKey: userAddress as `0x${string}`,
+        }),
+        getHistoricalOrders({
+          publicKey: userAddress as `0x${string}`,
+        }),
+        getUserOpenOrders({
+          publicKey: userAddress as `0x${string}`,
+        }),
+      ]);
+
+      setBalances(balancesRows);
+      setUserPositions(positionsRows);
+      setTradeHistory(tradeHistoryRows);
+      setUserFundings(fundingHistoryRows);
+      setHistoricalOrders(historicalOrdersRows);
+      setOpenOrders(openOrdersRows);
     };
 
     loadTabData();
   }, [
-    activeAccountTab,
     enableDataSync,
     getAllBalances,
     getHistoricalOrders,
@@ -262,7 +333,7 @@ export const BottomPannel: React.FC<Props> = ({
     if (!enableDataSync) return;
     if (!userAddress) return;
     if (!userAddress.startsWith("0x")) return;
-    if (activeAccountTab !== "positions") return;
+    // if (activeAccountTab !== "positions") return;
 
     let isActive = true;
     positionsSubscriptionRef.current?.unsubscribe();
@@ -301,7 +372,7 @@ export const BottomPannel: React.FC<Props> = ({
     if (!enableDataSync) return;
     if (!userAddress) return;
     if (!userAddress.startsWith("0x")) return;
-    if (activeAccountTab !== "openOrders") return;
+    // if (activeAccountTab !== "openOrders") return;
 
     let isActive = true;
     openOrdersSubscriptionRef.current?.unsubscribe();
@@ -340,7 +411,7 @@ export const BottomPannel: React.FC<Props> = ({
     if (!enableDataSync) return;
     if (!userAddress) return;
     if (!userAddress.startsWith("0x")) return;
-    if (activeAccountTab !== "tradeHistory") return;
+    // if (activeAccountTab !== "tradeHistory") return;
 
     let isActive = true;
     tradeHistorySubscriptionRef.current?.unsubscribe();
@@ -379,7 +450,7 @@ export const BottomPannel: React.FC<Props> = ({
     if (!enableDataSync) return;
     if (!userAddress) return;
     if (!userAddress.startsWith("0x")) return;
-    if (activeAccountTab !== "fundingHistory") return;
+    // if (activeAccountTab !== "fundingHistory") return;
 
     let isActive = true;
     userFundingsSubscriptionRef.current?.unsubscribe();
@@ -418,7 +489,7 @@ export const BottomPannel: React.FC<Props> = ({
     if (!enableDataSync) return;
     if (!userAddress) return;
     if (!userAddress.startsWith("0x")) return;
-    if (activeAccountTab !== "orderHistory") return;
+    // if (activeAccountTab !== "orderHistory") return;
 
     let isActive = true;
     historicalOrdersSubscriptionRef.current?.unsubscribe();
@@ -548,6 +619,464 @@ export const BottomPannel: React.FC<Props> = ({
       userAddress,
     ],
   );
+  const handleOpenOrderCancel = useCallback(
+    async ({
+      oid,
+      coin,
+      agentPrivateKey,
+    }: {
+      oid: number;
+      coin: string;
+      agentPrivateKey: `0x${string}`;
+    }) => {
+      if (!agentPrivateKey) {
+        appToast.error({
+          message:
+            "Agent wallet is not ready yet. Please try again in a moment.",
+        });
+        return;
+      }
+      if (!userAddress?.startsWith("0x")) return;
+
+      const isApproved = await checkApprovalStatus({
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+
+      if (!isApproved) {
+        appToast.error({
+          message: "Please approve the agent wallet to cancel order",
+        });
+        return;
+      }
+
+      const success = await cancelOrdersWithAgent({
+        agentPrivateKey,
+        orders: [{ orderId: oid.toString(), a: coin }],
+      });
+
+      if (!success) {
+        appToast.error({
+          message: "Unable to cancel order. Please try again.",
+        });
+        return;
+      }
+
+      const rows = await getUserOpenOrders({
+        publicKey: userAddress as `0x${string}`,
+      });
+      setOpenOrders(rows);
+    },
+    [
+      cancelOrdersWithAgent,
+      checkApprovalStatus,
+      getUserOpenOrders,
+      setOpenOrders,
+      userAddress,
+    ],
+  );
+  const handleCancelAllOpenOrders = useCallback(async () => {
+    if (!agentPrivateKey) {
+      appToast.error({
+        message: "Agent wallet is not ready yet. Please try again in a moment.",
+      });
+      return;
+    }
+    if (!userAddress?.startsWith("0x")) return;
+
+    const ordersToCancel = filteredOpenOrders.reduce<
+      { orderId: string; a: string }[]
+    >((acc, order) => {
+      const orderData = (order ?? {}) as Record<string, unknown>;
+      const openOrderOid = Number(
+        orderData.oid ?? orderData.orderId ?? Number.NaN,
+      );
+      const openOrderCoin = String(orderData.coin ?? "");
+
+      if (
+        Number.isFinite(openOrderOid) &&
+        openOrderOid > 0 &&
+        openOrderCoin.length > 0
+      ) {
+        acc.push({ orderId: openOrderOid.toString(), a: openOrderCoin });
+      }
+      return acc;
+    }, []);
+
+    if (ordersToCancel.length === 0) {
+      appToast.info({ message: "No cancellable open orders found." });
+      return;
+    }
+
+    const isApproved = await checkApprovalStatus({
+      userPublicKeyParam: userAddress as `0x${string}`,
+    });
+
+    if (!isApproved) {
+      appToast.error({
+        message: "Please approve the agent wallet to cancel order",
+      });
+      return;
+    }
+
+    const success = await cancelOrdersWithAgent({
+      agentPrivateKey: agentPrivateKey as `0x${string}`,
+      orders: ordersToCancel,
+    });
+
+    if (!success) {
+      appToast.error({
+        message: "Unable to cancel all orders. Please try again.",
+      });
+      return;
+    }
+
+    const rows = await getUserOpenOrders({
+      publicKey: userAddress as `0x${string}`,
+    });
+    setOpenOrders(rows);
+  }, [
+    agentPrivateKey,
+    cancelOrdersWithAgent,
+    checkApprovalStatus,
+    filteredOpenOrders,
+    getUserOpenOrders,
+    setOpenOrders,
+    userAddress,
+  ]);
+  const handleClosePositionMarket = useCallback(
+    async (positionItem: Position) => {
+      const pos = positionItem?.position;
+      if (!pos) return;
+
+      if (!userAddress?.startsWith("0x")) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      if (!agentPrivateKey) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      const isApprovedBuilderFee = await checkBuilderFeeStatus({
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+
+      if (!isApprovedBuilderFee) {
+        appToast.error({
+          message: "Please approve the builder fee to place order",
+        });
+        return;
+      }
+
+      const isApproved = await checkApprovalStatus({
+        agentPublicKeyParam: agentWallet?.address as `0x${string}`,
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+
+      if (!isApproved) {
+        appToast.error({
+          message: "Please approve the agent wallet to place order",
+        });
+        return;
+      }
+
+      try {
+        const currentSize = Number.parseFloat(pos.szi);
+        if (!Number.isFinite(currentSize) || currentSize === 0) {
+          appToast.error({ message: "Position size is zero" });
+          return;
+        }
+
+        if (!markPrice || markPrice <= 0) {
+          appToast.error({
+            message:
+              "Unable to get mark price, Wait for a while and try again!",
+          });
+          return;
+        }
+
+        const normalizedMaxSlippage = Number.isFinite(maxSlippage)
+          ? maxSlippage
+          : 0;
+        const slippageAmount = markPrice * (normalizedMaxSlippage / 100);
+        const rawPrice =
+          currentSize < 0
+            ? markPrice + slippageAmount
+            : markPrice - slippageAmount;
+
+        const szDecimals = await resolveSzDecimals(pos.coin);
+        const marketPrice = addDecimals(rawPrice, szDecimals).toString();
+        const formattedSize = addDecimals(
+          Math.abs(currentSize),
+          szDecimals,
+        ).toString();
+
+        const success = await placeOrderWithAgent({
+          agentPrivateKey: agentPrivateKey as `0x${string}`,
+          a: pos.coin,
+          b: currentSize < 0,
+          s: formattedSize,
+          p: marketPrice,
+          r: true,
+        });
+
+        if (success) {
+          appToast.success({ message: "Position closed successfully" });
+          const rows = await getUserPositions({
+            publicKey: userAddress as `0x${string}`,
+          });
+          setUserPositions(rows);
+          setActiveAccountTab("positions");
+        }
+      } catch (error) {
+        console.error("Error closing position:", error);
+        appToast.error({ message: "Failed to close position" });
+      }
+    },
+    [
+      agentPrivateKey,
+      agentWallet?.address,
+      checkApprovalStatus,
+      checkBuilderFeeStatus,
+      getUserPositions,
+      markPrice,
+      maxSlippage,
+      placeOrderWithAgent,
+      resolveSzDecimals,
+      setActiveAccountTab,
+      setUserPositions,
+      userAddress,
+    ],
+  );
+  const handleOpenLimitCloseModal = useCallback((positionItem: Position) => {
+    setLimitClosePosition(positionItem);
+    setIsLimitCloseModalOpen(true);
+  }, []);
+
+  const handleCloseLimitCloseModal = useCallback(() => {
+    setIsLimitCloseModalOpen(false);
+    setLimitClosePosition(null);
+  }, []);
+
+  const handleClosePositionLimit = useCallback(
+    async (price: string, percentage: number) => {
+      const pos = limitClosePosition?.position;
+      if (!pos) {
+        appToast.error({ message: "Unable to resolve position" });
+        return;
+      }
+
+      if (!userAddress?.startsWith("0x")) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      if (!agentPrivateKey) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      const isApprovedBuilderFee = await checkBuilderFeeStatus({
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+      if (!isApprovedBuilderFee) {
+        appToast.error({
+          message: "Please approve the builder fee to place order",
+        });
+        return;
+      }
+
+      const isApproved = await checkApprovalStatus({
+        agentPublicKeyParam: agentWallet?.address as `0x${string}`,
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+      if (!isApproved) {
+        appToast.error({
+          message: "Please approve the agent wallet to place order",
+        });
+        return;
+      }
+
+      try {
+        const currentSize = Number.parseFloat(pos.szi);
+        if (!Number.isFinite(currentSize) || currentSize === 0) {
+          appToast.error({ message: "Position size is zero" });
+          return;
+        }
+
+        const parsedPrice = Number.parseFloat(price);
+        if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+          appToast.error({ message: "Please enter a valid price" });
+          return;
+        }
+
+        const normalizedPercentage = Number.isFinite(percentage)
+          ? Math.min(Math.max(percentage, 0), 100)
+          : 0;
+        const closeSize = (Math.abs(currentSize) * normalizedPercentage) / 100;
+        if (!Number.isFinite(closeSize) || closeSize <= 0) {
+          appToast.error({ message: "Close size must be greater than 0" });
+          return;
+        }
+
+        const szDecimals = await resolveSzDecimals(pos.coin);
+        const formattedPrice = addDecimals(parsedPrice, szDecimals).toString();
+        const formattedSize = addDecimals(closeSize, szDecimals).toString();
+
+        const success = await placeOrderWithAgent({
+          agentPrivateKey: agentPrivateKey as `0x${string}`,
+          a: pos.coin,
+          b: currentSize < 0,
+          s: formattedSize,
+          p: formattedPrice,
+          r: true,
+          tif: "Gtc",
+        });
+
+        if (success) {
+          appToast.success({
+            message: "Limit close order placed successfully",
+          });
+          setIsLimitCloseModalOpen(false);
+          setLimitClosePosition(null);
+          const rows = await getUserPositions({
+            publicKey: userAddress as `0x${string}`,
+          });
+          setUserPositions(rows);
+          setActiveAccountTab("positions");
+        }
+      } catch (error) {
+        console.error("Error placing limit close order:", error);
+        appToast.error({ message: "Failed to place limit close order" });
+        throw error;
+      }
+    },
+    [
+      agentPrivateKey,
+      agentWallet?.address,
+      checkApprovalStatus,
+      checkBuilderFeeStatus,
+      getUserPositions,
+      limitClosePosition,
+      placeOrderWithAgent,
+      resolveSzDecimals,
+      setActiveAccountTab,
+      setUserPositions,
+      userAddress,
+    ],
+  );
+  const handleReversePositionMarket = useCallback(
+    async (positionItem: Position) => {
+      const pos = positionItem?.position;
+      if (!pos) return;
+
+      if (!userAddress?.startsWith("0x")) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      if (!agentPrivateKey) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      const isApprovedBuilderFee = await checkBuilderFeeStatus({
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+
+      if (!isApprovedBuilderFee) {
+        appToast.error({
+          message: "Please approve the builder fee to place order",
+        });
+        return;
+      }
+
+      const isApproved = await checkApprovalStatus({
+        agentPublicKeyParam: agentWallet?.address as `0x${string}`,
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+
+      if (!isApproved) {
+        appToast.error({
+          message: "Please approve the agent wallet to place order",
+        });
+        return;
+      }
+
+      try {
+        const currentSize = Number.parseFloat(pos.szi);
+        if (!Number.isFinite(currentSize) || currentSize === 0) {
+          appToast.error({ message: "Position size is zero" });
+          return;
+        }
+
+        if (!markPrice || markPrice <= 0) {
+          appToast.error({
+            message:
+              "Unable to get mark price, Wait for a while and try again!",
+          });
+          return;
+        }
+
+        const reverseSide = currentSize < 0;
+        const reverseSize = Math.abs(currentSize) * 2;
+        const normalizedMaxSlippage = Number.isFinite(maxSlippage)
+          ? maxSlippage
+          : 0;
+        const slippageAmount = markPrice * (normalizedMaxSlippage / 100);
+        const rawPrice = reverseSide
+          ? markPrice + slippageAmount
+          : markPrice - slippageAmount;
+        if (!Number.isFinite(rawPrice) || rawPrice <= 0) {
+          appToast.error({ message: "Invalid market price for reverse order" });
+          return;
+        }
+
+        const szDecimals = await resolveSzDecimals(pos.coin);
+        const reversePrice = addDecimals(rawPrice, szDecimals).toString();
+        const formattedSize = addDecimals(reverseSize, szDecimals).toString();
+
+        const success = await placeOrderWithAgent({
+          agentPrivateKey: agentPrivateKey as `0x${string}`,
+          a: pos.coin,
+          b: reverseSide,
+          s: formattedSize,
+          p: reversePrice,
+          r: false,
+          tif: "FrontendMarket",
+        });
+
+        if (success) {
+          appToast.success({
+            message: "Reverse position order placed successfully",
+          });
+          const rows = await getUserPositions({
+            publicKey: userAddress as `0x${string}`,
+          });
+          setUserPositions(rows);
+          setActiveAccountTab("positions");
+        }
+      } catch (error) {
+        console.error("Error reversing position:", error);
+        appToast.error({ message: "Failed to reverse position" });
+      }
+    },
+    [
+      agentPrivateKey,
+      agentWallet?.address,
+      checkApprovalStatus,
+      checkBuilderFeeStatus,
+      getUserPositions,
+      markPrice,
+      maxSlippage,
+      placeOrderWithAgent,
+      resolveSzDecimals,
+      setActiveAccountTab,
+      setUserPositions,
+      userAddress,
+    ],
+  );
 
   if (mode === "header") {
     return (
@@ -577,6 +1106,13 @@ export const BottomPannel: React.FC<Props> = ({
           onTabChange={setActiveAccountTab}
           onToggleCard={handleToggleAccountCard}
           onBalanceTransfer={handleBalanceTransfer}
+          onOpenOrderCancel={handleOpenOrderCancel}
+          onClosePositionLimit={handleOpenLimitCloseModal}
+          onClosePositionMarket={handleClosePositionMarket}
+          onReversePositionMarket={handleReversePositionMarket}
+          onOpenOrdersCancelAll={handleCancelAllOpenOrders}
+          isOpenOrdersCancelLoading={isCancellingOrdersWithAgentLoading}
+          agentPrivateKey={agentPrivateKey}
         />
         <TransferModal
           isOpen={isTransferModalOpen}
@@ -586,6 +1122,13 @@ export const BottomPannel: React.FC<Props> = ({
           spotAvailable={spotAvailable}
           isSubmitting={isTransferLoading}
           onConfirm={handleTransferConfirm}
+        />
+        <LimitCloseModal
+          isOpen={isLimitCloseModalOpen}
+          onClose={handleCloseLimitCloseModal}
+          position={limitClosePosition}
+          markPrice={markPrice}
+          onConfirm={handleClosePositionLimit}
         />
       </>
     );
@@ -619,6 +1162,13 @@ export const BottomPannel: React.FC<Props> = ({
           onTabChange={setActiveAccountTab}
           onToggleCard={handleToggleAccountCard}
           onBalanceTransfer={handleBalanceTransfer}
+          onOpenOrderCancel={handleOpenOrderCancel}
+          onClosePositionLimit={handleOpenLimitCloseModal}
+          onClosePositionMarket={handleClosePositionMarket}
+          onReversePositionMarket={handleReversePositionMarket}
+          onOpenOrdersCancelAll={handleCancelAllOpenOrders}
+          isOpenOrdersCancelLoading={isCancellingOrdersWithAgentLoading}
+          agentPrivateKey={agentPrivateKey}
         />
         <TransferModal
           isOpen={isTransferModalOpen}
@@ -628,6 +1178,13 @@ export const BottomPannel: React.FC<Props> = ({
           spotAvailable={spotAvailable}
           isSubmitting={isTransferLoading}
           onConfirm={handleTransferConfirm}
+        />
+        <LimitCloseModal
+          isOpen={isLimitCloseModalOpen}
+          onClose={handleCloseLimitCloseModal}
+          position={limitClosePosition}
+          markPrice={markPrice}
+          onConfirm={handleClosePositionLimit}
         />
       </>
     );
@@ -660,6 +1217,13 @@ export const BottomPannel: React.FC<Props> = ({
         onTabChange={setActiveAccountTab}
         onToggleCard={handleToggleAccountCard}
         onBalanceTransfer={handleBalanceTransfer}
+        onOpenOrderCancel={handleOpenOrderCancel}
+        onClosePositionLimit={handleOpenLimitCloseModal}
+        onClosePositionMarket={handleClosePositionMarket}
+        onReversePositionMarket={handleReversePositionMarket}
+        onOpenOrdersCancelAll={handleCancelAllOpenOrders}
+        isOpenOrdersCancelLoading={isCancellingOrdersWithAgentLoading}
+        agentPrivateKey={agentPrivateKey}
       />
       <MarketAccountOverview
         mode="content"
@@ -686,6 +1250,13 @@ export const BottomPannel: React.FC<Props> = ({
         onTabChange={setActiveAccountTab}
         onToggleCard={handleToggleAccountCard}
         onBalanceTransfer={handleBalanceTransfer}
+        onOpenOrderCancel={handleOpenOrderCancel}
+        onClosePositionLimit={handleOpenLimitCloseModal}
+        onClosePositionMarket={handleClosePositionMarket}
+        onReversePositionMarket={handleReversePositionMarket}
+        onOpenOrdersCancelAll={handleCancelAllOpenOrders}
+        isOpenOrdersCancelLoading={isCancellingOrdersWithAgentLoading}
+        agentPrivateKey={agentPrivateKey}
       />
       <TransferModal
         isOpen={isTransferModalOpen}
@@ -695,6 +1266,13 @@ export const BottomPannel: React.FC<Props> = ({
         spotAvailable={spotAvailable}
         isSubmitting={isTransferLoading}
         onConfirm={handleTransferConfirm}
+      />
+      <LimitCloseModal
+        isOpen={isLimitCloseModalOpen}
+        onClose={handleCloseLimitCloseModal}
+        position={limitClosePosition}
+        markPrice={markPrice}
+        onConfirm={handleClosePositionLimit}
       />
     </>
   );

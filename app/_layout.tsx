@@ -3,6 +3,7 @@ import "@walletconnect/react-native-compat";
 import "react-native-get-random-values";
 
 import { TradeOrderDrawer } from "@/components/sections/markets/trade-order-drawer";
+import { AnimatedSplashScreen } from "@/components/ui/animated-splash-screen";
 import { AppToast } from "@/components/ui/app-toast";
 import { walletKit } from "@/lib/clients/wallet";
 import { useMarketStore } from "@/store/markets";
@@ -75,6 +76,7 @@ export default function RootLayout() {
             side={tradeDrawerSide}
           />
         ) : null}
+        <AnimatedSplashScreen />
         <View style={{ position: "absolute", height: "100%", width: "100%" }}>
           <AppKit />
         </View>

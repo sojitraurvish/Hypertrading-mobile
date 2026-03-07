@@ -11,7 +11,7 @@ const IS_PRODUCTION = process.env.APP_VARIANT === "production";
 
 const ENV_CONFIG = {
   development: {
-    name: "Hypertrading (Dev)",
+    name: "HyperPerp (Dev)",
     bundleIdentifier: "com.chainlytics.hypertrading.dev",
     packageName: "com.chainlytics.hypertrading.dev",
     icon: "./assets/images/ios-icon.png",
@@ -19,7 +19,7 @@ const ENV_CONFIG = {
     scheme: "app-scheme-dev",
   },
   preview: {
-    name: "Hypertrading (Preview)",
+    name: "HyperPerp (Preview)",
     bundleIdentifier: "com.chainalysis.hypertrading.preview",
     packageName: "com.chainlytics.hypertrading.preview",
     icon: "./assets/images/ios-icon.png",
@@ -27,7 +27,7 @@ const ENV_CONFIG = {
     scheme: "app-scheme-preview",
   },
   production: {
-    name: "Hypertrading",
+    name: "HyperPerp",
     bundleIdentifier: "com.chainalysis.hypertrading",
     packageName: "com.chainlytics.hypertrading",
     icon: "./assets/images/ios-icon.png",
@@ -53,19 +53,32 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 
   console.log("APP_ENV", APP_ENV);
 
+  const SPLASH_IMAGE = "./assets/images/splash-icon.png";
+  const SPLASH_BACKGROUND = "#070B14";
+
   return {
     ...config,
     name: APP_NAME,
     slug: PROJECT_SLUG,
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    icon: ICON,
+    splash: {
+      image: SPLASH_IMAGE,
+      resizeMode: "contain",
+      backgroundColor: SPLASH_BACKGROUND,
+    },
     scheme: SCHEME,
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
       bundleIdentifier: BUNDLE_IDENTIFIER,
+      splash: {
+        image: SPLASH_IMAGE,
+        resizeMode: "contain",
+        backgroundColor: SPLASH_BACKGROUND,
+      },
       infoPlist: {
         LSApplicationQueriesSchemes: [
           "metamask",
@@ -78,10 +91,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       package: PACKAGE_NAME,
+      splash: {
+        image: SPLASH_IMAGE,
+        resizeMode: "contain",
+        backgroundColor: SPLASH_BACKGROUND,
+      },
       adaptiveIcon: {
-        backgroundColor: "#E6F4FE",
+        backgroundColor: SPLASH_BACKGROUND,
         foregroundImage: ADAPTIVE_ICON,
-        backgroundImage: ADAPTIVE_ICON,
         monochromeImage: ADAPTIVE_ICON,
       },
       edgeToEdgeEnabled: true,
@@ -105,12 +122,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         "expo-splash-screen",
         {
-          image: "./assets/images/splash-icon.png",
-          imageWidth: 200,
+          image: SPLASH_IMAGE,
+          imageWidth: 220,
           resizeMode: "contain",
-          backgroundColor: "#ffffff",
+          backgroundColor: SPLASH_BACKGROUND,
           dark: {
-            backgroundColor: "#000000",
+            backgroundColor: SPLASH_BACKGROUND,
           },
         },
       ],

@@ -778,7 +778,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
       const p =
         orderType === "limit"
           ? limitOrderPrice
-          : marketPriceWithSlippage.toString();
+          : Math.trunc(marketPriceWithSlippage).toString();
 
       // // Validate limit order price is provided
       // if (orderType === "limit" && price) {

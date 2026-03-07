@@ -889,7 +889,7 @@ export const BottomPannel: React.FC<Props> = ({
             : marketMarkPrice - slippageAmount;
 
         const szDecimals = await resolveSzDecimals(pos.coin);
-        const marketPrice = addDecimals(rawPrice, szDecimals).toString();
+        const marketPrice = Math.trunc(addDecimals(rawPrice, szDecimals)).toString();
         const formattedSize = addDecimals(
           Math.abs(currentSize),
           szDecimals,
@@ -1001,7 +1001,7 @@ export const BottomPannel: React.FC<Props> = ({
         }
 
         const szDecimals = await resolveSzDecimals(pos.coin);
-        const reversePrice = addDecimals(rawPrice, szDecimals).toString();
+        const reversePrice = Math.trunc(addDecimals(rawPrice, szDecimals)).toString();
         const formattedSize = addDecimals(reverseSize, szDecimals).toString();
 
         const success = await placeOrderWithAgent({

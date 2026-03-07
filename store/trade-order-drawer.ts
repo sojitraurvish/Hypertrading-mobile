@@ -137,6 +137,7 @@ const placeOrderWithAgent = async ({
       : {}),
   };
 
+  console.log("payload urvish", payload);
   const rawResponse = await agentExchangeClient.order(payload);
   return normalizeOrderPayload(rawResponse);
 };

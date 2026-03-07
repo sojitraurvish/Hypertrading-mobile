@@ -282,14 +282,14 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
   }, [asks.length, bids.length]);
 
   return (
-    <View className="mx-1 mt-3 rounded-xl border border-border-primary-dark/60 bg-[#050505] overflow-hidden">
+    <View className="mx-1 mt-3 rounded-xl border border-[#1E2A40] bg-[#060D1A] overflow-hidden">
       <View className="px-1.5 pt-2 pb-1">
-        <View className="flex-row rounded-lg bg-[#0a0a0a] p-1">
+        <View className="flex-row rounded-lg bg-[#0D1628] p-1">
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
             className={
               activeTab === "orderbook"
-                ? "flex-1 py-1 rounded-md bg-[#151515]"
+                ? "flex-1 py-1 rounded-md bg-[#121F34]"
                 : "flex-1 py-1 rounded-md"
             }
             onPress={() => setActiveTab("orderbook")}
@@ -309,7 +309,7 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
             variant={VARIANT_TYPES.NOT_SELECTED}
             className={
               activeTab === "trades"
-                ? "flex-1 py-1 rounded-md bg-[#151515]"
+                ? "flex-1 py-1 rounded-md bg-[#121F34]"
                 : "flex-1 py-1 rounded-md"
             }
             onPress={() => setActiveTab("trades")}
@@ -339,7 +339,7 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
         />
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="px-2 py-1 rounded-md bg-[#0f0f0f] border border-border-primary-dark/60 flex-row items-center"
+          className="px-2 py-1 rounded-md bg-[#0E1628] border border-[#22314B] flex-row items-center"
           onPress={() =>
             setDisplayCurrency((prev) => (prev === "USDC" ? currency : "USDC"))
           }

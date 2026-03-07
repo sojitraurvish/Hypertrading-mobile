@@ -172,7 +172,7 @@ export const MarketDetailContainer: React.FC<Props> = ({
 
   return (
     <View className="flex-1 bg-bg-primary-dark">
-      <View className="mx-2 rounded-xl border border-border-primary-dark/70 bg-bg-secondary-dark overflow-hidden z-20">
+      <View className="mx-2 rounded-xl border border-[#1E2A40] bg-[#08101F] overflow-hidden z-20">
         <View
           className={cn(
             "px-3 py-2 flex-row items-center justify-between",
@@ -214,7 +214,7 @@ export const MarketDetailContainer: React.FC<Props> = ({
             </AppText>
             <AppText
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="text-[10px] text-[#52f2a8] font-semibold ml-1.5 px-1.5 py-[2px] rounded bg-[#063b2e] uppercase"
+              className="text-[10px] text-[#C8FB38] font-semibold ml-1.5 px-1.5 py-[2px] rounded bg-[#1A2A13] uppercase"
             >
               {leverageText}
             </AppText>
@@ -247,8 +247,8 @@ export const MarketDetailContainer: React.FC<Props> = ({
                 className={cn(
                   "mt-1 px-1.5 py-[1px] rounded",
                   (market?.change24hPer ?? 0) >= 0
-                    ? "bg-[#073b2a]"
-                    : "bg-[#3a1318]",
+                    ? "bg-[#1A2A13]"
+                    : "bg-[#3B161D]",
                 )}
               >
                 <AppText
@@ -256,7 +256,7 @@ export const MarketDetailContainer: React.FC<Props> = ({
                   className={cn(
                     "text-[10px] font-semibold",
                     (market?.change24hPer ?? 0) >= 0
-                      ? "text-[#52f2a8]"
+                      ? "text-[#C8FB38]"
                       : "text-[#fb7185]",
                   )}
                 >
@@ -396,11 +396,11 @@ export const MarketDetailContainer: React.FC<Props> = ({
         <BottomPannel coin={coin} mode="content" />
       </ScrollView>
 
-      <View className="px-3 py-2 border-t border-border-primary-dark/60 bg-bg-secondary-dark">
-        <View className="rounded-2xl border border-border-primary-dark/35 bg-bg-primary-dark/80 p-1.5 flex-row items-center overflow-hidden">
+      <View className="px-3 py-2 border-t border-[#1E2A40] bg-[#08101F]">
+        <View className="rounded-2xl border border-[#22314B] bg-[#060D1A] p-1.5 flex-row items-center overflow-hidden">
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="flex-1 h-[42px] rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 flex-row items-center justify-center gap-1"
+            className="flex-1 h-[42px] rounded-xl bg-[#A8F334] border border-[#D1FF6D] flex-row items-center justify-center gap-1"
             onPress={() => openTradeDrawer("long")}
           >
             <Feather name="trending-up" size={13} color="#05290f" />
@@ -414,7 +414,7 @@ export const MarketDetailContainer: React.FC<Props> = ({
           <View className="w-px h-6 bg-border-primary-dark/50 mx-1.5" />
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="flex-1 h-[42px] rounded-xl bg-red-500 border border-[#ff8a8a]/40 flex-row items-center justify-center gap-1"
+            className="flex-1 h-[42px] rounded-xl bg-[#E64F65] border border-[#FF9BA8]/55 flex-row items-center justify-center gap-1"
             onPress={() => openTradeDrawer("short")}
           >
             <Feather name="trending-down" size={13} color="#ffffff" />

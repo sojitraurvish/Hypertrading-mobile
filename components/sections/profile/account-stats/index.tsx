@@ -58,12 +58,12 @@ export const AccountStats: React.FC<Props> = ({
         <AppCard
           key={index}
           variant={VARIANT_TYPES.SENARY}
-          className="bg-bg-quaternary-dark rounded-2xl p-4"
+          className="bg-bg-tertiary-dark rounded-3xl p-4 border border-border-primary-dark/18"
         >
-          <View className="w-10 h-10 items-center justify-center bg-bg-septenary-dark rounded-xl mb-3">
-            <Feather name={stat.iconName} size={18} color="#50fa7b" />
+          <View className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-2xl mb-3">
+            <Feather name={stat.iconName} size={18} color="#4ade80" />
           </View>
-          <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[9px] mb-1">
+          <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[9px] tracking-[2.5px] mb-1">
             {stat.label}
           </AppText>
           <AppText

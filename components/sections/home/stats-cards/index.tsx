@@ -8,7 +8,7 @@ import { AppCard } from "@/components/ui/app-card";
 
 const VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
-  [VARIANT_TYPES.PRIMARY]: "flex-row gap-3 mx-4 mt-3",
+  [VARIANT_TYPES.PRIMARY]: "flex-row gap-3.5 mx-4 mt-4",
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;
@@ -53,17 +53,17 @@ export const StatsCards: React.FC<Props> = ({
         <AppCard
           key={index}
           variant={VARIANT_TYPES.SENARY}
-          className="bg-bg-quaternary-dark rounded-2xl p-4"
+          className="bg-bg-tertiary-dark rounded-3xl p-4 border border-border-primary-dark/18"
         >
           {/* Icon */}
-          <View className="w-11 h-11 items-center justify-center bg-bg-septenary-dark rounded-xl mb-4">
-            <Feather name={stat.iconName} size={20} color="#50fa7b" />
+          <View className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-2xl mb-4">
+            <Feather name={stat.iconName} size={20} color="#4ade80" />
           </View>
 
           {/* Label */}
           <AppText
             variant={VARIANT_TYPES.TERTIARY}
-            className="text-[10px] mb-2"
+            className="text-[10px] tracking-[2.5px] mb-2"
           >
             {stat.label}
           </AppText>
@@ -72,7 +72,7 @@ export const StatsCards: React.FC<Props> = ({
           <AppText
             variant={VARIANT_TYPES.OCTONARY}
             className={cn(
-              "text-xl",
+              "text-[20px] leading-[26px]",
               stat.valueColor || "text-text-primary-dark"
             )}
           >

@@ -81,12 +81,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       contentClassName="gap-5"
     >
       <View className="gap-5">
-        <View className="gap-3 rounded-2xl border border-border-primary-dark/70 bg-bg-quaternary-dark/80 px-4 py-3.5">
+        <View className="gap-3 rounded-2xl border border-border-primary-dark/20 bg-bg-quaternary-dark/80 px-4 py-3.5">
           <AppText className="text-[10px] uppercase tracking-[1px] text-text-octonary-dark text-center font-semibold">
             Move USDC Between Accounts
           </AppText>
           <View className="flex-row items-center justify-center gap-2">
-            <View className="items-center min-w-[94px] rounded-xl border border-border-primary-dark/60 bg-bg-secondary-dark/75 px-3 py-2.5">
+            <View className="items-center min-w-[94px] rounded-xl border border-border-primary-dark/20 bg-bg-secondary-dark/75 px-3 py-2.5">
               <AppText className="text-[9px] uppercase tracking-[0.9px] text-text-octonary-dark font-semibold">
                 From
               </AppText>
@@ -103,12 +103,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
               onPress={() =>
                 setDirection((prev) => (prev === "toPerp" ? "toSpot" : "toPerp"))
               }
-              className="h-11 w-11 rounded-xl border border-[#78f39a]/50 bg-[#164b3a] items-center justify-center"
+              className="h-11 w-11 rounded-xl border border-[#4ade80]/30 bg-[#164b3a] items-center justify-center"
             >
               <AppText className="text-[15px] text-[#86efac]">⇅</AppText>
             </AppButton>
 
-            <View className="items-center min-w-[94px] rounded-xl border border-[#78f39a]/40 bg-[#113327] px-3 py-2.5">
+            <View className="items-center min-w-[94px] rounded-xl border border-[#4ade80]/30 bg-[#113327] px-3 py-2.5">
               <AppText className="text-[9px] uppercase tracking-[0.9px] text-text-octonary-dark font-semibold">
                 To
               </AppText>
@@ -142,13 +142,13 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             </AppButton>
           </View>
 
-          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/70 bg-bg-quaternary-dark/80 flex-row items-center">
+          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/20 bg-bg-quaternary-dark/80 flex-row items-center">
             <TextInput
               value={amount}
               onChangeText={handleAmountChange}
               keyboardType="decimal-pad"
               placeholder="0.00"
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#4b5563"
               className="flex-1 text-text-primary-dark font-mono"
               editable={!isSubmitting}
             />
@@ -165,8 +165,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           isLoading={isSubmitting}
           className={
             !isValidAmount || isSubmitting
-              ? "h-11 flex-row gap-2 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/60 items-center justify-center"
-              : "h-11 flex-row gap-2 rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 items-center justify-center"
+              ? "h-11 flex-row gap-2 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/20 items-center justify-center"
+              : "h-11 flex-row gap-2 rounded-xl bg-bg-senary-dark border border-[#4ade80]/30 items-center justify-center"
           }
         >
           <AppText

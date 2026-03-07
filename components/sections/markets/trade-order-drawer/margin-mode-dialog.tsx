@@ -54,8 +54,8 @@ const MarginModeDialog: React.FC<MarginModeDialogProps> = ({
           className={cn(
             "w-full rounded-xl border p-3.5",
             tempMode === "cross"
-              ? "bg-[#0f251b] border-[#2d815f]"
-              : "bg-bg-secondary-dark/50 border-border-primary-dark/60",
+              ? "bg-[#0f251b] border-accent-green/30"
+              : "bg-bg-secondary-dark/50 border-border-primary-dark/20",
           )}
         >
           <View className="flex-row items-start gap-2.5">
@@ -63,12 +63,12 @@ const MarginModeDialog: React.FC<MarginModeDialogProps> = ({
               className={cn(
                 "mt-0.5 h-4 w-4 rounded-full border-2 items-center justify-center",
                 tempMode === "cross"
-                  ? "border-[#52f2a8] bg-[#52f2a8]"
+                  ? "border-accent-green bg-accent-green"
                   : "border-border-primary-dark",
               )}
             >
               {tempMode === "cross" ? (
-                <Feather name="check" size={10} color="#052e16" />
+                <Feather name="check" size={10} color="#000000" />
               ) : null}
             </View>
             <View className="flex-1">
@@ -100,8 +100,8 @@ const MarginModeDialog: React.FC<MarginModeDialogProps> = ({
           className={cn(
             "w-full rounded-xl border p-3.5 ",
             tempMode === "isolated"
-              ? "bg-[#0f251b] border-[#2d815f]"
-              : "bg-bg-secondary-dark/50 border-border-primary-dark/60",
+              ? "bg-[#0f251b] border-accent-green/30"
+              : "bg-bg-secondary-dark/50 border-border-primary-dark/20",
           )}
         >
           <View className="flex-row items-start gap-2.5">
@@ -109,12 +109,12 @@ const MarginModeDialog: React.FC<MarginModeDialogProps> = ({
               className={cn(
                 "mt-0.5 h-4 w-4 rounded-full border-2 items-center justify-center",
                 tempMode === "isolated"
-                  ? "border-[#52f2a8] bg-[#52f2a8]"
+                  ? "border-accent-green bg-accent-green"
                   : "border-border-primary-dark",
               )}
             >
               {tempMode === "isolated" ? (
-                <Feather name="check" size={10} color="#052e16" />
+                <Feather name="check" size={10} color="#000000" />
               ) : null}
             </View>
             <View className="flex-1">
@@ -146,7 +146,7 @@ const MarginModeDialog: React.FC<MarginModeDialogProps> = ({
         onPress={handleConfirm}
         isLoading={isSubmitting}
         isDisabled={isSubmitting}
-        className="mt-4 h-11 rounded-xl bg-[#2fb67c] flex-row items-center justify-center"
+        className="mt-4 h-11 rounded-xl bg-accent-green flex-row items-center justify-center"
       >
         <AppText
           variant={VARIANT_TYPES.NOT_SELECTED}

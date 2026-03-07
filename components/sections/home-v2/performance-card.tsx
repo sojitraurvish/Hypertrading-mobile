@@ -28,13 +28,13 @@ export function PerformanceCard({
   return (
     <AppCard
       variant={VARIANT_TYPES.NOT_SELECTED}
-      className="mx-4 mb-6 rounded-[28px] border border-border-primary-dark bg-bg-tertiary-dark px-4 py-4"
+      className="mx-4 mb-6 rounded-[30px] border border-border-primary-dark/20 bg-bg-tertiary-dark px-5 py-5"
     >
       <View className="mb-1 flex-row items-start justify-between">
         <View className="flex-1 pr-2">
           <AppText
             variant={VARIANT_TYPES.NONARY}
-            className="text-[10px] tracking-[2.5px] text-text-tertiary-dark"
+            className="text-[10px] tracking-[2.8px] text-text-tertiary-dark"
           >
             PORTFOLIO PERFORMANCE
           </AppText>

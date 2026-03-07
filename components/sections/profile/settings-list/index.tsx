@@ -86,7 +86,7 @@ export const SettingsList: React.FC<Props> = ({
   return (
     <View className={cn(baseClassName, className)}>
       {/* Section Header */}
-      <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[11px] mb-4">
+      <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[10px] tracking-[2.5px] mb-4">
         SETTINGS
       </AppText>
 
@@ -97,16 +97,16 @@ export const SettingsList: React.FC<Props> = ({
             variant={VARIANT_TYPES.NOT_SELECTED}
             className={cn(
               "flex-row items-center px-4 py-4",
-              index < items.length - 1 && "border-b border-border-primary-dark"
+              index < items.length - 1 && "border-b border-border-primary-dark/15"
             )}
             onPress={() => onItemPress?.(item)}
           >
             {/* Icon */}
-            <View className="w-9 h-9 rounded-xl items-center justify-center bg-bg-septenary-dark mr-3">
+            <View className="w-9 h-9 rounded-xl items-center justify-center bg-bg-quaternary-dark mr-3">
               <Feather
                 name={item.iconName}
                 size={16}
-                color={item.iconColor || "#9ca3af"}
+                color={item.iconColor || "#6b7280"}
               />
             </View>
 

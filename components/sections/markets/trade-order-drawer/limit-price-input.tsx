@@ -84,23 +84,23 @@ const LimitPriceInput: React.FC<Props> = ({ isVisible }) => {
       >
         Price (USDC)
       </AppText>
-      <View className="h-14 rounded-2xl border border-border-primary-dark/70 bg-bg-secondary-dark/95 px-3 flex-row items-center justify-between">
+      <View className="h-14 rounded-2xl border border-border-primary-dark/20 bg-bg-secondary-dark/95 px-3 flex-row items-center justify-between">
         <TextInput
           value={limitOrderPrice}
           onChangeText={handleLimitOrderPriceInput}
           keyboardType="decimal-pad"
           placeholder="0.00"
-          placeholderTextColor="#64748b"
+          placeholderTextColor="#4b5563"
           className="flex-1 text-[22px] leading-[26px] font-semibold text-text-primary-dark pt-0 pb-0"
         />
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="h-7 min-w-[44px] px-2 rounded-lg border border-[#78f39a]/30 bg-[#1b3f33] items-center justify-center"
+          className="h-7 min-w-[44px] px-2 rounded-lg border border-accent-green/30 bg-[#1b3f33] items-center justify-center"
           onPress={handleMidPriceClick}
         >
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-[11px] font-semibold text-[#86efac]"
+            className="text-[11px] font-semibold text-accent-green"
           >
             Mid
           </AppText>

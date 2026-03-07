@@ -9,7 +9,7 @@ import { AppCard } from "@/components/ui/app-card";
 
 const VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
-  [VARIANT_TYPES.PRIMARY]: "mx-4 mt-6 mb-6",
+  [VARIANT_TYPES.PRIMARY]: "mx-4 mt-5 mb-6",
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;
@@ -68,7 +68,7 @@ export const LiveIntelligence: React.FC<Props> = ({
       <View className="flex-row items-center justify-between mb-4">
         <AppText
           variant={VARIANT_TYPES.TERTIARY}
-          className="text-[11px]"
+          className="text-[10px] tracking-[2.5px]"
         >
           LIVE INTELLIGENCE
         </AppText>
@@ -76,7 +76,7 @@ export const LiveIntelligence: React.FC<Props> = ({
           variant={VARIANT_TYPES.NOT_SELECTED}
           onPress={onSeeMore}
         >
-          <Ionicons name="arrow-forward" size={16} color="#6b7280" />
+          <Ionicons name="arrow-forward" size={16} color="#4b5563" />
         </AppButton>
       </View>
 
@@ -90,19 +90,19 @@ export const LiveIntelligence: React.FC<Props> = ({
           >
             <AppCard
               variant={VARIANT_TYPES.QUINARY}
-              className="flex-row items-center py-4 px-4"
+              className="flex-row items-center py-3.5 px-4"
             >
               {/* Icon */}
               <View
                 className={cn(
-                  "w-11 h-11 rounded-full items-center justify-center mr-3",
+                  "w-11 h-11 rounded-2xl items-center justify-center mr-3",
                   item.iconBgColor || "bg-bg-octonary-dark"
                 )}
               >
                 <Ionicons
                   name={item.iconName || "flash"}
                   size={20}
-                  color={item.iconColor || "#000000"}
+                  color={item.iconColor || "#4b5563"}
                 />
               </View>
 
@@ -110,13 +110,13 @@ export const LiveIntelligence: React.FC<Props> = ({
               <View className="flex-1">
                 <AppText
                   variant={VARIANT_TYPES.PRIMARY}
-                  className="font-bold text-sm"
+                  className="font-bold text-[14px]"
                 >
                   {item.title}
                 </AppText>
                 <AppText
                   variant={VARIANT_TYPES.SECONDARY}
-                  className="text-xs mt-0.5"
+                  className="text-[12px] mt-0.5"
                 >
                   {item.subtitle}
                 </AppText>

@@ -358,7 +358,7 @@ const summaryBadgeLabel = (tone: DetailTone) => {
 };
 
 const summaryBadgeTextClassName = (tone: DetailTone) => {
-  if (tone === "positive") return "text-[#52f2a8]";
+  if (tone === "positive") return "text-[#4ade80]";
   if (tone === "negative") return "text-[#fb7185]";
   if (tone === "muted") return "text-text-octonary-dark";
   return "text-text-tertiary-dark";
@@ -683,7 +683,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                       <Feather
                         name={TAB_META[tab.key].icon}
                         size={11}
-                        color={isActive ? "#50fa7b" : "#64748b"}
+                        color={isActive ? "#4ade80" : "#4b5563"}
                       />
                       <AppText
                         variant={VARIANT_TYPES.NOT_SELECTED}
@@ -731,7 +731,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
             ) : null}
             <AppButton
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="h-9 w-9 rounded-lg border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+              className="h-9 w-9 rounded-lg border border-border-primary-dark/25 bg-bg-tertiary-dark items-center justify-center"
               onPress={() => {
                 const shouldExpand = !allRowsExpanded;
                 if (activeTab === "balances") {
@@ -768,7 +768,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
               <Feather
                 name={allRowsExpanded ? "minimize-2" : "maximize-2"}
                 size={13}
-                color={allRowsExpanded ? "#94a3b8" : "#50fa7b"}
+                color={allRowsExpanded ? "#6b7280" : "#4ade80"}
               />
             </AppButton>
           </View>
@@ -781,7 +781,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
     <View className="mx-1 mt-2 px-2.5 pt-2.5 gap-[10px] pb-[14px]">
       {activeTab === "balances" && isBalancesLoading ? (
         <View className="rounded-xl border border-border-primary-dark/35 bg-bg-primary-dark px-4 py-6 items-center">
-          <ActivityIndicator size="small" color="#50fa7b" />
+          <ActivityIndicator size="small" color="#4ade80" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-[11px] text-text-octonary-dark mt-2"
@@ -793,7 +793,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
 
       {activeTab === "positions" && isPositionsLoading ? (
         <View className="rounded-xl border border-border-primary-dark/35 bg-bg-primary-dark px-4 py-6 items-center">
-          <ActivityIndicator size="small" color="#50fa7b" />
+          <ActivityIndicator size="small" color="#4ade80" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-[11px] text-text-octonary-dark mt-2"
@@ -805,7 +805,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
 
       {activeTab === "openOrders" && isOpenOrdersLoading ? (
         <View className="rounded-xl border border-border-primary-dark/35 bg-bg-primary-dark px-4 py-6 items-center">
-          <ActivityIndicator size="small" color="#50fa7b" />
+          <ActivityIndicator size="small" color="#4ade80" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-[11px] text-text-octonary-dark mt-2"
@@ -819,7 +819,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
       isTradeHistoryLoading &&
       activeTabCount === 0 ? (
         <View className="rounded-xl border border-border-primary-dark/35 bg-bg-primary-dark px-4 py-6 items-center">
-          <ActivityIndicator size="small" color="#50fa7b" />
+          <ActivityIndicator size="small" color="#4ade80" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-[11px] text-text-octonary-dark mt-2"
@@ -833,7 +833,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
       isUserFundingsLoading &&
       activeTabCount === 0 ? (
         <View className="rounded-xl border border-border-primary-dark/35 bg-bg-primary-dark px-4 py-6 items-center">
-          <ActivityIndicator size="small" color="#50fa7b" />
+          <ActivityIndicator size="small" color="#4ade80" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-[11px] text-text-octonary-dark mt-2"
@@ -847,7 +847,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
       isHistoricalOrdersLoading &&
       activeTabCount === 0 ? (
         <View className="rounded-xl border border-border-primary-dark/35 bg-bg-primary-dark px-4 py-6 items-center">
-          <ActivityIndicator size="small" color="#50fa7b" />
+          <ActivityIndicator size="small" color="#4ade80" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-[11px] text-text-octonary-dark mt-2"
@@ -1486,12 +1486,12 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                           }
                           color={
                             isBalance
-                              ? "#cbd5e1"
+                              ? "#c8cdd5"
                               : isPosition
-                                ? "#86efac"
+                                ? "#4ade80"
                                 : isOpenOrder
-                                  ? "#86efac"
-                                  : "#94a3b8"
+                                  ? "#4ade80"
+                                  : "#6b7280"
                           }
                         />
                       </View>
@@ -1532,11 +1532,11 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                               "text-[9px] uppercase font-semibold tracking-[0.6px]",
                               isPosition
                                 ? rowSubtitle.toLowerCase() === "long"
-                                  ? "text-[#52f2a8]"
+                                  ? "text-[#4ade80]"
                                   : "text-[#fb7185]"
                                 : isOpenOrder
                                   ? rowSubtitle.toLowerCase() === "long"
-                                    ? "text-[#52f2a8]"
+                                    ? "text-[#4ade80]"
                                     : "text-[#fb7185]"
                                   : "text-text-octonary-dark",
                             )}
@@ -1559,7 +1559,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                         >
                           <AppText
                             variant={VARIANT_TYPES.NOT_SELECTED}
-                            className="text-[9px] font-semibold text-[#52f2a8] uppercase tracking-[0.6px]"
+                            className="text-[9px] font-semibold text-[#4ade80] uppercase tracking-[0.6px]"
                           >
                             {transferLabel}
                           </AppText>
@@ -1613,15 +1613,15 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                           color={
                             isBalance
                               ? isOpen
-                                ? "#e2e8f0"
-                                : "#cbd5e1"
+                                ? "#f0f0f0"
+                                : "#c8cdd5"
                               : isPosition
                                 ? isOpen
-                                  ? "#50fa7b"
-                                  : "#cbd5e1"
+                                  ? "#4ade80"
+                                  : "#c8cdd5"
                                 : isOpen
-                                  ? "#50fa7b"
-                                  : "#64748b"
+                                  ? "#4ade80"
+                                  : "#4b5563"
                           }
                         />
                       </View>
@@ -1666,7 +1666,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                             className={cn(
                               "w-1/2 pr-2 pb-2",
                               metricIdx < openOrderCompactMetrics.length - 2
-                                ? "mb-1 border-b border-border-primary-dark/40"
+                                ? "mb-1 border-b border-border-primary-dark/25"
                                 : "mb-0",
                             )}
                           >
@@ -1785,7 +1785,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                     <View className="mt-2.5 flex-row items-center gap-2">
                       <AppButton
                         variant={VARIANT_TYPES.NOT_SELECTED}
-                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/25 bg-bg-tertiary-dark items-center justify-center"
                         isDisabled={!canClosePositionLimit}
                         onPress={() => {
                           if (positionItem) {
@@ -1802,7 +1802,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                       </AppButton>
                       <AppButton
                         variant={VARIANT_TYPES.NOT_SELECTED}
-                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/25 bg-bg-tertiary-dark items-center justify-center"
                         isDisabled={!canClosePositionMarket}
                         onPress={() => {
                           if (positionItem) {
@@ -1819,7 +1819,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                       </AppButton>
                       <AppButton
                         variant={VARIANT_TYPES.NOT_SELECTED}
-                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center"
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/25 bg-bg-tertiary-dark items-center justify-center"
                         isDisabled={!canReversePositionMarket}
                         onPress={() => {
                           if (positionItem) {
@@ -1836,7 +1836,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                       </AppButton>
                       <AppButton
                         variant={VARIANT_TYPES.NOT_SELECTED}
-                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/40 bg-bg-tertiary-dark items-center justify-center gap-1.5"
+                        className="h-7 flex-1 flex-row rounded-md border border-border-primary-dark/25 bg-bg-tertiary-dark items-center justify-center gap-1.5"
                         isDisabled={!positionItem || !onOpenPositionTpsl}
                         onPress={() => {
                           if (positionItem) {
@@ -1851,7 +1851,7 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                         >
                           {positionTpslDisplay}
                         </AppText>
-                        <Feather name="edit-3" size={10} color="#86efac" />
+                        <Feather name="edit-3" size={10} color="#4ade80" />
                       </AppButton>
                     </View>
                   ) : null}
@@ -1877,9 +1877,9 @@ export const MarketAccountOverview: React.FC<MarketAccountOverviewProps> = ({
                           "flex-row items-start justify-between gap-3 py-2",
                           detailIndex < rowDetails.length - 1
                             ? isBalance
-                              ? "border-b border-border-primary-dark/40"
+                              ? "border-b border-border-primary-dark/25"
                               : isPosition
-                                ? "border-b border-border-primary-dark/40"
+                                ? "border-b border-border-primary-dark/25"
                                 : "border-b border-border-primary-dark/20"
                             : "",
                         )}

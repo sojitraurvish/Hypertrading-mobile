@@ -10,22 +10,22 @@ import {
 const VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
   [VARIANT_TYPES.PRIMARY]:
-    "px-4 py-3 flex-row items-center justify-center bg-[#111A2E] border border-[#273552] rounded-xl",
+    "px-4 py-3.5 flex-row items-center justify-center bg-bg-quaternary-dark border border-border-primary-dark/40 rounded-2xl",
   [VARIANT_TYPES.SECONDARY]:
-    "w-full flex-row items-center gap-4 p-4 bg-[#0E172A] border border-[#25324A] rounded-xl",
+    "w-full flex-row items-center gap-4 p-4 bg-bg-tertiary-dark border border-border-primary-dark/30 rounded-2xl",
   [VARIANT_TYPES.TERTIARY]:
-    "px-3 py-2 flex-row items-center justify-center bg-[#111827] border border-[#1F293D] rounded-lg",
+    "px-3.5 py-2.5 flex-row items-center justify-center bg-bg-quaternary-dark border border-border-primary-dark/30 rounded-xl",
   [VARIANT_TYPES.QUATERNARY]:
-    "w-10 h-10 items-center justify-center bg-[#111827] border border-[#1F293D] rounded-xl",
+    "w-10 h-10 items-center justify-center bg-bg-quaternary-dark border border-border-primary-dark/25 rounded-xl",
   [VARIANT_TYPES.QUINARY]:
-    "px-4 py-2 flex-row items-center justify-center bg-[#0C1526] rounded-full border border-[#2A374D]",
+    "px-4 py-2.5 flex-row items-center justify-center bg-bg-tertiary-dark rounded-full border border-border-primary-dark/30",
   [VARIANT_TYPES.SENARY]:
-    "px-3 py-1.5 flex-row items-center justify-center rounded-md bg-[#0C1526]",
+    "px-3.5 py-2 flex-row items-center justify-center rounded-xl bg-bg-tertiary-dark",
   [VARIANT_TYPES.OCTONARY]:
-    "w-12 h-12 items-center justify-center bg-[#111827] border border-[#1F293D] rounded-2xl",
-  [VARIANT_TYPES.NONARY]: "flex-row items-center gap-2",
+    "w-12 h-12 items-center justify-center bg-bg-quaternary-dark border border-border-primary-dark/25 rounded-2xl",
+  [VARIANT_TYPES.NONARY]: "flex-row items-center gap-2.5",
   [VARIANT_TYPES.DENARY]:
-    "px-5 py-3 flex-row items-center justify-center bg-[#121D33] border border-[#2C3B57] rounded-xl",
+    "px-5 py-3.5 flex-row items-center justify-center bg-bg-senary-dark rounded-2xl",
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;
@@ -56,7 +56,7 @@ export const AppButton: React.FC<Props> = ({
         (isDisabled || isLoading) && "opacity-60",
         className,
       )}
-      activeOpacity={0.82}
+      activeOpacity={0.65}
       {...props}
     >
       {isLoading && (

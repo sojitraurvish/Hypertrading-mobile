@@ -1,9 +1,9 @@
 export const HOME_V2_COLORS = {
-  accent: "#9EE37D",
-  positive: "#9EE37D",
-  negative: "#fb7185",
-  muted: "#94a3b8",
-  iconMuted: "#cbd5e1",
-  ringTrack: "#111827",
-  surfaceInner: "#05080f",
+  accent: "#4ade80",
+  positive: "#4ade80",
+  negative: "#f87171",
+  muted: "#6b7280",
+  iconMuted: "#6b7280",
+  ringTrack: "#0f1118",
+  surfaceInner: "#030508",
 } as const;

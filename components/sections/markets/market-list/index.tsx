@@ -39,7 +39,7 @@ const DetailCell: React.FC<{
   value: string;
   valueColor?: string;
 }> = ({ label, value, valueColor = "text-text-primary-dark" }) => (
-  <View className="flex-1 bg-bg-tertiary-dark rounded-lg px-3 py-2">
+  <View className="flex-1 bg-bg-quaternary-dark/60 rounded-lg px-3 py-2">
     <AppText
       variant={VARIANT_TYPES.NOT_SELECTED}
       className="text-text-octonary-dark text-[9px] uppercase tracking-wider mb-1"
@@ -162,8 +162,8 @@ const MarketCard: React.FC<{
         className={cn(
           "py-3.5 px-4 rounded-2xl border",
           isPressed
-            ? "bg-bg-tertiary-dark border-border-secondary-dark"
-            : "border-border-primary-dark/80",
+            ? "bg-bg-quaternary-dark border-accent-green/20"
+            : "border-border-primary-dark/20",
         )}
       >
         {/* Top Row */}
@@ -186,13 +186,13 @@ const MarketCard: React.FC<{
             <View
               className={cn(
                 "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full items-center justify-center border-2 border-bg-quaternary-dark",
-                optimisticFavorite ? "bg-bg-senary-dark" : "bg-bg-tertiary-dark",
+                optimisticFavorite ? "bg-accent-green" : "bg-bg-tertiary-dark",
               )}
             >
               <Ionicons
                 name={optimisticFavorite ? "star" : "star-outline"}
                 size={10}
-                color={optimisticFavorite ? "#000000" : "#6b7280"}
+                color={optimisticFavorite ? "#000000" : "#4b5563"}
               />
             </View>
           </AppButton>
@@ -206,10 +206,10 @@ const MarketCard: React.FC<{
               >
                 {item.pair}
               </AppText>
-              <View className="bg-bg-senary-dark/15 px-1.5 py-0.5 rounded-md">
+              <View className="bg-accent-green/10 px-1.5 py-0.5 rounded-md">
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="text-text-quaternary-dark text-[10px] font-bold"
+                  className="text-accent-green text-[10px] font-bold"
                 >
                   {item.leverage}
                 </AppText>
@@ -243,19 +243,19 @@ const MarketCard: React.FC<{
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
             onPress={toggleExpanded}
-            className="w-8 h-8 items-center justify-center rounded-lg bg-bg-tertiary-dark"
+            className="w-8 h-8 items-center justify-center rounded-lg bg-bg-quaternary-dark"
           >
             <Feather
               name={expanded ? "chevron-up" : "chevron-down"}
               size={16}
-              color="#6b7280"
+              color="#4b5563"
             />
           </AppButton>
         </View>
 
         {/* Expanded Details */}
         {expanded && (
-          <View className="mt-3 pt-3 border-t border-border-primary-dark">
+          <View className="mt-3 pt-3 border-t border-border-primary-dark/20">
             <View className="flex-row gap-2 mb-2">
               <DetailCell label="LAST PRICE" value={item.price} />
               <DetailCell label="MARK" value={item.mark} />
@@ -271,7 +271,7 @@ const MarketCard: React.FC<{
               <DetailCell label="24H VOLUME" value={item.volume24h} />
             </View>
             <View className="flex-row gap-2">
-              <View className="flex-1 min-w-0 bg-bg-tertiary-dark rounded-lg px-3 py-2">
+              <View className="flex-1 min-w-0 bg-bg-quaternary-dark/60 rounded-lg px-3 py-2">
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
                   className="text-text-octonary-dark text-[8px] uppercase tracking-wide mb-1"
@@ -385,7 +385,7 @@ export const MarketList: React.FC<Props> = ({
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={onRefresh}
-              tintColor="#50fa7b"
+              tintColor="#4ade80"
             />
           ) : undefined
         }
@@ -411,17 +411,17 @@ export const MarketList: React.FC<Props> = ({
         <View className="absolute right-5 bottom-24 gap-2.5">
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="w-11 h-11 rounded-full items-center justify-center bg-bg-tertiary-dark border border-border-primary-dark"
+            className="w-11 h-11 rounded-full items-center justify-center bg-bg-tertiary-dark border border-border-primary-dark/20"
             onPress={scrollToTop}
           >
-            <Feather name="chevrons-up" size={18} color="#50fa7b" />
+            <Feather name="chevrons-up" size={18} color="#4ade80" />
           </AppButton>
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="w-11 h-11 rounded-full items-center justify-center bg-bg-tertiary-dark border border-border-primary-dark"
+            className="w-11 h-11 rounded-full items-center justify-center bg-bg-tertiary-dark border border-border-primary-dark/20"
             onPress={scrollToBottom}
           >
-            <Feather name="chevrons-down" size={18} color="#50fa7b" />
+            <Feather name="chevrons-down" size={18} color="#4ade80" />
           </AppButton>
         </View>
       ) : null}

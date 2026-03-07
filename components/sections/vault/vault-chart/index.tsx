@@ -233,7 +233,7 @@ const makePayload = (
 
   const safeVolumes = filteredCandles.map((candle) => {
     const found = volumeByTime.get(candle.time);
-    const candleColor = candle.close >= candle.open ? "#22c55e88" : "#ef444488";
+    const candleColor = candle.close >= candle.open ? "#4ade8088" : "#f8717188";
     if (found) {
       return {
         time: candle.time,
@@ -259,7 +259,7 @@ const makePayload = (
         position:
           item.position ??
           (item.side === "buy" ? ("belowBar" as const) : ("aboveBar" as const)),
-        color: item.color ?? (item.side === "buy" ? "#22c55e" : "#ef4444"),
+        color: item.color ?? (item.side === "buy" ? "#4ade80" : "#f87171"),
         shape: "circle",
         text: item.label ?? (item.side === "buy" ? "B" : "S"),
       };
@@ -292,7 +292,7 @@ const makePayload = (
           color:
             typeof pnlOverlay.color === "string" && pnlOverlay.color.length > 0
               ? pnlOverlay.color
-              : "#22c55e",
+              : "#4ade80",
         }
       : undefined;
   const safeLiquidationOverlay =
@@ -308,7 +308,7 @@ const makePayload = (
             typeof liquidationOverlay.color === "string" &&
             liquidationOverlay.color.length > 0
               ? liquidationOverlay.color
-              : "#ec4899",
+              : "#f87171",
         }
       : undefined;
 
@@ -336,7 +336,7 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background: #050c1a;
+        background: #030305;
       }
       #container {
         width: 100%;
@@ -354,7 +354,7 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
       }
       #error {
         display: none;
-        color: #ef4444;
+        color: #f87171;
         font-family: Arial, sans-serif;
         font-size: 12px;
         padding: 8px;
@@ -407,18 +407,18 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
         const LWC = window.LightweightCharts;
         chart = LWC.createChart(container, {
           layout: {
-            background: { type: "solid", color: "#050c1a" },
-            textColor: "#94a3b8",
+            background: { type: "solid", color: "#030305" },
+            textColor: "#6b7280",
             fontSize: 9,
             attributionLogo: false,
           },
           grid: {
-            vertLines: { color: "#1e293b" },
-            horzLines: { color: "#1e293b" },
+            vertLines: { color: "#1c1c26" },
+            horzLines: { color: "#1c1c26" },
           },
           rightPriceScale: {
             borderVisible: true,
-            borderColor: "#1e293b",
+            borderColor: "#1c1c26",
             autoScale: true,
             minimumWidth: 36,
             entireTextOnly: true,
@@ -434,21 +434,21 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
           crosshair: {
             mode: LWC.CrosshairMode.Normal,
             vertLine: {
-              color: "#334155",
+              color: "#282834",
               width: 1,
               style: LWC.LineStyle.Dotted,
-              labelBackgroundColor: "#0f172a",
+              labelBackgroundColor: "#0a0a0f",
             },
             horzLine: {
-              color: "#334155",
+              color: "#282834",
               width: 1,
               style: LWC.LineStyle.Dotted,
-              labelBackgroundColor: "#0f172a",
+              labelBackgroundColor: "#0a0a0f",
             },
           },
           timeScale: {
             borderVisible: true,
-            borderColor: "#1e293b",
+            borderColor: "#1c1c26",
             timeVisible: true,
             secondsVisible: false,
             rightOffset: 0,
@@ -492,13 +492,13 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
         });
 
         candleSeries = chart.addSeries(LWC.CandlestickSeries, {
-          upColor: "#22c55e",
-          downColor: "#ef4444",
-          borderUpColor: "#22c55e",
-          borderDownColor: "#ef4444",
-          wickUpColor: "#22c55e",
-          wickDownColor: "#ef4444",
-          priceLineColor: "#ef4444",
+          upColor: "#4ade80",
+          downColor: "#f87171",
+          borderUpColor: "#4ade80",
+          borderDownColor: "#f87171",
+          wickUpColor: "#4ade80",
+          wickDownColor: "#f87171",
+          priceLineColor: "#f87171",
           priceLineStyle: LWC.LineStyle.Dotted,
           priceFormat: {
             type: "price",
@@ -575,7 +575,7 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
             const lineColor =
               typeof pnlOverlay.color === "string" && pnlOverlay.color
                 ? pnlOverlay.color
-                : "#22c55e";
+                : "#4ade80";
             pnlPriceLine = candleSeries.createPriceLine({
               price: Number(pnlOverlay.price),
               color: lineColor,
@@ -613,7 +613,7 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
               typeof liquidationOverlay.color === "string" &&
               liquidationOverlay.color
                 ? liquidationOverlay.color
-                : "#ec4899";
+                : "#f87171";
             liquidationPriceLine = candleSeries.createPriceLine({
               price: Number(liquidationOverlay.price),
               color: lineColor,
@@ -629,14 +629,14 @@ const makeChartHtml = (initialPayloadJson: string) => `<!doctype html>
         if (latestCandle) {
           const isUp = Number(latestCandle.close) >= Number(latestCandle.open);
           candleSeries.applyOptions({
-            priceLineColor: isUp ? "#22c55e" : "#ef4444",
+            priceLineColor: isUp ? "#4ade80" : "#f87171",
           });
         }
         const latestVolume = (payload.volumes || [])[payload.volumes.length - 1];
         if (latestVolume) {
-          const isUpVolume = String(latestVolume.color || "").includes("22c55e");
+          const isUpVolume = String(latestVolume.color || "").includes("4ade80");
           volumeSeries.applyOptions({
-            priceLineColor: isUpVolume ? "#22c55e" : "#ef4444",
+            priceLineColor: isUpVolume ? "#4ade80" : "#f87171",
           });
         }
 
@@ -779,7 +779,7 @@ const ChartCanvas: React.FC<{
         overScrollMode="never"
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        style={{ backgroundColor: "#050c1a", flex: 1 }}
+        style={{ backgroundColor: "#030305", flex: 1 }}
       />
     </View>
   );
@@ -1051,7 +1051,7 @@ export const VaultChart: React.FC<Props> = ({
                 variant={VARIANT_TYPES.NOT_SELECTED}
                 className={cn(
                   "text-[11px] font-semibold",
-                  isActive ? "text-black" : "text-[#7c8596]",
+                  isActive ? "text-black" : "text-[#6b7280]",
                 )}
               >
                 {item.value}
@@ -1064,7 +1064,7 @@ export const VaultChart: React.FC<Props> = ({
   );
 
   const renderIntervalDropdown = () => (
-    <View className="w-full max-h-[340px] rounded-xl border border-border-primary-dark bg-[#0a1222] overflow-hidden">
+    <View className="w-full max-h-[340px] rounded-xl border border-border-primary-dark/30 bg-bg-secondary-dark overflow-hidden">
       <ScrollView
         className="px-2 py-2"
         showsVerticalScrollIndicator={false}
@@ -1088,7 +1088,7 @@ export const VaultChart: React.FC<Props> = ({
                 <Feather
                   name={isCollapsed ? "chevron-down" : "chevron-up"}
                   size={12}
-                  color="#64748b"
+                  color="#4b5563"
                 />
               </AppButton>
               {!isCollapsed &&
@@ -1112,7 +1112,7 @@ export const VaultChart: React.FC<Props> = ({
                           className={cn(
                             "text-[12px]",
                             isActive
-                              ? "text-[#52f2a8] font-semibold"
+                              ? "text-[#4ade80] font-semibold"
                               : "text-text-primary-dark",
                           )}
                         >
@@ -1127,7 +1127,7 @@ export const VaultChart: React.FC<Props> = ({
                         <Ionicons
                           name={option.isFavorite ? "star" : "star-outline"}
                           size={12}
-                          color={option.isFavorite ? "#facc15" : "#64748b"}
+                          color={option.isFavorite ? "#fbbf24" : "#4b5563"}
                         />
                       </AppButton>
                     </View>
@@ -1141,7 +1141,7 @@ export const VaultChart: React.FC<Props> = ({
   );
 
   return (
-    <View className="mx-2 mt-4 rounded-2xl border border-border-primary-dark bg-bg-secondary-dark overflow-hidden">
+    <View className="mx-2 mt-4 rounded-2xl border border-border-primary-dark/30 bg-bg-secondary-dark overflow-hidden">
       <View className="px-3 py-2.5 border-b border-border-primary-dark flex-row items-center justify-between gap-2">
         <View className="flex-1 min-w-0 flex-row items-center gap-2">
           {renderIntervalFavorites()}
@@ -1152,19 +1152,19 @@ export const VaultChart: React.FC<Props> = ({
             className="px-0 py-0 rounded-none bg-transparent border-0 flex-row items-center gap-1"
             onPress={() => {}}
           >
-            <Feather name="bar-chart-2" size={12} color="#7c8596" />
+            <Feather name="bar-chart-2" size={12} color="#6b7280" />
             <AppText
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="text-[11px] text-[#7c8596] font-medium"
+              className="text-[11px] text-[#6b7280] font-medium"
             >
               Indicators
             </AppText>
           </AppButton>
-          <View className="w-px h-4 bg-border-primary-dark/80" />
+          <View className="w-px h-4 bg-border-primary-dark/30" />
           <View ref={inlineIntervalTriggerRef} collapsable={false}>
             <AppButton
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="h-8 px-3 rounded-lg bg-[#131722] border border-border-primary-dark/80 flex-row items-center gap-1"
+              className="h-8 px-3 rounded-lg bg-bg-tertiary-dark border border-border-primary-dark/30 flex-row items-center gap-1"
               onPress={() =>
                 isIntervalMenuOpen
                   ? setIsIntervalMenuOpen(false)
@@ -1180,16 +1180,16 @@ export const VaultChart: React.FC<Props> = ({
               <Feather
                 name={isIntervalMenuOpen ? "chevron-up" : "chevron-down"}
                 size={12}
-                color="#94a3b8"
+                color="#6b7280"
               />
             </AppButton>
           </View>
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="h-8 w-8 rounded-lg bg-[#131722] border border-border-primary-dark/80 items-center justify-center"
+            className="h-8 w-8 rounded-lg bg-bg-tertiary-dark border border-border-primary-dark/30 items-center justify-center"
             onPress={() => setIsFullscreen(true)}
           >
-            <Feather name="maximize-2" size={12} color="#e2e8f0" />
+            <Feather name="maximize-2" size={12} color="#f0f0f0" />
           </AppButton>
         </View>
       </View>
@@ -1306,7 +1306,7 @@ export const VaultChart: React.FC<Props> = ({
           </View>
           {isLoading ? (
             <View className="absolute inset-0 items-center justify-center bg-bg-primary-dark/35">
-              <ActivityIndicator size="small" color="#50fa7b" />
+              <ActivityIndicator size="small" color="#4ade80" />
               <AppText
                 variant={VARIANT_TYPES.NOT_SELECTED}
                 className="text-text-tertiary-dark text-[12px] mt-2"
@@ -1343,19 +1343,19 @@ export const VaultChart: React.FC<Props> = ({
                 className="px-0 py-0 rounded-none bg-transparent border-0 flex-row items-center gap-1"
                 onPress={() => {}}
               >
-                <Feather name="bar-chart-2" size={12} color="#7c8596" />
+                <Feather name="bar-chart-2" size={12} color="#6b7280" />
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="text-[11px] text-[#7c8596] font-medium"
+                  className="text-[11px] text-[#6b7280] font-medium"
                 >
                   Indicators
                 </AppText>
               </AppButton>
-              <View className="w-px h-4 bg-border-primary-dark/80" />
+              <View className="w-px h-4 bg-border-primary-dark/30" />
               <View ref={fullscreenIntervalTriggerRef} collapsable={false}>
                 <AppButton
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="h-8 px-3 rounded-lg bg-[#131722] border border-border-primary-dark/80 flex-row items-center gap-1"
+                  className="h-8 px-3 rounded-lg bg-bg-tertiary-dark border border-border-primary-dark/30 flex-row items-center gap-1"
                   onPress={() =>
                     isIntervalMenuOpen
                       ? setIsIntervalMenuOpen(false)
@@ -1371,16 +1371,16 @@ export const VaultChart: React.FC<Props> = ({
                   <Feather
                     name={isIntervalMenuOpen ? "chevron-up" : "chevron-down"}
                     size={12}
-                    color="#94a3b8"
+                    color="#6b7280"
                   />
                 </AppButton>
               </View>
               <AppButton
                 variant={VARIANT_TYPES.NOT_SELECTED}
-                className="h-8 w-8 rounded-lg bg-[#131722] border border-border-primary-dark/80 items-center justify-center"
+                className="h-8 w-8 rounded-lg bg-bg-tertiary-dark border border-border-primary-dark/30 items-center justify-center"
                 onPress={() => setIsFullscreen(false)}
               >
-                <Feather name="minimize-2" size={12} color="#e2e8f0" />
+                <Feather name="minimize-2" size={12} color="#f0f0f0" />
               </AppButton>
             </View>
           </View>

@@ -38,9 +38,9 @@ const RISK_COLORS = {
 };
 
 const RISK_BG_COLORS = {
-  Low: "bg-bg-quinary-dark",
-  Medium: "bg-bg-octonary-dark",
-  High: "bg-bg-nonary-dark",
+  Low: "bg-accent-green",
+  Medium: "bg-accent-amber",
+  High: "bg-accent-red",
 };
 
 const DEFAULT_STRATEGIES: StrategyItem[] = [
@@ -94,7 +94,7 @@ export const VaultStrategies: React.FC<Props> = ({
     <View className={cn(baseClassName, className)}>
       {/* Section Header */}
       <View className="flex-row items-center justify-between mb-4">
-        <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[11px]">
+        <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[10px] tracking-[2.5px]">
           AVAILABLE STRATEGIES
         </AppText>
         <AppText
@@ -106,7 +106,7 @@ export const VaultStrategies: React.FC<Props> = ({
       </View>
 
       {/* Strategies List */}
-      <View className="gap-3">
+      <View className="gap-3.5">
         {strategies.map((strategy) => (
           <AppButton
             key={strategy.id}
@@ -116,8 +116,8 @@ export const VaultStrategies: React.FC<Props> = ({
             <AppCard variant={VARIANT_TYPES.OCTONARY} className="p-4">
               <View className="flex-row items-center">
                 {/* Icon */}
-                <View className="w-12 h-12 rounded-2xl items-center justify-center bg-bg-septenary-dark mr-3">
-                  <Feather name={strategy.iconName} size={20} color="#50fa7b" />
+                <View className="w-12 h-12 rounded-2xl items-center justify-center bg-bg-quaternary-dark mr-3">
+                  <Feather name={strategy.iconName} size={20} color="#4ade80" />
                 </View>
 
                 {/* Info */}
@@ -154,7 +154,7 @@ export const VaultStrategies: React.FC<Props> = ({
               </View>
 
               {/* Bottom Row: TVL + Risk */}
-              <View className="flex-row items-center justify-between mt-3 pt-3 border-t border-border-primary-dark">
+              <View className="flex-row items-center justify-between mt-3 pt-3 border-t border-border-primary-dark/15">
                 <View className="flex-row items-center gap-1">
                   <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[10px]">
                     TVL:

@@ -36,10 +36,10 @@ export const VaultSummary: React.FC<Props> = ({
         <View className="flex-row items-center justify-between">
           {/* Total Deposited */}
           <View className="flex-1 items-center">
-            <View className="w-10 h-10 items-center justify-center bg-bg-septenary-dark rounded-xl mb-3">
-              <Feather name="lock" size={18} color="#50fa7b" />
+            <View className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-2xl mb-3">
+              <Feather name="lock" size={18} color="#4ade80" />
             </View>
-            <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[9px] mb-1">
+            <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[9px] tracking-[2.5px] mb-1">
               DEPOSITED
             </AppText>
             <AppText
@@ -51,14 +51,14 @@ export const VaultSummary: React.FC<Props> = ({
           </View>
 
           {/* Divider */}
-          <View className="w-px h-16 bg-border-primary-dark" />
+          <View className="w-px h-16 bg-border-primary-dark/30" />
 
           {/* Total Earned */}
           <View className="flex-1 items-center">
-            <View className="w-10 h-10 items-center justify-center bg-bg-septenary-dark rounded-xl mb-3">
-              <Feather name="trending-up" size={18} color="#50fa7b" />
+            <View className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-2xl mb-3">
+              <Feather name="trending-up" size={18} color="#4ade80" />
             </View>
-            <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[9px] mb-1">
+            <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[9px] tracking-[2.5px] mb-1">
               EARNED
             </AppText>
             <AppText
@@ -70,14 +70,14 @@ export const VaultSummary: React.FC<Props> = ({
           </View>
 
           {/* Divider */}
-          <View className="w-px h-16 bg-border-primary-dark" />
+          <View className="w-px h-16 bg-border-primary-dark/30" />
 
           {/* Active Vaults */}
           <View className="flex-1 items-center">
-            <View className="w-10 h-10 items-center justify-center bg-bg-septenary-dark rounded-xl mb-3">
-              <Feather name="layers" size={18} color="#50fa7b" />
+            <View className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-2xl mb-3">
+              <Feather name="layers" size={18} color="#4ade80" />
             </View>
-            <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[9px] mb-1">
+            <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[9px] tracking-[2.5px] mb-1">
               ACTIVE
             </AppText>
             <AppText

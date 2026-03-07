@@ -16,7 +16,7 @@ export const SpreadIndicator: React.FC<SpreadIndicatorProps> = ({
   const formatTwoDecimals = (value: number) => addDecimals(value, 2).toFixed(2);
 
   return (
-    <View className="flex-row items-center px-2 py-2 border-y border-border-primary-dark/35 bg-[#0c0c0c] mt-1">
+    <View className="flex-row items-center px-2.5 py-2 border-y border-border-primary-dark/15 bg-bg-tertiary-dark mt-1">
       <AppText
         variant={VARIANT_TYPES.NOT_SELECTED}
         className="flex-1 text-[10px] text-text-octonary-dark uppercase"

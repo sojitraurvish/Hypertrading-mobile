@@ -601,7 +601,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       contentClassName="gap-5"
     >
       <View className="gap-5">
-        <View className="rounded-xl border border-border-primary-dark/55 bg-bg-quaternary-dark/60 px-3 py-2.5">
+        <View className="rounded-xl border border-border-primary-dark/20 bg-bg-tertiary-dark px-3 py-2.5">
           <AppText className="text-[11px] text-text-tertiary-dark leading-4">
             USDC sent via {chainDisplayName}. Arrives within ~5 minutes.
           </AppText>
@@ -612,7 +612,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
         <View className="flex-row gap-3">
           <View className="flex-1 gap-2">
-            <AppText className="text-[11px] uppercase tracking-[0.6px] text-text-secondary-dark font-semibold">
+            <AppText className="text-[11px] uppercase tracking-[0.6px] text-accent-green font-semibold">
               Asset
             </AppText>
             <AppDropdown
@@ -622,7 +622,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             />
           </View>
           <View className="flex-1 gap-2">
-            <AppText className="text-[11px] uppercase tracking-[0.6px] text-text-secondary-dark font-semibold">
+            <AppText className="text-[11px] uppercase tracking-[0.6px] text-accent-green font-semibold">
               Chain
             </AppText>
             <AppDropdown
@@ -635,7 +635,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
-            <AppText className="text-[11px] uppercase tracking-[0.6px] text-text-secondary-dark font-semibold">
+            <AppText className="text-[11px] uppercase tracking-[0.6px] text-accent-green font-semibold">
               Amount (USDC)
             </AppText>
             {!isLoadingBalance && withdrawableBalance !== null ? (
@@ -648,13 +648,13 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
                 className="px-0 py-0"
                 isDisabled={isSubmitting || withdrawableBalance === null}
               >
-                <AppText className="text-[12px] font-semibold text-text-quaternary-dark">
+                <AppText className="text-[12px] font-semibold text-accent-green">
                   Max: {formattedBalance}
                 </AppText>
               </AppButton>
             ) : null}
           </View>
-          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/70 bg-bg-quaternary-dark/80 flex-row items-center">
+          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/20 bg-bg-tertiary-dark flex-row items-center">
             <TextInput
               value={amount}
               onChangeText={(value) => {
@@ -667,7 +667,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
               }}
               keyboardType="decimal-pad"
               placeholder="0.00"
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#4b5563"
               className="flex-1 text-text-primary-dark font-mono"
               editable={!isSubmitting}
             />
@@ -679,7 +679,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             <AppText className="text-[11px] text-text-octonary-dark">
               Available:{" "}
               {isLoadingBalance ? (
-                <ActivityIndicator size="small" color="#6b7280" />
+                <ActivityIndicator size="small" color="#4b5563" />
               ) : withdrawableBalance !== null ? (
                 `${formattedBalance} USDC`
               ) : (
@@ -715,7 +715,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         ) : null}
 
         {hasApiResponse ? (
-          <View className="rounded-xl border border-border-primary-dark/60 bg-bg-quaternary-dark/80 px-3 py-2.5">
+          <View className="rounded-xl border border-border-primary-dark/20 bg-bg-tertiary-dark px-3 py-2.5">
             <AppText className="text-[11px] text-text-tertiary-dark">
               Last API response: {apiResponse?.status ?? ""}{" "}
               {typeof apiResponse?.body === "string"
@@ -731,14 +731,14 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           onPress={handleWithdraw}
           className={
             !canSubmit
-              ? "h-11 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/60 items-center justify-center"
-              : "h-11 rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 items-center justify-center"
+              ? "h-11 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/20 items-center justify-center"
+              : "h-11 rounded-xl bg-accent-green border-transparent items-center justify-center"
           }
         >
           <AppText
             className={
               !canSubmit
-                ? "text-[14px] font-semibold text-text-octonary-dark"
+                ? "text-[14px] font-semibold text-text-tertiary-dark"
                 : "text-[14px] font-semibold text-black"
             }
           >

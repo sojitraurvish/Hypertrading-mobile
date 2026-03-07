@@ -153,8 +153,8 @@ const createMarkersFromFills = (
   fills: FillData[],
   interval: CandleInterval,
   selectedTimePeriod: number,
-  themeUpColor = "#10b981",
-  themeDownColor = "#ef4444",
+  themeUpColor = "#4ade80",
+  themeDownColor = "#f87171",
 ): VaultTradeMarker[] => {
   if (!interval || !selectedTimePeriod || fills.length === 0) return [];
 
@@ -294,7 +294,7 @@ export const MarketChart: React.FC<Props> = ({ currency }) => {
           return {
             time,
             value,
-            color: close >= open ? "#22c55e88" : "#ef444488",
+            color: close >= open ? "#4ade8088" : "#f8717188",
           };
         })
         .filter((item): item is VaultChartVolume => item !== null),
@@ -319,7 +319,7 @@ export const MarketChart: React.FC<Props> = ({ currency }) => {
       return null;
     }
     const absSize = Math.abs(signedSize);
-    const sideColor = signedSize > 0 ? "#10b981" : "#ef4444";
+    const sideColor = signedSize > 0 ? "#4ade80" : "#f87171";
     const pnlText = Number.isFinite(unrealizedPnl)
       ? `${unrealizedPnl >= 0 ? "+" : ""}${unrealizedPnl.toFixed(2)}`
       : "0.00";
@@ -339,7 +339,7 @@ export const MarketChart: React.FC<Props> = ({ currency }) => {
     return {
       price: liquidationPrice,
       label: `Liq. Price ${liquidationPrice.toFixed(2)}`,
-      color: "#ec4899",
+      color: "#f87171",
     };
   }, [livePosition]);
 

@@ -30,20 +30,20 @@ type Props = {
 const ACTIVITY_CONFIG = {
   deposit: {
     icon: "arrow-down-left" as const,
-    color: "#50fa7b",
-    bgColor: "bg-bg-septenary-dark",
+    color: "#4ade80",
+    bgColor: "bg-bg-quaternary-dark",
     label: "Deposited",
   },
   withdraw: {
     icon: "arrow-up-right" as const,
-    color: "#ef4444",
-    bgColor: "bg-bg-septenary-dark",
+    color: "#f87171",
+    bgColor: "bg-bg-quaternary-dark",
     label: "Withdrew",
   },
   earn: {
     icon: "dollar-sign" as const,
-    color: "#50fa7b",
-    bgColor: "bg-bg-septenary-dark",
+    color: "#4ade80",
+    bgColor: "bg-bg-quaternary-dark",
     label: "Earned",
   },
 };
@@ -82,7 +82,7 @@ export const VaultActivity: React.FC<Props> = ({
   return (
     <View className={cn(baseClassName, className)}>
       {/* Section Header */}
-      <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[11px] mb-4">
+      <AppText variant={VARIANT_TYPES.TERTIARY} className="text-[10px] tracking-[2.5px] mb-4">
         RECENT ACTIVITY
       </AppText>
 
@@ -94,12 +94,12 @@ export const VaultActivity: React.FC<Props> = ({
             <AppCard
               key={activity.id}
               variant={VARIANT_TYPES.QUINARY}
-              className="flex-row items-center py-3 px-4"
+              className="flex-row items-center py-3.5 px-4"
             >
               {/* Icon */}
               <View
                 className={cn(
-                  "w-10 h-10 rounded-full items-center justify-center mr-3",
+                  "w-10 h-10 rounded-2xl items-center justify-center mr-3",
                   config.bgColor
                 )}
               >

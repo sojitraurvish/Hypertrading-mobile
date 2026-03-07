@@ -280,7 +280,7 @@ export const MarketsContainer: React.FC<MarketsContainerProps> = ({
           <Feather
             name={expandAll ? "minimize-2" : "maximize-2"}
             size={12}
-            color={expandAll ? "#50fa7b" : "#9ca3af"}
+            color={expandAll ? "#4ade80" : "#6b7280"}
           />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
@@ -293,7 +293,7 @@ export const MarketsContainer: React.FC<MarketsContainerProps> = ({
 
       {isInitialLoading ? (
         <View className="flex-1 items-center justify-center px-4">
-          <ActivityIndicator size="small" color="#50fa7b" />
+          <ActivityIndicator size="small" color="#4ade80" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-text-tertiary-dark text-center mt-3"

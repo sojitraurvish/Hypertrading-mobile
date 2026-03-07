@@ -47,18 +47,18 @@ export const MarketHeader: React.FC<Props> = ({
     <View className={cn(baseClassName, className)}>
       {isSearching ? (
         <View className="flex-row items-center gap-3">
-          <View className="flex-1 flex-row items-center bg-bg-quaternary-dark rounded-xl px-3 h-11">
-            <Feather name="search" size={16} color="#6b7280" />
+          <View className="flex-1 flex-row items-center bg-bg-tertiary-dark rounded-2xl px-3.5 h-11 border border-border-primary-dark/20">
+            <Feather name="search" size={16} color="#4b5563" />
             <TextInput
               ref={inputRef}
               value={searchQuery}
               onChangeText={onSearchChange}
               placeholder="Search markets..."
-              placeholderTextColor="#6b7280"
+              placeholderTextColor="#4b5563"
               autoCapitalize="characters"
               autoCorrect={false}
               className="flex-1 ml-2 text-sm text-white font-medium"
-              selectionColor="#50fa7b"
+              selectionColor="#4ade80"
             />
             {searchQuery.length > 0 && (
               <AppButton
@@ -66,7 +66,7 @@ export const MarketHeader: React.FC<Props> = ({
                 onPress={() => onSearchChange?.("")}
                 className="p-1"
               >
-                <Feather name="x" size={16} color="#6b7280" />
+                <Feather name="x" size={16} color="#4b5563" />
               </AppButton>
             )}
           </View>
@@ -88,7 +88,7 @@ export const MarketHeader: React.FC<Props> = ({
           <View>
             <AppText
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="text-text-primary-dark text-3xl font-black"
+              className="text-text-primary-dark text-[28px] leading-[34px] font-black"
             >
               {title}
             </AppText>
@@ -102,10 +102,10 @@ export const MarketHeader: React.FC<Props> = ({
 
           <AppButton
             variant={VARIANT_TYPES.QUATERNARY}
-            className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-xl"
+            className="w-11 h-11 items-center justify-center bg-bg-quaternary-dark rounded-2xl border border-border-primary-dark/20"
             onPress={onSearchToggle}
           >
-            <Feather name="search" size={20} color="#9ca3af" />
+            <Feather name="search" size={20} color="#6b7280" />
           </AppButton>
         </View>
       )}

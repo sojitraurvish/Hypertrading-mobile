@@ -31,7 +31,7 @@ export const AppInfo: React.FC<Props> = ({
 
   return (
     <View className={cn(baseClassName, className, "items-center")}>
-      <View className="w-10 h-10 bg-bg-quinary-dark rounded-xl items-center justify-center mb-3">
+      <View className="w-12 h-12 bg-accent-green rounded-2xl items-center justify-center mb-3">
         <AppText
           variant={VARIANT_TYPES.NOT_SELECTED}
           className="text-black font-bold text-lg"
@@ -55,7 +55,7 @@ export const AppInfo: React.FC<Props> = ({
         <AppButton variant={VARIANT_TYPES.NOT_SELECTED} onPress={onTermsPress}>
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-text-tertiary-dark text-[11px] underline"
+            className="text-accent-green text-[11px] underline"
           >
             Terms of Service
           </AppText>
@@ -68,7 +68,7 @@ export const AppInfo: React.FC<Props> = ({
         <AppButton variant={VARIANT_TYPES.NOT_SELECTED} onPress={onPrivacyPress}>
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-text-tertiary-dark text-[11px] underline"
+            className="text-accent-green text-[11px] underline"
           >
             Privacy Policy
           </AppText>

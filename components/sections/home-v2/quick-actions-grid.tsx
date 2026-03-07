@@ -35,12 +35,12 @@ export function QuickActionsGrid({
           <AppButton
             key={action.id}
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className={`mb-3 ${twoCol ? "w-[48.5%]" : "w-[32%]"}`}
+            className={`mb-3.5 ${twoCol ? "w-[48.5%]" : "w-[32%]"}`}
             onPress={action.onPress}
           >
             <AppCard
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className={`rounded-[22px] border border-border-primary-dark bg-bg-tertiary-dark ${
+              className={`rounded-[24px] border border-border-primary-dark/20 bg-bg-tertiary-dark ${
                 compact ? "px-3 py-3.5" : "px-4 py-4"
               }`}
             >

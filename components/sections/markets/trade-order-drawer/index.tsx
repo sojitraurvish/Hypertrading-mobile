@@ -70,7 +70,7 @@ const ToggleButton: React.FC<ToggleButtonProps> = ({
       isActive
         ? activeClassName
         : cn(
-            "bg-bg-secondary-dark/90 border-border-primary-dark/60",
+            "bg-bg-secondary-dark/90 border-border-primary-dark/20",
             inactiveClassName,
           ),
     )}
@@ -517,7 +517,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
   };
 
   const sectionCardClassName =
-    "rounded-2xl border border-border-primary-dark/60 bg-bg-secondary-dark/70 p-3";
+    "rounded-2xl border border-border-primary-dark/20 bg-bg-secondary-dark/70 p-3";
 
   const isLoadingTradeOrderDrawer = useMemo(() => {
     const selectedAvailableToTrade =
@@ -842,7 +842,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
     >
       {isLoadingTradeOrderDrawer ? (
         <View className="h-[55vh] items-center justify-center gap-3">
-          <ActivityIndicator size="small" color="#66ef7a" />
+          <ActivityIndicator size="small" color="#4ade80" />
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
             className="text-[13px] leading-[16px] text-text-octonary-dark"
@@ -876,7 +876,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
                 >
                   {coin.toUpperCase()} Order
                 </AppText>
-                <View className="px-2 py-0.5 rounded-full border border-border-primary-dark/70 bg-bg-secondary-dark/80">
+                <View className="px-2 py-0.5 rounded-full border border-border-primary-dark/20 bg-bg-secondary-dark/80">
                   <AppText
                     variant={VARIANT_TYPES.NOT_SELECTED}
                     className="text-[9px] leading-[11px] font-semibold text-text-octonary-dark uppercase tracking-[0.8px]"
@@ -888,24 +888,24 @@ export const TradeOrderDrawer: React.FC<Props> = ({
               <AppButton
                 variant={VARIANT_TYPES.NOT_SELECTED}
                 onPress={onClose}
-                className="w-8 h-8 rounded-full bg-bg-quaternary-dark/95 border border-border-primary-dark/70 items-center justify-center"
+                className="w-8 h-8 rounded-full bg-bg-quaternary-dark/95 border border-border-primary-dark/20 items-center justify-center"
                 accessibilityLabel="Close order drawer"
               >
-                <Feather name="x" size={14} color="#94a3b8" />
+                <Feather name="x" size={14} color="#6b7280" />
               </AppButton>
             </View>
 
             <AppButton
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="h-[66px] rounded-[18px] border border-border-primary-dark/70 bg-bg-secondary-dark/95 px-3.5 flex-row items-center justify-between"
+              className="h-[66px] rounded-[18px] border border-border-primary-dark/20 bg-bg-secondary-dark/95 px-3.5 flex-row items-center justify-between"
               onPress={() => setIsMarketSelectorOpen(true)}
               accessibilityLabel="Select market"
             >
               <View className="flex-row items-center gap-2.5 min-w-0 flex-1">
-                <View className="h-10 w-10 rounded-full bg-[#0f2f27] border border-[#2d815f]/70 items-center justify-center">
+                <View className="h-10 w-10 rounded-full bg-[#0f2f27] border border-accent-green/30 items-center justify-center">
                   <AppText
                     variant={VARIANT_TYPES.NOT_SELECTED}
-                    className="text-[10px] font-extrabold text-[#7af8a0] uppercase"
+                    className="text-[10px] font-extrabold text-accent-green uppercase"
                   >
                     {coin.toUpperCase().slice(0, 5)}
                   </AppText>
@@ -928,14 +928,14 @@ export const TradeOrderDrawer: React.FC<Props> = ({
               </View>
               <View className="flex-row items-center gap-2">
                 <View className="h-8 w-px bg-border-primary-dark/50" />
-                <View className="h-8 flex-row items-center gap-1.5 rounded-full border border-border-primary-dark/70 bg-bg-quaternary-dark/90 px-3">
+                <View className="h-8 flex-row items-center gap-1.5 rounded-full border border-border-primary-dark/20 bg-bg-quaternary-dark/90 px-3">
                   <AppText
                     variant={VARIANT_TYPES.NOT_SELECTED}
                     className="text-[11px] font-bold text-text-tertiary-dark"
                   >
                     Change
                   </AppText>
-                  <Feather name="chevron-down" size={12} color="#94a3b8" />
+                  <Feather name="chevron-down" size={12} color="#6b7280" />
                 </View>
               </View>
             </AppButton>
@@ -945,24 +945,24 @@ export const TradeOrderDrawer: React.FC<Props> = ({
             <View className="flex-row gap-2.5">
               <AppButton
                 variant={VARIANT_TYPES.NOT_SELECTED}
-                className="h-11 flex-1 rounded-2xl border border-[#2d815f] bg-[#0a3a2a] items-center justify-center"
+                className="h-11 flex-1 rounded-2xl border border-accent-green/30 bg-[#0a3a2a] items-center justify-center"
                 onPress={() => setIsMarginModeDialogOpen(true)}
               >
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="text-[13px] leading-[16px] font-bold text-[#52f2a8]"
+                  className="text-[13px] leading-[16px] font-bold text-accent-green"
                 >
                   {marginMode === "isolated" ? "Isolated" : "Cross"}
                 </AppText>
               </AppButton>
               <AppButton
                 variant={VARIANT_TYPES.NOT_SELECTED}
-                className="h-11 flex-1 rounded-2xl border border-[#2d815f] bg-[#0a3a2a] items-center justify-center"
+                className="h-11 flex-1 rounded-2xl border border-accent-green/30 bg-[#0a3a2a] items-center justify-center"
                 onPress={() => setIsLeverageDialogOpen(true)}
               >
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="text-[13px] leading-[16px] font-bold text-[#52f2a8]"
+                  className="text-[13px] leading-[16px] font-bold text-accent-green"
                 >
                   {userLeverage}x
                 </AppText>
@@ -991,7 +991,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
                 label="Buy / Long"
                 isActive={selectedSide === "long"}
                 onPress={() => setSelectedSide("long")}
-                activeClassName="bg-bg-senary-dark border-[#78f39a]/45 shadow-sm"
+                activeClassName="bg-accent-green border-accent-green/30 shadow-sm"
                 activeTextClassName="text-[#05311b]"
                 inactiveTextClassName="text-text-octonary-dark"
               />
@@ -999,7 +999,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
                 label="Sell / Short"
                 isActive={selectedSide === "short"}
                 onPress={() => setSelectedSide("short")}
-                activeClassName="bg-[#ff4d57] border-[#ff6b73]"
+                activeClassName="bg-accent-red border-accent-red/30"
                 activeTextClassName="text-white"
                 inactiveTextClassName="text-text-octonary-dark"
               />
@@ -1016,7 +1016,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
             <StatRow
               label="Current Position"
               value={`${addDecimals(normalizedCurrentPosition, normalizedSzDecimals || 2)} ${coin.toUpperCase()}`}
-              valueClassName="text-[#52f2a8]"
+              valueClassName="text-accent-green"
               labelClassName="text-[14px]"
             />
           </View>
@@ -1050,8 +1050,8 @@ export const TradeOrderDrawer: React.FC<Props> = ({
                     className={cn(
                       "h-7 flex-1 rounded-lg border items-center justify-center",
                       sliderValue === percent
-                        ? "bg-bg-senary-dark border-[#78f39a]/50"
-                        : "bg-bg-quaternary-dark/50 border-border-primary-dark/60",
+                        ? "bg-accent-green border-accent-green/30"
+                        : "bg-bg-quaternary-dark/50 border-border-primary-dark/20",
                     )}
                   >
                     <AppText
@@ -1089,18 +1089,18 @@ export const TradeOrderDrawer: React.FC<Props> = ({
             <AppButton
               variant={VARIANT_TYPES.NOT_SELECTED}
               onPress={() => setIsTpSlEnabled((prev) => !prev)}
-              className="h-11 flex-row items-center justify-start gap-2.5 px-3 rounded-xl border border-border-primary-dark/60 bg-bg-secondary-dark/65 mt-0.5"
+              className="h-11 flex-row items-center justify-start gap-2.5 px-3 rounded-xl border border-border-primary-dark/20 bg-bg-secondary-dark/65 mt-0.5"
             >
               <View
                 className={cn(
                   "w-5 h-5 rounded-md border items-center justify-center",
                   isTpSlEnabled
-                    ? "bg-bg-senary-dark border-[#78f39a]/60"
-                    : "bg-transparent border-border-primary-dark/70",
+                    ? "bg-accent-green border-accent-green/30"
+                    : "bg-transparent border-border-primary-dark/20",
                 )}
               >
                 {isTpSlEnabled ? (
-                  <Feather name="check" size={12} color="#0c4a2e" />
+                  <Feather name="check" size={12} color="#000000" />
                 ) : null}
               </View>
               <AppText
@@ -1156,11 +1156,11 @@ export const TradeOrderDrawer: React.FC<Props> = ({
                 "h-14 rounded-2xl border flex-row items-center justify-center mt-0.5 shadow-sm",
                 selectedSide === "long"
                   ? isPlaceOrderDisabled || isPlaceOrderLoading
-                    ? "bg-bg-senary-dark/70 border-[#78f39a]/30"
-                    : "bg-bg-senary-dark border-[#78f39a]/50"
+                    ? "bg-accent-green/70 border-accent-green/30"
+                    : "bg-accent-green border-accent-green/30"
                   : isPlaceOrderDisabled || isPlaceOrderLoading
-                    ? "bg-red-500/70 border-[#ff8a8a]/30"
-                    : "bg-red-500 border-[#ff8a8a]/50",
+                    ? "bg-accent-red/70 border-accent-red/30"
+                    : "bg-accent-red border-accent-red/30",
               )}
             >
               <AppText
@@ -1196,7 +1196,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
               <StatRow
                 label="Slippage"
                 value={`MAX: ${maxSlippage.toFixed(2)}%`}
-                valueClassName="text-[#84ff5c]"
+                valueClassName="text-accent-green"
               />
             </AppButton>
           </View>
@@ -1240,7 +1240,7 @@ export const TradeOrderDrawer: React.FC<Props> = ({
               label="Unrealized PNL"
               value={`${unrealizedPnl.toFixed(2)} `}
               valueClassName={
-                unrealizedPnl >= 0 ? "text-[#52f2a8]" : "text-[#fb7185]"
+                unrealizedPnl >= 0 ? "text-accent-green" : "text-accent-red"
               }
             />
             <View className="h-px bg-border-primary-dark/35" />

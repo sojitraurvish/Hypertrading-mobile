@@ -26,7 +26,7 @@ export function SectionHeader({
   actionColor = HOME_V2_COLORS.accent,
 }: SectionHeaderProps) {
   return (
-    <View className={`mb-3 flex-row items-center justify-between ${className}`}>
+    <View className={`mb-3.5 flex-row items-center justify-between ${className}`}>
       <AppText
         variant={VARIANT_TYPES.NONARY}
         className={`text-[10px] tracking-[2.8px] text-text-tertiary-dark ${titleClassName}`}

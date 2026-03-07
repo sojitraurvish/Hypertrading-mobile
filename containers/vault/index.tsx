@@ -127,7 +127,7 @@ export const VaultContainer: React.FC = () => {
           return {
             time,
             value,
-            color: close >= open ? "#22c55e88" : "#ef444488",
+            color: close >= open ? "#4ade8088" : "#f8717188",
           };
         })
         .filter((item): item is VaultChartVolume => item !== null);

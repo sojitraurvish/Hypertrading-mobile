@@ -209,7 +209,7 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
       contentClassName="gap-4"
     >
       <View className="gap-4">
-        <View className="grid grid-cols-2 gap-2.5 p-3.5 bg-bg-quaternary-dark/70 rounded-xl border border-border-primary-dark/60">
+        <View className="grid grid-cols-2 gap-2.5 p-3.5 bg-bg-quaternary-dark/70 rounded-xl border border-border-primary-dark/20">
           <View className="gap-1">
             <AppText className="text-[10px] text-text-octonary-dark uppercase tracking-[0.7px]">
               Coin
@@ -251,7 +251,7 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
         </View>
 
         {existingTpsl?.takeProfit ? (
-          <View className="flex-row items-center justify-between p-3 rounded-xl border border-[#78f39a]/30 bg-[#163b2f]/35">
+          <View className="flex-row items-center justify-between p-3 rounded-xl border border-[#4ade80]/30 bg-[#163b2f]/35">
             <View className="gap-1">
               <AppText className="text-[12px] text-text-primary-dark font-semibold">
                 TP: {existingTpsl.takeProfit.triggerPx}
@@ -338,8 +338,8 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
             <View
               className={
                 isConfigureAmountEnabled
-                  ? "w-5 h-5 rounded-md border border-[#78f39a]/50 bg-bg-senary-dark items-center justify-center"
-                  : "w-5 h-5 rounded-md border border-border-primary-dark/70 bg-transparent items-center justify-center"
+                  ? "w-5 h-5 rounded-md border border-[#4ade80]/30 bg-bg-senary-dark items-center justify-center"
+                  : "w-5 h-5 rounded-md border border-border-primary-dark/20 bg-transparent items-center justify-center"
               }
             >
               {isConfigureAmountEnabled ? (
@@ -374,8 +374,8 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
             <View
               className={
                 isLimitPriceEnabled
-                  ? "w-5 h-5 rounded-md border border-[#78f39a]/50 bg-bg-senary-dark items-center justify-center"
-                  : "w-5 h-5 rounded-md border border-border-primary-dark/70 bg-transparent items-center justify-center"
+                  ? "w-5 h-5 rounded-md border border-[#4ade80]/30 bg-bg-senary-dark items-center justify-center"
+                  : "w-5 h-5 rounded-md border border-border-primary-dark/20 bg-transparent items-center justify-center"
               }
             >
               {isLimitPriceEnabled ? (
@@ -393,7 +393,7 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
                 <AppText className="text-[10px] text-text-octonary-dark uppercase tracking-[0.7px]">
                   TP Limit
                 </AppText>
-                <View className="h-11 px-3 rounded-xl border border-border-primary-dark/70 bg-bg-quaternary-dark/80 justify-center">
+                <View className="h-11 px-3 rounded-xl border border-border-primary-dark/20 bg-bg-quaternary-dark/80 justify-center">
                   <TextInput
                     value={takeProfitLimitPrice}
                     onChangeText={(value) => {
@@ -402,7 +402,7 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
                     }}
                     keyboardType="decimal-pad"
                     placeholder="0.00"
-                    placeholderTextColor="#64748b"
+                    placeholderTextColor="#4b5563"
                     className="text-text-primary-dark font-mono"
                     editable={!isSubmitting}
                   />
@@ -412,7 +412,7 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
                 <AppText className="text-[10px] text-text-octonary-dark uppercase tracking-[0.7px]">
                   SL Limit
                 </AppText>
-                <View className="h-11 px-3 rounded-xl border border-border-primary-dark/70 bg-bg-quaternary-dark/80 justify-center">
+                <View className="h-11 px-3 rounded-xl border border-border-primary-dark/20 bg-bg-quaternary-dark/80 justify-center">
                   <TextInput
                     value={stopLossLimitPrice}
                     onChangeText={(value) => {
@@ -421,7 +421,7 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
                     }}
                     keyboardType="decimal-pad"
                     placeholder="0.00"
-                    placeholderTextColor="#64748b"
+                    placeholderTextColor="#4b5563"
                     className="text-text-primary-dark font-mono"
                     editable={!isSubmitting}
                   />
@@ -443,8 +443,8 @@ export const PositionTpslModal: React.FC<PositionTpslModalProps> = ({
             className={
               isSubmitting ||
               (takeProfitPrice === undefined && stopLossPrice === undefined)
-                ? "h-11 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/60 items-center justify-center"
-                : "h-11 rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 items-center justify-center"
+                ? "h-11 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/20 items-center justify-center"
+                : "h-11 rounded-xl bg-bg-senary-dark border border-[#4ade80]/30 items-center justify-center"
             }
           >
             <AppText

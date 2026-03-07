@@ -29,8 +29,8 @@ export const WalletStatus: React.FC<Props> = ({
     <View className={cn(baseClassName, className)}>
       <AppCard variant={VARIANT_TYPES.TERTIARY}>
         <View className="items-center py-2">
-          <View className="w-12 h-12 rounded-full bg-bg-quaternary-dark items-center justify-center mb-3">
-            <Feather name="link" size={22} color="#50fa7b" />
+          <View className="w-14 h-14 rounded-3xl bg-bg-quaternary-dark items-center justify-center mb-4">
+            <Feather name="link" size={22} color="#4ade80" />
           </View>
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
@@ -46,7 +46,7 @@ export const WalletStatus: React.FC<Props> = ({
           </AppText>
           <AppButton
             variant={VARIANT_TYPES.DENARY}
-            className="w-full"
+            className="w-full bg-bg-senary-dark rounded-2xl"
             onPress={() => {
               // TODO: implement wallet connection
             }}

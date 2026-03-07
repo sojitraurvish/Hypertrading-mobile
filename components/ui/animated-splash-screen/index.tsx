@@ -21,8 +21,8 @@ type AnimatedSplashScreenProps = {
 };
 
 export const AnimatedSplashScreen: React.FC<AnimatedSplashScreenProps> = ({
-  backgroundColor = "#020407",
-  accentColor = "#8afc6e",
+  backgroundColor = "#030305",
+  accentColor = "#4ade80",
   onFinished,
 }) => {
   const [isVisible, setIsVisible] = React.useState(true);
@@ -201,18 +201,18 @@ const styles = StyleSheet.create({
   },
   emblemRing: {
     position: "absolute",
-    width: 184,
-    height: 184,
-    borderRadius: 92,
-    borderWidth: 1,
-    shadowOpacity: 0.22,
-    shadowRadius: 18,
+    width: 190,
+    height: 190,
+    borderRadius: 95,
+    borderWidth: 1.5,
+    shadowOpacity: 0.3,
+    shadowRadius: 24,
     shadowOffset: { width: 0, height: 0 },
   },
   emblemWrap: {
     width: 160,
     height: 160,
-    borderRadius: 40,
+    borderRadius: 44,
     overflow: "hidden",
   },
   emblemImage: {
@@ -227,9 +227,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   taglineText: {
-    color: "#64748f",
+    color: "#4b5563",
     fontSize: 10,
-    letterSpacing: 3.4,
+    letterSpacing: 3.8,
     fontWeight: "600",
   },
 });

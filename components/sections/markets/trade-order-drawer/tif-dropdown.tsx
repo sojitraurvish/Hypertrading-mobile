@@ -86,15 +86,15 @@ const TIFDropdown: React.FC<TIFDropdownProps> = ({
           variant={VARIANT_TYPES.NOT_SELECTED}
           isDisabled={disabled}
           onPress={() => setShowTooltip((prev) => !prev)}
-          className="h-5 w-5 rounded-full border border-border-primary-dark/60 bg-bg-quaternary-dark/70 items-center justify-center"
+          className="h-5 w-5 rounded-full border border-border-primary-dark/20 bg-bg-quaternary-dark/70 items-center justify-center"
           accessibilityLabel="Toggle TIF help"
         >
-          <Feather name="info" size={11} color="#94a3b8" />
+          <Feather name="info" size={11} color="#6b7280" />
         </AppButton>
       </View>
 
       {showTooltip && !disabled ? (
-        <View className="rounded-xl border border-border-primary-dark/70 bg-bg-quaternary-dark/95 px-3 py-2.5">
+        <View className="rounded-xl border border-border-primary-dark/20 bg-bg-quaternary-dark/95 px-3 py-2.5">
           <View className="gap-2.5">
             {options.map((option) => {
               const info = tooltipContent[option];
@@ -127,8 +127,8 @@ const TIFDropdown: React.FC<TIFDropdownProps> = ({
           className={cn(
             "w-full h-10 rounded-xl border px-3 py-1.5 flex-row items-center justify-between",
             isOpen
-              ? "bg-bg-quaternary-dark border-[#78f39a]/45"
-              : "bg-bg-quaternary-dark/80 border-border-primary-dark/70",
+              ? "bg-bg-quaternary-dark border-accent-green/30"
+              : "bg-bg-quaternary-dark/80 border-border-primary-dark/20",
             disabled ? "opacity-50" : "",
           )}
         >
@@ -141,7 +141,7 @@ const TIFDropdown: React.FC<TIFDropdownProps> = ({
           <Feather
             name={isOpen ? "chevron-up" : "chevron-down"}
             size={14}
-            color="#94a3b8"
+            color="#6b7280"
           />
         </AppButton>
       </View>
@@ -164,14 +164,14 @@ const TIFDropdown: React.FC<TIFDropdownProps> = ({
               left: menuPosition.left,
               minWidth: menuPosition.minWidth,
             }}
-            className="rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/70 overflow-hidden z-30"
+            className="rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/20 overflow-hidden z-30"
           >
             {options.map((option) => (
               <AppButton
                 key={option}
                 variant={VARIANT_TYPES.NOT_SELECTED}
                 className={cn(
-                  "h-10 px-3 flex-row items-center justify-between border-b border-border-primary-dark/40 last:border-b-0",
+                  "h-10 px-3 flex-row items-center justify-between border-b border-border-primary-dark/25 last:border-b-0",
                   value === option
                     ? "bg-bg-quaternary-dark"
                     : "bg-bg-quaternary-dark/95",
@@ -193,7 +193,7 @@ const TIFDropdown: React.FC<TIFDropdownProps> = ({
                   {option}
                 </AppText>
                 {value === option ? (
-                  <Feather name="check" size={13} color="#78f39a" />
+                  <Feather name="check" size={13} color="#4ade80" />
                 ) : null}
               </AppButton>
             ))}

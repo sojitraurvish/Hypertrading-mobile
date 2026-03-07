@@ -6,23 +6,23 @@ import { View, ViewProps } from "react-native";
 const VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
   [VARIANT_TYPES.PRIMARY]:
-    "bg-bg-tertiary-dark rounded-2xl p-4 border border-border-primary-dark",
+    "bg-bg-tertiary-dark rounded-3xl p-4 border border-border-primary-dark/30",
   [VARIANT_TYPES.SECONDARY]:
-    "bg-bg-quaternary-dark rounded-xl p-4",
+    "bg-bg-quaternary-dark rounded-3xl p-4",
   [VARIANT_TYPES.TERTIARY]:
-    "bg-bg-tertiary-dark rounded-2xl p-5 border border-border-primary-dark",
+    "bg-bg-tertiary-dark rounded-3xl p-5 border border-border-primary-dark/25",
   [VARIANT_TYPES.QUATERNARY]:
-    "bg-bg-secondary-dark rounded-xl p-3",
+    "bg-bg-secondary-dark rounded-2xl p-3.5",
   [VARIANT_TYPES.QUINARY]:
-    "bg-bg-tertiary-dark rounded-xl p-4 flex-row items-center",
+    "bg-bg-tertiary-dark rounded-3xl p-4 flex-row items-center border border-border-primary-dark/20",
   [VARIANT_TYPES.SENARY]:
-    "bg-bg-quaternary-dark rounded-2xl p-4 flex-1",
+    "bg-bg-quaternary-dark rounded-3xl p-4 flex-1",
   [VARIANT_TYPES.OCTONARY]:
-    "bg-bg-tertiary-dark rounded-2xl p-4",
+    "bg-bg-tertiary-dark rounded-3xl p-4 border border-border-primary-dark/18",
   [VARIANT_TYPES.NONARY]:
-    "bg-bg-secondary-dark rounded-2xl p-4 border border-border-primary-dark",
+    "bg-bg-secondary-dark rounded-3xl p-4 border border-border-primary-dark/25",
   [VARIANT_TYPES.DENARY]:
-    "bg-bg-quaternary-dark rounded-lg p-3",
+    "bg-bg-quaternary-dark rounded-2xl p-3.5",
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;

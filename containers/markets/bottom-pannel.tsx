@@ -13,6 +13,7 @@ import {
 import { BUILDER_CONFIG } from "@/lib/config";
 import { addDecimals } from "@/lib/utils/decimals";
 import { useBottomPannelStore } from "@/store/bottom-pannel";
+import { useMarketStore } from "@/store/markets";
 import { useTradeOrderDrawerStore } from "@/store/trade-order-drawer";
 import type { Position } from "@/types/bottom-pannel";
 import type { ISubscription } from "@nktkas/hyperliquid";
@@ -173,6 +174,9 @@ export const BottomPannel: React.FC<Props> = ({
     (state) => state.resolveSzDecimals,
   );
   const markPrice = useTradeOrderDrawerStore((state) => state.markPrice);
+  const market = useMarketStore((state) => state.markets.get(`${coin}-USDC`));
+  const marketMarkPrice = market?.mark ?? null;
+
   const [isLimitCloseModalOpen, setIsLimitCloseModalOpen] = useState(false);
   const [limitClosePosition, setLimitClosePosition] = useState<Position | null>(
     null,
@@ -867,7 +871,7 @@ export const BottomPannel: React.FC<Props> = ({
           return;
         }
 
-        if (!markPrice || markPrice <= 0) {
+        if (!marketMarkPrice || marketMarkPrice <= 0) {
           appToast.error({
             message:
               "Unable to get mark price, Wait for a while and try again!",
@@ -878,11 +882,11 @@ export const BottomPannel: React.FC<Props> = ({
         const normalizedMaxSlippage = Number.isFinite(maxSlippage)
           ? maxSlippage
           : 0;
-        const slippageAmount = markPrice * (normalizedMaxSlippage / 100);
+        const slippageAmount = marketMarkPrice * (normalizedMaxSlippage / 100);
         const rawPrice =
           currentSize < 0
-            ? markPrice + slippageAmount
-            : markPrice - slippageAmount;
+            ? marketMarkPrice + slippageAmount
+            : marketMarkPrice - slippageAmount;
 
         const szDecimals = await resolveSzDecimals(pos.coin);
         const marketPrice = addDecimals(rawPrice, szDecimals).toString();
@@ -919,7 +923,7 @@ export const BottomPannel: React.FC<Props> = ({
       checkApprovalStatus,
       checkBuilderFeeStatus,
       getUserPositions,
-      markPrice,
+      marketMarkPrice,
       maxSlippage,
       placeOrderWithAgent,
       resolveSzDecimals,
@@ -928,6 +932,119 @@ export const BottomPannel: React.FC<Props> = ({
       userAddress,
     ],
   );
+
+  const handleReversePositionMarket = useCallback(
+    async (positionItem: Position) => {
+      const pos = positionItem?.position;
+      if (!pos) return;
+
+      if (!userAddress?.startsWith("0x")) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      if (!agentPrivateKey) {
+        appToast.error({ message: "Please connect your wallet" });
+        return;
+      }
+
+      const isApprovedBuilderFee = await checkBuilderFeeStatus({
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+
+      if (!isApprovedBuilderFee) {
+        appToast.error({
+          message: "Please approve the builder fee to place order",
+        });
+        return;
+      }
+
+      const isApproved = await checkApprovalStatus({
+        agentPublicKeyParam: agentWallet?.address as `0x${string}`,
+        userPublicKeyParam: userAddress as `0x${string}`,
+      });
+
+      if (!isApproved) {
+        appToast.error({
+          message: "Please approve the agent wallet to place order",
+        });
+        return;
+      }
+
+      try {
+        const currentSize = Number.parseFloat(pos.szi);
+        if (!Number.isFinite(currentSize) || currentSize === 0) {
+          appToast.error({ message: "Position size is zero" });
+          return;
+        }
+
+        if (!marketMarkPrice || marketMarkPrice <= 0) {
+          appToast.error({
+            message:
+              "Unable to get mark price, Wait for a while and try again!",
+          });
+          return;
+        }
+
+        const reverseSide = currentSize < 0;
+        const reverseSize = Math.abs(currentSize) * 2;
+        const normalizedMaxSlippage = Number.isFinite(maxSlippage)
+          ? maxSlippage
+          : 0;
+        const slippageAmount = marketMarkPrice * (normalizedMaxSlippage / 100);
+        const rawPrice = reverseSide
+          ? marketMarkPrice + slippageAmount
+          : marketMarkPrice - slippageAmount;
+        if (!Number.isFinite(rawPrice) || rawPrice <= 0) {
+          appToast.error({ message: "Invalid market price for reverse order" });
+          return;
+        }
+
+        const szDecimals = await resolveSzDecimals(pos.coin);
+        const reversePrice = addDecimals(rawPrice, szDecimals).toString();
+        const formattedSize = addDecimals(reverseSize, szDecimals).toString();
+
+        const success = await placeOrderWithAgent({
+          agentPrivateKey: agentPrivateKey as `0x${string}`,
+          a: pos.coin,
+          b: reverseSide,
+          s: formattedSize,
+          p: reversePrice,
+          r: false,
+          tif: "FrontendMarket",
+        });
+
+        if (success) {
+          appToast.success({
+            message: "Reverse position order placed successfully",
+          });
+          const rows = await getUserPositions({
+            publicKey: userAddress as `0x${string}`,
+          });
+          setUserPositions(rows);
+          setActiveAccountTab("positions");
+        }
+      } catch (error) {
+        console.error("Error reversing position:", error);
+        appToast.error({ message: "Failed to reverse position" });
+      }
+    },
+    [
+      agentPrivateKey,
+      agentWallet?.address,
+      checkApprovalStatus,
+      checkBuilderFeeStatus,
+      getUserPositions,
+      marketMarkPrice,
+      maxSlippage,
+      placeOrderWithAgent,
+      resolveSzDecimals,
+      setActiveAccountTab,
+      setUserPositions,
+      userAddress,
+    ],
+  );
+
   const handleOpenLimitCloseModal = useCallback((positionItem: Position) => {
     setLimitClosePosition(positionItem);
     setIsLimitCloseModalOpen(true);
@@ -1038,117 +1155,6 @@ export const BottomPannel: React.FC<Props> = ({
       checkBuilderFeeStatus,
       getUserPositions,
       limitClosePosition,
-      placeOrderWithAgent,
-      resolveSzDecimals,
-      setActiveAccountTab,
-      setUserPositions,
-      userAddress,
-    ],
-  );
-  const handleReversePositionMarket = useCallback(
-    async (positionItem: Position) => {
-      const pos = positionItem?.position;
-      if (!pos) return;
-
-      if (!userAddress?.startsWith("0x")) {
-        appToast.error({ message: "Please connect your wallet" });
-        return;
-      }
-
-      if (!agentPrivateKey) {
-        appToast.error({ message: "Please connect your wallet" });
-        return;
-      }
-
-      const isApprovedBuilderFee = await checkBuilderFeeStatus({
-        userPublicKeyParam: userAddress as `0x${string}`,
-      });
-
-      if (!isApprovedBuilderFee) {
-        appToast.error({
-          message: "Please approve the builder fee to place order",
-        });
-        return;
-      }
-
-      const isApproved = await checkApprovalStatus({
-        agentPublicKeyParam: agentWallet?.address as `0x${string}`,
-        userPublicKeyParam: userAddress as `0x${string}`,
-      });
-
-      if (!isApproved) {
-        appToast.error({
-          message: "Please approve the agent wallet to place order",
-        });
-        return;
-      }
-
-      try {
-        const currentSize = Number.parseFloat(pos.szi);
-        if (!Number.isFinite(currentSize) || currentSize === 0) {
-          appToast.error({ message: "Position size is zero" });
-          return;
-        }
-
-        if (!markPrice || markPrice <= 0) {
-          appToast.error({
-            message:
-              "Unable to get mark price, Wait for a while and try again!",
-          });
-          return;
-        }
-
-        const reverseSide = currentSize < 0;
-        const reverseSize = Math.abs(currentSize) * 2;
-        const normalizedMaxSlippage = Number.isFinite(maxSlippage)
-          ? maxSlippage
-          : 0;
-        const slippageAmount = markPrice * (normalizedMaxSlippage / 100);
-        const rawPrice = reverseSide
-          ? markPrice + slippageAmount
-          : markPrice - slippageAmount;
-        if (!Number.isFinite(rawPrice) || rawPrice <= 0) {
-          appToast.error({ message: "Invalid market price for reverse order" });
-          return;
-        }
-
-        const szDecimals = await resolveSzDecimals(pos.coin);
-        const reversePrice = addDecimals(rawPrice, szDecimals).toString();
-        const formattedSize = addDecimals(reverseSize, szDecimals).toString();
-
-        const success = await placeOrderWithAgent({
-          agentPrivateKey: agentPrivateKey as `0x${string}`,
-          a: pos.coin,
-          b: reverseSide,
-          s: formattedSize,
-          p: reversePrice,
-          r: false,
-          tif: "FrontendMarket",
-        });
-
-        if (success) {
-          appToast.success({
-            message: "Reverse position order placed successfully",
-          });
-          const rows = await getUserPositions({
-            publicKey: userAddress as `0x${string}`,
-          });
-          setUserPositions(rows);
-          setActiveAccountTab("positions");
-        }
-      } catch (error) {
-        console.error("Error reversing position:", error);
-        appToast.error({ message: "Failed to reverse position" });
-      }
-    },
-    [
-      agentPrivateKey,
-      agentWallet?.address,
-      checkApprovalStatus,
-      checkBuilderFeeStatus,
-      getUserPositions,
-      markPrice,
-      maxSlippage,
       placeOrderWithAgent,
       resolveSzDecimals,
       setActiveAccountTab,

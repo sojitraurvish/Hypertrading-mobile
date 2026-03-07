@@ -78,7 +78,7 @@ const LeverageDialog: React.FC<LeverageDialogProps> = ({
           {tempLeverage}
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-[25px] leading-[30px] text-[#52f2a8]"
+            className="text-[25px] leading-[30px] text-accent-green"
           >
             x
           </AppText>
@@ -101,21 +101,21 @@ const LeverageDialog: React.FC<LeverageDialogProps> = ({
                   handleLeverageChange(next);
                 }
               }}
-              minimumTrackTintColor="#66ef7a"
-              maximumTrackTintColor="#2a3347"
-              thumbTintColor="#66ef7a"
+              minimumTrackTintColor="#4ade80"
+              maximumTrackTintColor="#1c1c26"
+              thumbTintColor="#4ade80"
               thumbStyle={{
                 width: 20,
                 height: 20,
                 borderRadius: 10,
                 borderWidth: 3,
-                borderColor: "#0d1117",
+                borderColor: "#0a0a0f",
               }}
               trackStyle={{ height: 7, borderRadius: 999 }}
             />
           </View>
 
-          <View className="h-9 w-[64px] rounded-lg border border-border-primary-dark/70 bg-bg-quaternary-dark items-center justify-center px-2">
+          <View className="h-9 w-[64px] rounded-lg border border-border-primary-dark/20 bg-bg-quaternary-dark items-center justify-center px-2">
             <TextInput
               value={inputValue}
               onChangeText={(value) => {
@@ -155,8 +155,8 @@ const LeverageDialog: React.FC<LeverageDialogProps> = ({
                 className={cn(
                   "h-8 flex-1 rounded-lg border items-center justify-center",
                   tempLeverage === value
-                    ? "bg-bg-senary-dark border-[#78f39a]/50"
-                    : "bg-bg-quaternary-dark/50 border-border-primary-dark/60",
+                    ? "bg-accent-green border-accent-green/30"
+                    : "bg-bg-quaternary-dark/50 border-border-primary-dark/20",
                 )}
               >
                 <AppText
@@ -178,7 +178,7 @@ const LeverageDialog: React.FC<LeverageDialogProps> = ({
         onPress={handleConfirm}
         isLoading={isSubmitting}
         isDisabled={isSubmitting}
-        className="mt-5 h-11 rounded-xl bg-[#2fb67c] flex-row items-center justify-center"
+        className="mt-5 h-11 rounded-xl bg-accent-green flex-row items-center justify-center"
       >
         <AppText
           variant={VARIANT_TYPES.NOT_SELECTED}

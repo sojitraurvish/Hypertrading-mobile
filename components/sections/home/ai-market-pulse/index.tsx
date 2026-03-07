@@ -8,7 +8,7 @@ import { AppCard } from "@/components/ui/app-card";
 
 const VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
-  [VARIANT_TYPES.PRIMARY]: "mx-4 mt-6",
+  [VARIANT_TYPES.PRIMARY]: "mx-4 mt-5",
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;
@@ -38,12 +38,12 @@ export const AiMarketPulse: React.FC<Props> = ({
       <AppCard variant={VARIANT_TYPES.TERTIARY}>
         {/* Header Row */}
         <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center gap-2.5">
             {/* Green Dot */}
-            <View className="w-2 h-2 rounded-full bg-[#50fa7b]" />
+            <View className="w-2 h-2 rounded-full bg-accent-green" />
             <AppText
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="text-text-primary-dark text-xs font-bold uppercase tracking-wider"
+              className="text-text-primary-dark text-[10px] font-bold uppercase tracking-[2.5px]"
             >
               AI Market Pulse
             </AppText>
@@ -55,8 +55,8 @@ export const AiMarketPulse: React.FC<Props> = ({
             isLoading={isLoading}
           >
             <AppText
-              variant={VARIANT_TYPES.QUATERNARY}
-              className="text-[11px] font-bold uppercase tracking-wider"
+              variant={VARIANT_TYPES.NOT_SELECTED}
+              className="text-[10px] font-bold uppercase tracking-[1.5px] text-accent-green"
             >
               Refresh
             </AppText>
@@ -66,7 +66,7 @@ export const AiMarketPulse: React.FC<Props> = ({
         {/* Content */}
         <AppText
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="text-text-quinary-dark text-[13px] leading-5"
+          className="text-text-septenary-dark text-[13px] leading-[21px]"
           style={{ fontStyle: "italic" }}
         >
           {content}

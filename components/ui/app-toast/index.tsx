@@ -75,12 +75,12 @@ const EXIT_ANIMATION_DURATION = 300;
 let toastId = 0;
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
-  success: "bg-[#0b1512] border border-green-400/30",
-  error: "bg-[#180d12] border border-red-400/32",
-  info: "bg-[#0b1320] border border-blue-400/30",
-  warning: "bg-[#1b1509] border border-amber-400/30",
-  notification: "bg-[#0f1520] border border-slate-300/24",
-  loading: "bg-[#0a1712] border border-emerald-400/28",
+  success: "bg-[#091410] border border-green-400/20",
+  error: "bg-[#160b10] border border-red-400/20",
+  info: "bg-[#0a111e] border border-blue-400/20",
+  warning: "bg-[#181308] border border-amber-400/20",
+  notification: "bg-[#0e131e] border border-slate-300/16",
+  loading: "bg-[#091510] border border-emerald-400/18",
 };
 
 const TITLE_STYLES: Record<ToastVariant, string> = {
@@ -111,12 +111,12 @@ const ICON_BG_STYLES: Record<ToastVariant, string> = {
 };
 
 const ICON_COLORS: Record<ToastVariant, string> = {
-  success: "#22C55E",
-  error: "#F87171",
-  info: "#60A5FA",
-  warning: "#F59E0B",
-  notification: "#CBD5E1",
-  loading: "#34D399",
+  success: "#4ade80",
+  error: "#f87171",
+  info: "#60a5fa",
+  warning: "#fbbf24",
+  notification: "#9ea6b4",
+  loading: "#4ade80",
 };
 
 const ACCENT_STYLES: Record<ToastVariant, string> = {
@@ -229,7 +229,7 @@ const getContainerPositionStyle = (
 };
 
 const LoadingIndicator = () => (
-  <ActivityIndicator size="small" color="#4ADE80" />
+  <ActivityIndicator size="small" color="#4ade80" />
 );
 
 const ToastIcon: React.FC<{ variant: ToastVariant }> = ({ variant }) => {
@@ -488,7 +488,7 @@ export const AppToast: React.FC<AppToastProps> = ({
             <Animated.View
               key={toast.id}
               className={cn(
-                "mb-2.5 overflow-hidden rounded-2xl px-3 py-3.5 flex-row gap-2.5",
+                "mb-2.5 overflow-hidden rounded-3xl px-3.5 py-4 flex-row gap-3",
                 toast.title ? "items-start" : "items-center",
                 VARIANT_STYLES[toast.variant],
               )}
@@ -511,7 +511,7 @@ export const AppToast: React.FC<AppToastProps> = ({
             >
               <View
                 className={cn(
-                  "absolute left-0 top-0 bottom-0 w-[3px]",
+                  "absolute left-0 top-0 bottom-0 w-[3px] rounded-full",
                   ACCENT_STYLES[toast.variant],
                 )}
               />
@@ -562,16 +562,16 @@ export const AppToast: React.FC<AppToastProps> = ({
                 ) : null}
               </View>
 
-              <Pressable
+                <Pressable
                 onPress={() => appToast.dismiss(toast.id)}
                 className={cn(
-                  "w-7 h-7 rounded-full items-center justify-center self-center bg-black/25 border border-white/10",
+                  "w-7 h-7 rounded-full items-center justify-center self-center bg-white/5 border border-white/8",
                   toast.title ? "mt-0.5" : "",
                 )}
                 hitSlop={8}
                 disabled={toast.isExiting}
               >
-                <Feather name="x" size={14} color="#9CA3AF" />
+                <Feather name="x" size={13} color="#6b7280" />
               </Pressable>
             </Animated.View>
           ))}

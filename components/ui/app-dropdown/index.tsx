@@ -55,10 +55,10 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
       <View ref={triggerRef} collapsable={false}>
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className={`h-10 px-3 rounded-xl border flex-row items-center justify-between ${
+          className={`h-10 px-3.5 rounded-xl border flex-row items-center justify-between ${
             open
-              ? "bg-bg-quaternary-dark border-[#78f39a]/45"
-              : "bg-bg-quaternary-dark/80 border-border-primary-dark/70"
+              ? "bg-bg-quaternary-dark border-accent-green/25"
+              : "bg-bg-quaternary-dark border-border-primary-dark/30"
           }`}
           onPress={toggleOpen}
         >
@@ -71,7 +71,7 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
           <Feather
             name={open ? "chevron-up" : "chevron-down"}
             size={14}
-            color="#94a3b8"
+            color="#6b7280"
           />
         </AppButton>
       </View>
@@ -93,7 +93,7 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
               left: menuPosition.left,
               minWidth: menuPosition.minWidth,
             }}
-            className="rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/70 overflow-hidden z-30"
+            className="rounded-2xl bg-bg-quaternary-dark border border-border-primary-dark/30 overflow-hidden z-30"
           >
             {options.map((option) => (
               <AppButton
@@ -101,8 +101,8 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
                 variant={VARIANT_TYPES.NOT_SELECTED}
                 className={
                   option.value === value
-                    ? "h-10 px-3 bg-bg-quaternary-dark flex-row items-center justify-between border-b border-border-primary-dark/40 last:border-b-0"
-                    : "h-10 px-3 bg-bg-quaternary-dark/95 flex-row items-center justify-between border-b border-border-primary-dark/40 last:border-b-0"
+                    ? "h-11 px-3.5 bg-accent-green/8 flex-row items-center justify-between border-b border-border-primary-dark/25 last:border-b-0"
+                    : "h-11 px-3.5 bg-bg-quaternary-dark flex-row items-center justify-between border-b border-border-primary-dark/25 last:border-b-0"
                 }
                 onPress={() => {
                   onChange(option.value);
@@ -113,14 +113,14 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
                   variant={VARIANT_TYPES.NOT_SELECTED}
                   className={
                     option.value === value
-                      ? "text-[12px] text-text-primary-dark font-semibold"
-                      : "text-[12px] text-text-tertiary-dark font-semibold"
+                      ? "text-[13px] text-text-primary-dark font-semibold"
+                      : "text-[13px] text-text-tertiary-dark font-medium"
                   }
                 >
                   {option.label}
                 </AppText>
                 {option.value === value ? (
-                  <Feather name="check" size={13} color="#78f39a" />
+                  <Feather name="check" size={13} color="#4ade80" />
                 ) : null}
               </AppButton>
             ))}

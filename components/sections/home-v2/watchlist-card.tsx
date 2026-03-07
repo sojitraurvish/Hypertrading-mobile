@@ -24,7 +24,7 @@ export function WatchlistCard({
   return (
     <View className="mx-4 mb-6">
       <SectionHeader title="Watchlist" onPressAction={onPressSeeAll} actionLabel="See all" />
-      <View className="gap-3">
+      <View className="gap-3.5">
         {items.map((item) => (
           <AppButton
             key={item.symbol}
@@ -33,11 +33,11 @@ export function WatchlistCard({
           >
             <AppCard
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="rounded-[24px] border border-border-primary-dark bg-bg-tertiary-dark px-3.5 py-3.5"
+              className="rounded-[26px] border border-border-primary-dark/20 bg-bg-tertiary-dark px-4 py-4"
             >
               <View className="flex-row items-start justify-between">
                 <View className="min-w-0 flex-1 flex-row items-center pr-3">
-                  <View className="mr-3 h-11 w-11 items-center justify-center rounded-2xl border border-border-primary-dark bg-bg-quaternary-dark">
+                  <View className="mr-3 h-11 w-11 items-center justify-center rounded-2xl border border-border-primary-dark/20 bg-bg-quaternary-dark">
                     <AppText
                       variant={VARIANT_TYPES.QUATERNARY}
                       className="text-[18px] text-text-primary-dark"

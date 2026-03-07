@@ -32,7 +32,7 @@ export function InsightCard({
   return (
     <AppCard
       variant={VARIANT_TYPES.NOT_SELECTED}
-      className={`rounded-[24px] border border-border-primary-dark bg-bg-tertiary-dark ${
+      className={`rounded-[26px] border border-border-primary-dark/20 bg-bg-tertiary-dark ${
         compact ? "p-3.5" : "p-4"
       }`}
     >
@@ -47,7 +47,7 @@ export function InsightCard({
           {subtitle}
         </AppText>
       ) : null}
-      <View className="mt-3 gap-2.5">
+      <View className="mt-3.5 gap-3">
         {rows.map((row) => (
           <View key={`${title}-${row.label}`} className="flex-row items-center justify-between">
             <AppText

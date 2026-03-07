@@ -57,11 +57,11 @@ export const MarketStats: React.FC<Props> = ({
         <AppCard
           key={index}
           variant={VARIANT_TYPES.SENARY}
-          className="bg-bg-quaternary-dark rounded-2xl p-4"
+          className="bg-bg-tertiary-dark rounded-3xl p-4 border border-border-primary-dark/18"
         >
           <AppText
             variant={VARIANT_TYPES.TERTIARY}
-            className="text-[9px] mb-2"
+            className="text-[9px] tracking-[2.5px] mb-2"
           >
             {stat.label}
           </AppText>

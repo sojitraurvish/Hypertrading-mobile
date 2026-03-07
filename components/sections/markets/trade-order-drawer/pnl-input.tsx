@@ -103,7 +103,7 @@ export function PnlInput({
           <View
             className={cn(
               "h-12 rounded-xl border bg-bg-secondary-dark/95 px-3 flex-row items-center",
-              error ? "border-[#ef4444]/60" : "border-border-primary-dark/70",
+              error ? "border-accent-red/60" : "border-border-primary-dark/20",
             )}
           >
             <TextInput
@@ -113,7 +113,7 @@ export function PnlInput({
               value={draftPrice}
               onChangeText={handlePriceChange}
               placeholder="0.00"
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#4b5563"
               className="flex-1 text-[16px] leading-[20px] font-semibold text-text-primary-dark pt-0 pb-0"
             />
             <AppText
@@ -135,7 +135,7 @@ export function PnlInput({
           <View
             className={cn(
               "h-12 rounded-xl border bg-bg-secondary-dark/95 px-2.5 flex-row items-center",
-              error ? "border-[#ef4444]/60" : "border-border-primary-dark/70",
+              error ? "border-accent-red/60" : "border-border-primary-dark/20",
             )}
           >
             <TextInput
@@ -144,14 +144,14 @@ export function PnlInput({
               value={pnlValue}
               onChangeText={handlePnLChange}
               placeholder="0.00"
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#4b5563"
               className="flex-1 text-[16px] leading-[20px] font-semibold text-text-primary-dark pt-0 pb-0"
             />
             <AppButton
               variant={VARIANT_TYPES.NOT_SELECTED}
               onPress={toggleVariant}
               isDisabled={disabled}
-              className="h-7 min-w-[34px] px-2 rounded-lg border border-border-primary-dark/70 bg-bg-quaternary-dark/80 items-center justify-center"
+              className="h-7 min-w-[34px] px-2 rounded-lg border border-border-primary-dark/20 bg-bg-quaternary-dark/80 items-center justify-center"
             >
               <AppText
                 variant={VARIANT_TYPES.NOT_SELECTED}

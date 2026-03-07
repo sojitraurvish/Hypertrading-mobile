@@ -55,18 +55,18 @@ export const MarketFilters: React.FC<Props> = ({
               key={filter.value}
               variant={VARIANT_TYPES.NOT_SELECTED}
               className={cn(
-                "px-4 py-2 rounded-full border",
+                "px-4 py-2.5 rounded-full border",
                 isActive
-                  ? "bg-bg-quinary-dark border-bg-quinary-dark"
-                  : "bg-bg-quaternary-dark border-border-primary-dark",
+                  ? "bg-accent-green border-accent-green"
+                  : "bg-bg-tertiary-dark border-border-primary-dark/20",
               )}
               onPress={() => onFilterChange?.(filter.value)}
             >
               <AppText
                 variant={VARIANT_TYPES.NOT_SELECTED}
                 className={cn(
-                  "text-[11px] font-semibold uppercase tracking-wide",
-                  isActive ? "text-black" : "text-text-tertiary-dark",
+                  "text-[10px] font-semibold uppercase tracking-[1.5px]",
+                  isActive ? "text-black" : "text-text-septenary-dark",
                 )}
               >
                 {filter.label}

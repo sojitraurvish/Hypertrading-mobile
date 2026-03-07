@@ -16,12 +16,12 @@ export function HeroBanner({
   compact = false,
 }: HeroBannerProps) {
   return (
-    <View className="mb-4 px-4 pt-2">
+    <View className="mb-5 px-5 pt-2">
       <View className="flex-row items-start justify-between">
         <View className="flex-1 pr-3">
           <AppText
             variant={VARIANT_TYPES.NONARY}
-            className="text-[10px] tracking-[2.8px] text-text-quaternary-dark"
+            className="text-[10px] tracking-[3px] text-text-quaternary-dark"
           >
             FLEET COMMANDER
           </AppText>
@@ -37,7 +37,7 @@ export function HeroBanner({
         </View>
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="h-14 w-14 items-center justify-center rounded-2xl border border-border-primary-dark bg-bg-quaternary-dark"
+          className="h-12 w-12 items-center justify-center rounded-2xl border border-border-primary-dark/20 bg-bg-quaternary-dark"
           onPress={onPressNotifications}
           accessibilityLabel="Open notifications"
         >

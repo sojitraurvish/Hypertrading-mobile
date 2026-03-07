@@ -53,12 +53,12 @@ export const OrderRow: React.FC<OrderRowProps> = ({
   }, [highlightOpacity, isHighlighted, order.size, order.total]);
 
   return (
-    <View className="relative flex-row items-center px-2 py-[3px] border-b border-border-primary-dark/10 overflow-hidden">
+    <View className="relative flex-row items-center px-2.5 py-[3.5px] border-b border-border-primary-dark/8 overflow-hidden">
       <Animated.View
         className={
           isAsk
             ? "absolute inset-y-0 left-0 bg-red-500/10"
-            : "absolute inset-y-0 left-0 bg-bg-senary-dark/15"
+            : "absolute inset-y-0 left-0 bg-accent-green/12"
         }
         style={{
           width: animatedBarWidth.interpolate({
@@ -72,7 +72,7 @@ export const OrderRow: React.FC<OrderRowProps> = ({
           className={
             isAsk
               ? "absolute inset-0 bg-red-500/25"
-              : "absolute inset-0 bg-bg-senary-dark/25"
+              : "absolute inset-0 bg-accent-green/20"
           }
           style={{ opacity: highlightOpacity }}
         />

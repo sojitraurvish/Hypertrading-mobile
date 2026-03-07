@@ -150,13 +150,13 @@ export const LimitCloseModal: React.FC<LimitCloseModalProps> = ({
               </AppText>
             </AppButton>
           </View>
-          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/70 bg-bg-quaternary-dark/80 flex-row items-center">
+          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/20 bg-bg-quaternary-dark/80 flex-row items-center">
             <TextInput
               value={closePrice}
               onChangeText={handlePriceChange}
               keyboardType="decimal-pad"
               placeholder="0.00"
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#4b5563"
               className="flex-1 text-text-primary-dark font-mono"
               editable={!isSubmitting}
             />
@@ -186,7 +186,7 @@ export const LimitCloseModal: React.FC<LimitCloseModalProps> = ({
               </AppText>
             </AppButton>
           </View>
-          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/70 bg-bg-quaternary-dark/80 flex-row items-center justify-between">
+          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/20 bg-bg-quaternary-dark/80 flex-row items-center justify-between">
             <AppText className="text-[15px] text-text-primary-dark font-mono">
               {displaySize}
             </AppText>
@@ -213,8 +213,8 @@ export const LimitCloseModal: React.FC<LimitCloseModalProps> = ({
                 onPress={() => setClosePercentage(value)}
                 className={
                   closePercentage === value
-                    ? "flex-1 h-8 rounded-lg bg-bg-senary-dark border border-[#78f39a]/45 items-center justify-center"
-                    : "flex-1 h-8 rounded-lg bg-bg-tertiary-dark border border-border-primary-dark/70 items-center justify-center"
+                    ? "flex-1 h-8 rounded-lg bg-bg-senary-dark border border-[#4ade80]/30 items-center justify-center"
+                    : "flex-1 h-8 rounded-lg bg-bg-tertiary-dark border border-border-primary-dark/20 items-center justify-center"
                 }
                 isDisabled={isSubmitting}
               >
@@ -232,7 +232,7 @@ export const LimitCloseModal: React.FC<LimitCloseModalProps> = ({
           </View>
         </View>
 
-        <View className="p-3 rounded-xl bg-bg-quaternary-dark/80 border border-border-primary-dark/60">
+        <View className="p-3 rounded-xl bg-bg-quaternary-dark/80 border border-border-primary-dark/20">
           <View className="flex-row items-center justify-between">
             <AppText className="text-[11px] text-text-octonary-dark">
               Est. Closed PnL
@@ -257,8 +257,8 @@ export const LimitCloseModal: React.FC<LimitCloseModalProps> = ({
           isDisabled={isSubmitting || closePriceNum <= 0 || closeSize <= 0 || !pos}
           className={
             isSubmitting || closePriceNum <= 0 || closeSize <= 0 || !pos
-              ? "h-11 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/60 items-center justify-center"
-              : "h-11 rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 items-center justify-center"
+              ? "h-11 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/20 items-center justify-center"
+              : "h-11 rounded-xl bg-bg-senary-dark border border-[#4ade80]/30 items-center justify-center"
           }
         >
           <AppText

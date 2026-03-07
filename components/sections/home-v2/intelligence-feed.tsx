@@ -23,13 +23,13 @@ export function IntelligenceFeed({
   compact = false,
 }: IntelligenceFeedProps) {
   return (
-    <View className="mx-4 mb-8">
+    <View className="mx-4 mb-6">
       <SectionHeader
         title="Live Intelligence"
         onPressAction={onPressSeeMore}
         actionLabel="More"
       />
-      <View className="gap-3">
+      <View className="gap-3.5">
         {items.map((item) => {
           const iconColor =
             item.tone === "positive"
@@ -45,7 +45,7 @@ export function IntelligenceFeed({
             >
               <AppCard
                 variant={VARIANT_TYPES.NOT_SELECTED}
-                className={`rounded-[24px] border border-border-primary-dark bg-bg-tertiary-dark ${
+                className={`rounded-[26px] border border-border-primary-dark/20 bg-bg-tertiary-dark ${
                   compact ? "p-3" : "p-3.5"
                 }`}
               >

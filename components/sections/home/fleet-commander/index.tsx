@@ -9,7 +9,7 @@ import { AppCard } from "@/components/ui/app-card";
 
 const VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
-  [VARIANT_TYPES.PRIMARY]: "mx-4 mt-4",
+  [VARIANT_TYPES.PRIMARY]: "mx-4 mt-5",
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;
@@ -35,29 +35,28 @@ export const FleetCommander: React.FC<Props> = ({
     <View className={cn(baseClassName, className)}>
       <AppCard variant={VARIANT_TYPES.TERTIARY} className="relative">
         {/* Top Row: Label + Bell */}
-        <View className="flex-row items-start justify-between mb-1">
+        <View className="flex-row items-start justify-between mb-1.5">
           <View>
             <AppText
               variant={VARIANT_TYPES.NONARY}
-              className="text-[10px] mb-1"
+              className="text-[10px] tracking-[2.8px] mb-1.5"
             >
               {subtitle}
             </AppText>
             <AppText
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className="text-text-primary-dark text-4xl font-bold"
+              className="text-text-primary-dark text-[28px] leading-[34px] font-bold"
             >
               {title}
             </AppText>
           </View>
 
-          {/* Notification Bell */}
           <AppButton
             variant={VARIANT_TYPES.QUATERNARY}
-            className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-xl"
+            className="w-11 h-11 items-center justify-center bg-bg-quaternary-dark rounded-2xl border border-border-primary-dark/20"
             onPress={onNotificationPress}
           >
-            <Ionicons name="notifications-outline" size={20} color="#9ca3af" />
+            <Ionicons name="notifications-outline" size={20} color="#4b5563" />
           </AppButton>
         </View>
       </AppCard>

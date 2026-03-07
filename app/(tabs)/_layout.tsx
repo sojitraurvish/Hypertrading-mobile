@@ -27,21 +27,21 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: "#000000",
-            borderTopColor: "#1f1f28",
-            borderTopWidth: 1,
+            backgroundColor: "#030305",
+            borderTopColor: "#1c1c26",
+            borderTopWidth: 0.5,
             height: 70 + insets.bottom,
             paddingBottom: insets.bottom,
-            paddingTop: 8,
+            paddingTop: 10,
           },
-          tabBarActiveTintColor: "#50fa7b",
-          tabBarInactiveTintColor: "#6b7280",
+          tabBarActiveTintColor: "#4ade80",
+          tabBarInactiveTintColor: "#4b5563",
           tabBarLabelStyle: {
-            fontSize: 10,
-            fontWeight: "600",
-            letterSpacing: 1,
+            fontSize: 9,
+            fontWeight: "700",
+            letterSpacing: 1.2,
             textTransform: "uppercase",
-            marginTop: 4,
+            marginTop: 3,
           },
         }}
       >

@@ -8,7 +8,7 @@ import { AppCard } from "@/components/ui/app-card";
 
 const VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
-  [VARIANT_TYPES.PRIMARY]: "mx-4 mt-6",
+  [VARIANT_TYPES.PRIMARY]: "mx-4 mt-5",
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;
@@ -43,16 +43,16 @@ const DEFAULT_ITEMS: WatchlistItem[] = [
 
 /** Mini sparkline placeholder using small views */
 const MiniChart: React.FC<{ isPositive: boolean }> = ({ isPositive }) => {
-  const color = isPositive ? "bg-[#50fa7b]" : "bg-[#ef4444]";
+  const color = isPositive ? "bg-accent-green" : "bg-accent-red";
   // Simple visual representation of a mini chart
-  const heights = [12, 16, 10, 18, 14, 8, 16, 12, 6, 14];
+  const heights = [10, 14, 8, 16, 12, 7, 15, 11, 5, 13];
 
   return (
     <View className="flex-row items-end gap-[2px] h-8">
       {heights.map((h, i) => (
         <View
           key={i}
-          className={cn("w-[3px] rounded-full opacity-70", color)}
+          className={cn("w-[2.5px] rounded-full opacity-60", color)}
           style={{ height: h }}
         />
       ))}
@@ -72,10 +72,10 @@ export const Watchlist: React.FC<Props> = ({
   return (
     <View className={cn(baseClassName, className)}>
       {/* Section Header */}
-      <View className="flex-row items-center justify-between mb-3">
+      <View className="flex-row items-center justify-between mb-4">
         <AppText
           variant={VARIANT_TYPES.TERTIARY}
-          className="text-[11px]"
+          className="text-[10px] tracking-[2.5px]"
         >
           WATCHLIST
         </AppText>
@@ -84,8 +84,8 @@ export const Watchlist: React.FC<Props> = ({
           onPress={onSeeAll}
         >
           <AppText
-            variant={VARIANT_TYPES.QUATERNARY}
-            className="text-xs font-bold"
+            variant={VARIANT_TYPES.NOT_SELECTED}
+            className="text-[10px] font-bold text-accent-green tracking-[1.5px]"
           >
             SEE ALL
           </AppText>
@@ -101,18 +101,18 @@ export const Watchlist: React.FC<Props> = ({
         >
           <AppCard
             variant={VARIANT_TYPES.QUINARY}
-            className="flex-row items-center py-3 px-4"
+            className="flex-row items-center py-3.5 px-4"
           >
             {/* Coin Icon */}
             <View
               className={cn(
-                "w-10 h-10 rounded-full items-center justify-center mr-3",
+                "w-11 h-11 rounded-2xl items-center justify-center mr-3",
                 item.iconBgColor
               )}
             >
               <AppText
                 variant={VARIANT_TYPES.NOT_SELECTED}
-                className="text-black font-bold text-base"
+                className="text-black font-bold text-[15px]"
               >
                 {item.iconLabel}
               </AppText>

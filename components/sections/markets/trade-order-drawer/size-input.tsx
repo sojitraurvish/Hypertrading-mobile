@@ -63,7 +63,7 @@ const SizeInput: React.FC<SizeInputProps> = ({
       <View
         className={cn(
           "h-14 rounded-2xl border bg-bg-secondary-dark/95 px-3 flex-row items-center justify-between",
-          hasError ? "border-[#ef4444]/60" : "border-border-primary-dark/70",
+          hasError ? "border-accent-red/60" : "border-border-primary-dark/20",
         )}
       >
         <TextInput
@@ -71,17 +71,17 @@ const SizeInput: React.FC<SizeInputProps> = ({
           onChangeText={handleChange}
           keyboardType="decimal-pad"
           placeholder="0.00"
-          placeholderTextColor="#64748b"
+          placeholderTextColor="#4b5563"
           className="flex-1 text-[22px] leading-[26px] font-semibold text-text-primary-dark pt-0 pb-0"
         />
         {/* <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
           onPress={onMaxPress}
-          className="h-8 px-2 rounded-lg border border-[#78f39a]/40 bg-[#1b3f33] items-center justify-center mr-1"
+          className="h-8 px-2 rounded-lg border border-accent-green/30 bg-[#1b3f33] items-center justify-center mr-1"
         >
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-[10px] font-semibold text-[#86efac]"
+            className="text-[10px] font-semibold text-accent-green"
           >
             Max {formattedMaxSize}
           </AppText>
@@ -97,13 +97,13 @@ const SizeInput: React.FC<SizeInputProps> = ({
           >
             {currency}
           </AppText>
-          <Feather name="chevron-down" size={12} color="#94a3b8" />
+          <Feather name="chevron-down" size={12} color="#6b7280" />
         </AppButton>
       </View>
       {hasError ? (
         <AppText
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="text-[11px] leading-[14px] text-[#ef4444] font-medium"
+          className="text-[11px] leading-[14px] text-accent-red font-medium"
         >
           Size exceeds maximum available
         </AppText>

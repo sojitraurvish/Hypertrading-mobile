@@ -36,13 +36,13 @@ export const VaultHeader: React.FC<Props> = ({
         <View>
           <AppText
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="text-text-primary-dark text-3xl font-black"
+            className="text-text-primary-dark text-[28px] leading-[34px] font-black"
           >
             {title}
           </AppText>
           <AppText
             variant={VARIANT_TYPES.NONARY}
-            className="text-[10px] mt-1"
+            className="text-[10px] tracking-[2.8px] mt-1.5"
           >
             {subtitle}
           </AppText>
@@ -50,10 +50,10 @@ export const VaultHeader: React.FC<Props> = ({
 
         <AppButton
           variant={VARIANT_TYPES.QUATERNARY}
-          className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-xl"
+          className="w-11 h-11 items-center justify-center bg-bg-quaternary-dark rounded-2xl border border-border-primary-dark/20"
           onPress={onInfoPress}
         >
-          <MaterialCommunityIcons name="information-outline" size={20} color="#9ca3af" />
+          <MaterialCommunityIcons name="information-outline" size={20} color="#6b7280" />
         </AppButton>
       </View>
     </View>

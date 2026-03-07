@@ -449,7 +449,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({
       <View className="gap-4">
         <View className="flex-row gap-3">
           <View className="flex-1 gap-2">
-            <AppText className="text-[11px] uppercase tracking-[0.6px] text-text-secondary-dark font-semibold">
+            <AppText className="text-[11px] uppercase tracking-[0.6px] text-accent-green font-semibold">
               Asset
             </AppText>
             <AppDropdown
@@ -459,7 +459,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({
             />
           </View>
           <View className="flex-1 gap-2">
-            <AppText className="text-[11px] uppercase tracking-[0.6px] text-text-secondary-dark font-semibold">
+            <AppText className="text-[11px] uppercase tracking-[0.6px] text-accent-green font-semibold">
               Chain
             </AppText>
             <AppDropdown
@@ -472,7 +472,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({
 
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
-            <AppText className="text-[11px] uppercase tracking-[0.6px] text-text-secondary-dark font-semibold">
+            <AppText className="text-[11px] uppercase tracking-[0.6px] text-accent-green font-semibold">
               Amount (USDC)
             </AppText>
             <AppButton
@@ -481,19 +481,19 @@ export const DepositModal: React.FC<DepositModalProps> = ({
               className="px-0 py-0"
               isDisabled={balance === undefined || isPending || isConfirming}
             >
-              <AppText className="text-[12px] font-semibold text-text-quaternary-dark">
+              <AppText className="text-[12px] font-semibold text-accent-green">
                 Max: {maxBalance}
               </AppText>
             </AppButton>
           </View>
 
-          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/70 bg-bg-quaternary-dark/80 flex-row items-center">
+          <View className="h-12 px-3 rounded-xl border border-border-primary-dark/20 bg-bg-tertiary-dark flex-row items-center">
             <TextInput
               value={amount}
               onChangeText={handleAmountChange}
               keyboardType="decimal-pad"
               placeholder="0.00"
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#4b5563"
               className="flex-1 text-text-primary-dark font-mono"
               editable={!isPending && !isConfirming}
             />
@@ -541,12 +541,12 @@ export const DepositModal: React.FC<DepositModalProps> = ({
             isPending ||
             isConfirming ||
             isSwitchingChain
-              ? "h-11 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/60 items-center justify-center"
-              : "h-11 rounded-xl bg-bg-senary-dark border border-[#78f39a]/45 items-center justify-center"
+              ? "h-11 rounded-xl bg-bg-quaternary-dark border border-border-primary-dark/20 items-center justify-center"
+              : "h-11 rounded-xl bg-accent-green border-transparent items-center justify-center"
           }
         >
           {isPending || isConfirming || isSwitchingChain ? (
-            <ActivityIndicator size="small" color="#FFFFFF" className="mr-2" />
+            <ActivityIndicator size="small" color="#f0f0f0" className="mr-2" />
           ) : null}
           <AppText
             className={
@@ -555,7 +555,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({
               isPending ||
               isConfirming ||
               isSwitchingChain
-                ? "text-[14px] font-semibold text-text-octonary-dark"
+                ? "text-[14px] font-semibold text-text-tertiary-dark"
                 : "text-[14px] font-semibold text-black"
             }
           >

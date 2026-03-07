@@ -59,28 +59,28 @@ export const AppDrawer: React.FC<AppDrawerProps> = ({
       animationType="slide"
       overlay
       closeOnOutsideClick={closeOnOutsideClick}
-      overlayClassName="bg-black/70"
+      overlayClassName="bg-black/75"
       className="flex-1 justify-end"
     >
       <View className="flex-1 justify-end">
         <View
           className={cn(
-            "rounded-t-3xl border border-border-primary-dark/70 bg-bg-secondary-dark px-4 pb-6 pt-3",
+            "rounded-t-4xl border-t border-x border-border-primary-dark/25 bg-bg-secondary-dark px-5 pb-8 pt-3",
             className,
           )}
         >
           <View {...swipeCloseResponder.panHandlers}>
             {showHandle ? (
-              <View className="w-10 h-1 rounded-full bg-bg-quinary-dark self-center mb-4" />
+              <View className="w-10 h-[5px] rounded-full bg-bg-nonary-dark/80 self-center mb-5" />
             ) : null}
           </View>
 
           {(title || showCloseButton) && (
-            <View className="flex-row items-center justify-between mb-4" {...swipeCloseResponder.panHandlers}>
+            <View className="flex-row items-center justify-between mb-5" {...swipeCloseResponder.panHandlers}>
               {title ? (
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="text-[28px] font-extrabold text-text-primary-dark uppercase"
+                  className="text-[22px] font-bold text-text-primary-dark tracking-tight"
                 >
                   {title}
                 </AppText>
@@ -92,10 +92,10 @@ export const AppDrawer: React.FC<AppDrawerProps> = ({
                 <AppButton
                   variant={VARIANT_TYPES.NOT_SELECTED}
                   onPress={onClose}
-                  className="w-9 h-9 rounded-full bg-bg-quaternary-dark items-center justify-center"
+                  className="w-9 h-9 rounded-full bg-bg-quaternary-dark border border-border-primary-dark/20 items-center justify-center"
                   accessibilityLabel="Close drawer"
                 >
-                  <Feather name="x" size={16} color="#64748b" />
+                  <Feather name="x" size={15} color="#6b7280" />
                 </AppButton>
               ) : null}
             </View>

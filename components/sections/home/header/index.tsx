@@ -17,7 +17,7 @@ function truncateAddress(address: string) {
 const VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
   [VARIANT_TYPES.PRIMARY]:
-    "flex-row items-center justify-between px-4 py-3 bg-bg-primary-dark",
+    "flex-row items-center justify-between px-5 py-3.5 bg-bg-primary-dark",
 } as const;
 
 type VariantKeys = keyof typeof VARIANTS;
@@ -87,7 +87,7 @@ export const HomeHeader: React.FC<Props> = ({
       <View style={{ flex: 1 }} className="overflow-hidden mr-3">
         <AppText
           variant={VARIANT_TYPES.TERTIARY}
-          className="text-text-tertiary-dark text-[10px] mb-1"
+          className="text-text-tertiary-dark text-[9px] tracking-[2px] mb-1.5"
         >
           PORTFOLIO VALUE
         </AppText>
@@ -101,7 +101,7 @@ export const HomeHeader: React.FC<Props> = ({
           {addDecimals(
             Number(balances[0]?.available_balance.replace(/\s+[A-Za-z]+$/, "")), 2,
           ).toFixed(2)}
-          <Text className="text-text-tertiary-dark text-sm font-normal">
+          <Text className="text-text-tertiary-dark text-xs font-normal">
             {"  "}
             {currency}
           </Text>
@@ -109,41 +109,38 @@ export const HomeHeader: React.FC<Props> = ({
       </View>
 
       {/* Right: Action Buttons */}
-      <View style={{ flexShrink: 0 }} className="flex-row items-center gap-2">
-        {/* Deposit Button */}
+      <View style={{ flexShrink: 0 }} className="flex-row items-center gap-2.5">
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="w-9 h-9 items-center justify-center bg-bg-quaternary-dark rounded-xl border border-border-primary-dark/60"
+          className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-2xl border border-border-primary-dark/20"
           onPress={onDeposit}
           accessibilityLabel="Open deposit modal"
         >
-          <Feather name="arrow-down-left" size={15} color="#52f2a8" />
+          <Feather name="arrow-down-left" size={16} color="#4ade80" />
         </AppButton>
 
-        {/* Withdraw Button */}
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="w-9 h-9 items-center justify-center bg-bg-quaternary-dark rounded-xl border border-border-primary-dark/60"
+          className="w-10 h-10 items-center justify-center bg-bg-quaternary-dark rounded-2xl border border-border-primary-dark/20"
           onPress={onWithdraw}
           accessibilityLabel="Open withdraw modal"
         >
-          <Feather name="arrow-up-right" size={15} color="#ef4444" />
+          <Feather name="arrow-up-right" size={16} color="#f87171" />
         </AppButton>
 
-        {/* Connect Wallet Button */}
         <AppButton
           variant={VARIANT_TYPES.TERTIARY}
-          className="h-10 rounded-xl bg-bg-senary-dark px-3"
+          className="h-10 rounded-2xl bg-bg-senary-dark border border-transparent px-3.5"
           onPress={() => open()}
         >
           <Ionicons
             name={isConnected ? "wallet" : "wallet-outline"}
-            size={16}
+            size={15}
             color="#000000"
           />
           <AppText
             variant={VARIANT_TYPES.QUATERNARY}
-            className="ml-1.5 text-xs font-semibold text-black"
+            className="ml-2 text-[11px] font-bold text-black tracking-wide"
           >
             {isConnected && address ? truncateAddress(address) : "CONNECT"}
           </AppText>

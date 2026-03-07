@@ -32,7 +32,7 @@ export function MoversCarousel({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="px-4 gap-2.5"
+        contentContainerClassName="px-4 gap-3"
       >
         {items.map((item) => (
           <AppButton
@@ -42,7 +42,7 @@ export function MoversCarousel({
           >
             <AppCard
               variant={VARIANT_TYPES.NOT_SELECTED}
-              className={`rounded-[24px] border border-border-primary-dark bg-bg-tertiary-dark p-3 ${
+              className={`rounded-[26px] border border-border-primary-dark/20 bg-bg-tertiary-dark p-3.5 ${
                 compact ? "h-[116px] w-[122px]" : "h-[120px] w-[128px]"
               } ${cardClassName}`}
             >

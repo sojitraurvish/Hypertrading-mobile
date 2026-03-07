@@ -67,7 +67,7 @@ const ShimmerOrderRows: React.FC = () => {
         >
           <View className="w-1/3 pr-[2px]">
             <Animated.View
-              className="h-[11px] rounded-sm bg-[#1a1a1a]"
+              className="h-[11px] rounded-sm bg-bg-quaternary-dark"
               style={{
                 opacity: shimmerOpacity,
                 width: `${62 + ((index * 7) % 26)}%`,
@@ -76,7 +76,7 @@ const ShimmerOrderRows: React.FC = () => {
           </View>
           <View className="w-1/3 px-[2px] items-center">
             <Animated.View
-              className="h-[11px] rounded-sm bg-[#1a1a1a]"
+              className="h-[11px] rounded-sm bg-bg-quaternary-dark"
               style={{
                 opacity: shimmerOpacity,
                 width: `${56 + ((index * 5) % 30)}%`,
@@ -85,7 +85,7 @@ const ShimmerOrderRows: React.FC = () => {
           </View>
           <View className="w-1/3 pl-[2px] items-end">
             <Animated.View
-              className="h-[11px] rounded-sm bg-[#1a1a1a]"
+              className="h-[11px] rounded-sm bg-bg-quaternary-dark"
               style={{
                 opacity: shimmerOpacity,
                 width: `${60 + ((index * 9) % 24)}%`,
@@ -123,22 +123,22 @@ const ShimmerSpreadIndicator: React.FC = () => {
   }, [shimmerOpacity]);
 
   return (
-    <View className="flex-row items-center px-2 py-2 border-y border-border-primary-dark/35 bg-[#0c0c0c] mt-1">
+    <View className="flex-row items-center px-2 py-2 border-y border-border-primary-dark/35 bg-bg-tertiary-dark mt-1">
       <View className="flex-1">
         <Animated.View
-          className="h-[10px] rounded-sm bg-[#1a1a1a]"
+          className="h-[10px] rounded-sm bg-bg-quaternary-dark"
           style={{ opacity: shimmerOpacity, width: 56 }}
         />
       </View>
       <View className="flex-1 items-center">
         <Animated.View
-          className="h-[10px] rounded-sm bg-[#1a1a1a]"
+          className="h-[10px] rounded-sm bg-bg-quaternary-dark"
           style={{ opacity: shimmerOpacity, width: 38 }}
         />
       </View>
       <View className="flex-1 items-end">
         <Animated.View
-          className="h-[10px] rounded-sm bg-[#1a1a1a]"
+          className="h-[10px] rounded-sm bg-bg-quaternary-dark"
           style={{ opacity: shimmerOpacity, width: 38 }}
         />
       </View>
@@ -282,14 +282,14 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
   }, [asks.length, bids.length]);
 
   return (
-    <View className="mx-1 mt-3 rounded-xl border border-[#1E2A40] bg-[#060D1A] overflow-hidden">
+    <View className="mx-1 mt-3 rounded-xl border border-border-primary-dark/20 bg-bg-secondary-dark overflow-hidden">
       <View className="px-1.5 pt-2 pb-1">
-        <View className="flex-row rounded-lg bg-[#0D1628] p-1">
+        <View className="flex-row rounded-lg bg-bg-tertiary-dark p-1">
           <AppButton
             variant={VARIANT_TYPES.NOT_SELECTED}
             className={
               activeTab === "orderbook"
-                ? "flex-1 py-1 rounded-md bg-[#121F34]"
+                ? "flex-1 py-1 rounded-md bg-bg-quaternary-dark"
                 : "flex-1 py-1 rounded-md"
             }
             onPress={() => setActiveTab("orderbook")}
@@ -309,7 +309,7 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
             variant={VARIANT_TYPES.NOT_SELECTED}
             className={
               activeTab === "trades"
-                ? "flex-1 py-1 rounded-md bg-[#121F34]"
+                ? "flex-1 py-1 rounded-md bg-bg-quaternary-dark"
                 : "flex-1 py-1 rounded-md"
             }
             onPress={() => setActiveTab("trades")}
@@ -339,7 +339,7 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
         />
         <AppButton
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="px-2 py-1 rounded-md bg-[#0E1628] border border-[#22314B] flex-row items-center"
+          className="px-2 py-1 rounded-md bg-bg-tertiary-dark border border-border-primary-dark/20 flex-row items-center"
           onPress={() =>
             setDisplayCurrency((prev) => (prev === "USDC" ? currency : "USDC"))
           }
@@ -350,15 +350,15 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
           >
             {displayCurrency}
           </AppText>
-          <Feather name="chevron-down" size={12} color="#94a3b8" />
+          <Feather name="chevron-down" size={12} color="#6b7280" />
         </AppButton>
       </View>
 
       {activeTab === "orderbook" ? (
         <View className="px-1.5 py-1.5">
           <View className="flex-row">
-            <View className="flex-1 border-r border-border-primary-dark/30 pr-1">
-              <View className="flex-row pb-1.5 border-b border-border-primary-dark/40">
+            <View className="flex-1 border-r border-border-primary-dark/20 pr-1">
+              <View className="flex-row pb-1.5 border-b border-border-primary-dark/25">
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
                   className="w-1/3 text-[8px] text-text-octonary-dark uppercase"
@@ -402,7 +402,7 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
             </View>
 
             <View className="flex-1 pl-1">
-              <View className="flex-row pb-1.5 border-b border-border-primary-dark/40">
+              <View className="flex-row pb-1.5 border-b border-border-primary-dark/25">
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
                   className="w-1/3 text-[8px] text-text-octonary-dark uppercase"
@@ -454,7 +454,7 @@ export const OrderBook: React.FC<Props> = ({ currency }) => {
         </View>
       ) : (
         <View className="px-1.5 py-1.5">
-          <View className="flex-row pb-1.5 border-b border-border-primary-dark/40">
+          <View className="flex-row pb-1.5 border-b border-border-primary-dark/25">
             <AppText
               variant={VARIANT_TYPES.NOT_SELECTED}
               className="w-1/3 text-[8px] text-text-octonary-dark uppercase"

@@ -15,6 +15,10 @@ module.exports = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      borderRadius: {
+        "4xl": "32px",
+        "5xl": "40px",
+      },
       colors: {
         // ==========================================
         // TEXT COLORS — Light Mode
@@ -24,14 +28,14 @@ module.exports = {
         // ==========================================
         // TEXT COLORS — Dark Mode
         // ==========================================
-        "text-primary-dark": "#FFFFFF",
-        "text-secondary-dark": "#50fa7b",
-        "text-tertiary-dark": "#9ca3af",
-        "text-quaternary-dark": "#50fa7b",
+        "text-primary-dark": "#eef0f4",
+        "text-secondary-dark": "#4ade80",
+        "text-tertiary-dark": "#6b7280",
+        "text-quaternary-dark": "#4ade80",
         "text-quinary-dark": "#d1d5db",
-        "text-senary-dark": "#ef4444",
-        "text-septenary-dark": "#B0B0B0",
-        "text-octonary-dark": "#6b7280",
+        "text-senary-dark": "#f87171",
+        "text-septenary-dark": "#9ca3af",
+        "text-octonary-dark": "#4b5563",
 
         // ==========================================
         // BACKGROUND COLORS — Light Mode
@@ -41,15 +45,15 @@ module.exports = {
         // ==========================================
         // BACKGROUND COLORS — Dark Mode
         // ==========================================
-        "bg-primary-dark": "#000000",
-        "bg-secondary-dark": "#0a0a0a",
-        "bg-tertiary-dark": "#141414",
-        "bg-quaternary-dark": "#1a1a1a",
-        "bg-quinary-dark": "#FFFFFF",
-        "bg-senary-dark": "#50fa7b",
-        "bg-septenary-dark": "#111111",
-        "bg-octonary-dark": "#1f1f1f",
-        "bg-nonary-dark": "#2a2a2a",
+        "bg-primary-dark": "#030305",
+        "bg-secondary-dark": "#0a0a0f",
+        "bg-tertiary-dark": "#0f0f15",
+        "bg-quaternary-dark": "#14141c",
+        "bg-quinary-dark": "#eef0f4",
+        "bg-senary-dark": "#4ade80",
+        "bg-septenary-dark": "#0c0c12",
+        "bg-octonary-dark": "#1a1a24",
+        "bg-nonary-dark": "#222230",
         "bg-denary-dark": "#b91c1c",
 
         // ==========================================
@@ -60,9 +64,19 @@ module.exports = {
         // ==========================================
         // BORDER COLORS — Dark Mode
         // ==========================================
-        "border-primary-dark": "#1f1f1f",
-        "border-secondary-dark": "#2a2a2a",
-        "border-tertiary-dark": "#333333",
+        "border-primary-dark": "#1c1c26",
+        "border-secondary-dark": "#262632",
+        "border-tertiary-dark": "#30303c",
+
+        // ==========================================
+        // ACCENT COLORS — Shared
+        // ==========================================
+        "accent-green": "#4ade80",
+        "accent-red": "#f87171",
+        "accent-blue": "#60a5fa",
+        "accent-amber": "#fbbf24",
+        "accent-teal": "#2dd4bf",
+        "accent-violet": "#a78bfa",
       },
     },
   },

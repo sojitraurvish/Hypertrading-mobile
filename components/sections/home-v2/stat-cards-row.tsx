@@ -28,7 +28,7 @@ export function StatCardsRow({ cards, compact = false }: StatCardsRowProps) {
           <AppCard
             key={card.id}
             variant={VARIANT_TYPES.NOT_SELECTED}
-            className="flex-1 rounded-[26px] border border-border-primary-dark bg-bg-tertiary-dark p-3.5"
+            className="flex-1 rounded-[28px] border border-border-primary-dark/20 bg-bg-tertiary-dark p-4"
           >
             <View className="mb-3 h-10 w-10 items-center justify-center rounded-xl bg-bg-quaternary-dark">
               <Feather
@@ -39,7 +39,7 @@ export function StatCardsRow({ cards, compact = false }: StatCardsRowProps) {
             </View>
             <AppText
               variant={VARIANT_TYPES.NONARY}
-              className="text-[9px] tracking-[2.1px] text-text-tertiary-dark"
+              className="text-[9px] tracking-[2.5px] text-text-tertiary-dark"
             >
               {card.label}
             </AppText>

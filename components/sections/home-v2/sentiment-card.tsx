@@ -23,7 +23,7 @@ export function SentimentCard({ sentiment, compact = false }: SentimentCardProps
       <SectionHeader title="Market Sentiment" />
       <AppCard
         variant={VARIANT_TYPES.NOT_SELECTED}
-        className="rounded-[28px] border border-border-primary-dark bg-bg-tertiary-dark p-4"
+        className="rounded-[30px] border border-border-primary-dark/20 bg-bg-tertiary-dark p-5"
       >
         <View className={compact ? "items-center" : "flex-row items-center"}>
           <View className={compact ? "mb-3 items-center justify-center" : "mr-5 items-center justify-center"}>

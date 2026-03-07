@@ -32,17 +32,17 @@ const SizeSlider: React.FC<SizeSliderProps> = ({
             step={1}
             disabled={disabled}
             containerStyle={{ marginHorizontal: 0 }}
-            minimumTrackTintColor="#66ef7a"
-            maximumTrackTintColor="#2a3347"
-            thumbTintColor="#66ef7a"
+            minimumTrackTintColor="#4ade80"
+            maximumTrackTintColor="#1c1c26"
+            thumbTintColor="#4ade80"
             thumbStyle={{
               width: 20,
               height: 20,
               borderRadius: 10,
               borderWidth: 3,
-              borderColor: "#0d1117",
+              borderColor: "#0a0a0f",
             }}
-            trackStyle={{ height: 7, borderRadius: 999 }}
+            trackStyle={{ height: 6, borderRadius: 999 }}
           />
         </View>
         <View className={cn("min-w-12 items-end", disabled ? "opacity-50" : "")}>

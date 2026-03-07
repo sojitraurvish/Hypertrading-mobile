@@ -288,7 +288,7 @@ export function TakeProfitStopLossInputs({
       {hasError ? (
         <AppText
           variant={VARIANT_TYPES.NOT_SELECTED}
-          className="text-[12px] leading-[16px] text-[#ef4444] font-medium"
+          className="text-[12px] leading-[16px] text-accent-red font-medium"
         >
           {takeProfitError && stopLossError
             ? `Both ${priceLabel === "entry" ? "entry" : "mark"} prices are invalid`

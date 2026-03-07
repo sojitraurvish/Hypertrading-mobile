@@ -10,11 +10,11 @@ import { View } from "react-native";
 const MODAL_VARIANTS = {
   [VARIANT_TYPES.NOT_SELECTED]: "",
   [VARIANT_TYPES.PRIMARY]:
-    "bg-bg-secondary-dark border border-border-primary-dark/60 shadow-2xl w-full max-w-[520px]",
+    "bg-bg-secondary-dark border border-border-primary-dark/25 shadow-2xl w-full max-w-[520px]",
   [VARIANT_TYPES.SECONDARY]:
-    "bg-bg-secondary-dark border border-border-primary-dark/60 shadow-2xl w-full max-w-[520px]",
+    "bg-bg-secondary-dark border border-border-primary-dark/25 shadow-2xl w-full max-w-[520px]",
   [VARIANT_TYPES.TERTIARY]:
-    "bg-bg-secondary-dark border border-border-primary-dark/60 shadow-2xl w-full max-w-[520px]",
+    "bg-bg-secondary-dark border border-border-primary-dark/25 shadow-2xl w-full max-w-[520px]",
 } as const;
 
 type VariantKeys = keyof typeof MODAL_VARIANTS;
@@ -55,29 +55,29 @@ export const AppModal: React.FC<Props> = ({
       closeOnOutsideClick={closeOnOutsideClick}
       onClose={onClose}
       overlay
-      overlayClassName="bg-black/70"
+      overlayClassName="bg-black/75"
     >
-      <View className="flex-1 items-center justify-center px-4">
+      <View className="flex-1 items-center justify-center px-5">
         <View
           className={cn(
-            "relative w-full rounded-2xl overflow-hidden",
+            "relative w-full rounded-3xl overflow-hidden",
             modalClassName,
             className,
           )}
         >
-          <View className="h-[2px] w-full bg-bg-senary-dark" />
+          <View className="h-[3px] w-full bg-accent-green" />
 
           {(title || showCloseButton) && (
             <View
               className={cn(
-                "flex-row items-center justify-between px-5 py-4 bg-bg-secondary-dark",
+                "flex-row items-center justify-between px-5 py-5 bg-bg-secondary-dark",
                 headerClassName,
               )}
             >
               {title ? (
                 <AppText
                   variant={VARIANT_TYPES.NOT_SELECTED}
-                  className="text-[24px] font-bold text-text-primary-dark tracking-tight"
+                  className="text-[20px] font-bold text-text-primary-dark tracking-tight"
                 >
                   {title}
                 </AppText>
@@ -89,20 +89,20 @@ export const AppModal: React.FC<Props> = ({
                 <AppButton
                   variant={VARIANT_TYPES.NOT_SELECTED}
                   onPress={onClose}
-                  className="w-8 h-8 rounded-full bg-bg-quaternary-dark items-center justify-center"
+                  className="w-8 h-8 rounded-full bg-bg-quaternary-dark border border-border-primary-dark/20 items-center justify-center"
                   accessibilityLabel="Close modal"
                 >
-                  <Feather name="x" size={14} color="#94a3b8" />
+                  <Feather name="x" size={14} color="#6b7280" />
                 </AppButton>
               ) : null}
             </View>
           )}
 
           {(title || showCloseButton) && (
-            <View className="mx-5 h-px bg-border-primary-dark/70" />
+            <View className="mx-5 h-px bg-border-primary-dark/30" />
           )}
 
-          <View className={cn("px-5 py-4", contentClassName)}>{children}</View>
+          <View className={cn("px-5 py-5", contentClassName)}>{children}</View>
         </View>
       </View>
     </Portal>
